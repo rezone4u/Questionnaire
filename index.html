@@ -185,70 +185,79 @@ tr.dtr td{padding:0;border-bottom:2px solid var(--sc)}
 <div class="panels">
   <div class="ptabs">
     <div class="ptab active" onclick="switchPanel(0,this)">問卷洞察</div>
-    <div class="ptab" onclick="switchPanel(1,this)">選項計分配重</div>
-    <div class="ptab" onclick="switchPanel(2,this)">題目計算權重</div>
-    <div class="ptab" onclick="switchPanel(3,this)">分析對象</div>
-    <div class="ptab" onclick="switchPanel(4,this)">體驗名單</div>
+    <div class="ptab" onclick="switchPanel(1,this)">配重設定</div>
+    <div class="ptab" onclick="switchPanel(2,this)">分析對象</div>
+    <div class="ptab" onclick="switchPanel(3,this)">體驗名單</div>
   </div>
-  <div class="pbody active" id="p0" style="flex-direction:column;gap:0;padding:0;overflow:hidden">
-    <div id="insightsBody" class="insightsbody-wrap" style="width:100%;padding:10px 16px 12px">
+  <div class="pbody active" id="p0" style="flex-direction:column;gap:0;padding:0;overflow:hidden;height:calc(100vh - 78px)">
+    <div id="insightsBody" class="insightsbody-wrap" style="width:100%;padding:10px 16px 12px;overflow-y:auto;height:100%">
       <div style="color:var(--sub);font-size:11px;padding:20px 0;text-align:center">切換至此頁後自動計算…</div>
     </div>
   </div>
-<div class="pbody" id="p1">
-    <div class="og"><div class="ogt">5 選項題（Q1–Q4）</div>
+<div class="pbody" id="p1" style="flex-direction:column;gap:0">
+    <div style="display:flex;flex-wrap:wrap;gap:0;align-items:flex-start">
+      <div style="display:flex;flex-direction:column;gap:0;flex:1;min-width:0">
+        <div style="font-size:10px;font-weight:800;color:var(--pr);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;padding-left:2px">選項計分配重</div>
+        <div style="display:flex;flex-wrap:wrap;gap:0;align-items:flex-start">
+        <div class="og"><div class="ogt">5 選項題（Q1–Q4）</div>
 <div class="orc"><span class="orl">完全認同</span><input type="range" min="0" max="10" step="0.5" value="5" oninput="setOpt5('完全認同',+this.value);ov0.value=+this.value"><input type="number" class="ni" id="ov0" value="5" min="0" max="10" step="0.5" oninput="setOpt5('完全認同',+this.value)"></div>
 <div class="orc"><span class="orl">認同</span><input type="range" min="0" max="10" step="0.5" value="4" oninput="setOpt5('認同',+this.value);ov1.value=+this.value"><input type="number" class="ni" id="ov1" value="4" min="0" max="10" step="0.5" oninput="setOpt5('認同',+this.value)"></div>
 <div class="orc"><span class="orl">普通</span><input type="range" min="0" max="10" step="0.5" value="3" oninput="setOpt5('普通',+this.value);ov2.value=+this.value"><input type="number" class="ni" id="ov2" value="3" min="0" max="10" step="0.5" oninput="setOpt5('普通',+this.value)"></div>
 <div class="orc"><span class="orl">不太認同</span><input type="range" min="0" max="10" step="0.5" value="2" oninput="setOpt5('不太認同',+this.value);ov3.value=+this.value"><input type="number" class="ni" id="ov3" value="2" min="0" max="10" step="0.5" oninput="setOpt5('不太認同',+this.value)"></div>
 <div class="orc"><span class="orl">完全不認同</span><input type="range" min="0" max="10" step="0.5" value="1" oninput="setOpt5('完全不認同',+this.value);ov4.value=+this.value"><input type="number" class="ni" id="ov4" value="1" min="0" max="10" step="0.5" oninput="setOpt5('完全不認同',+this.value)"></div>
-    </div>
-    <div class="dvd"></div>
-    <div class="og"><div class="ogt">4 選項題（Q5–Q6）</div>
+        </div>
+        <div class="dvd" style="width:1px;height:auto;margin:8px 4px;align-self:stretch"></div>
+        <div class="og"><div class="ogt">4 選項題（Q5–Q6）</div>
 <div class="orc"><span class="orl">經常</span><input type="range" min="0" max="10" step="0.5" value="4" oninput="setOpt4('經常',+this.value);o4v0.value=+this.value"><input type="number" class="ni" id="o4v0" value="4" min="0" max="10" step="0.5" oninput="setOpt4('經常',+this.value)"></div>
 <div class="orc"><span class="orl">偶爾</span><input type="range" min="0" max="10" step="0.5" value="3" oninput="setOpt4('偶爾',+this.value);o4v1.value=+this.value"><input type="number" class="ni" id="o4v1" value="3" min="0" max="10" step="0.5" oninput="setOpt4('偶爾',+this.value)"></div>
 <div class="orc"><span class="orl">好像有</span><input type="range" min="0" max="10" step="0.5" value="2" oninput="setOpt4('好像有',+this.value);o4v2.value=+this.value"><input type="number" class="ni" id="o4v2" value="2" min="0" max="10" step="0.5" oninput="setOpt4('好像有',+this.value)"></div>
 <div class="orc"><span class="orl">完全沒有</span><input type="range" min="0" max="10" step="0.5" value="1" oninput="setOpt4('完全沒有',+this.value);o4v3.value=+this.value"><input type="number" class="ni" id="o4v3" value="1" min="0" max="10" step="0.5" oninput="setOpt4('完全沒有',+this.value)"></div>
-    </div>
-    <div style="margin-left:auto;align-self:flex-end"><button class="bsm" onclick="resetOpts()">重設預設</button></div>
-  </div>
-  <div class="pbody" id="p2">
-    <div class="wg">
-      <div class="wi"><label>Q2 解決需求</label><div class="wr">
-        <input type="range" min="0" max="100" step="1" value="35" id="wq2" oninput="setQW('q2',+this.value);wq2v.value=this.value">
-        <input type="number" class="ni" id="wq2v" value="35" min="0" max="100" oninput="setQW('q2',+this.value);wq2.value=this.value">%
-      </div></div>
-      <div class="wi"><label>Q3 售價購買</label><div class="wr">
-        <input type="range" min="0" max="100" step="1" value="25" id="wq3" oninput="setQW('q3',+this.value);wq3v.value=this.value">
-        <input type="number" class="ni" id="wq3v" value="25" min="0" max="100" oninput="setQW('q3',+this.value);wq3.value=this.value">%
-      </div></div>
-      <div class="wi"><label>Q4 外觀品味</label><div class="wr">
-        <input type="range" min="0" max="100" step="1" value="15" id="wq4" oninput="setQW('q4',+this.value);wq4v.value=this.value">
-        <input type="number" class="ni" id="wq4v" value="15" min="0" max="100" oninput="setQW('q4',+this.value);wq4.value=this.value">%
-      </div></div>
-      <div class="wi"><label>Q5 社群推薦</label><div class="wr">
-        <input type="range" min="0" max="100" step="1" value="15" id="wq5" oninput="setQW('q5',+this.value);wq5v.value=this.value">
-        <input type="number" class="ni" id="wq5v" value="15" min="0" max="100" oninput="setQW('q5',+this.value);wq5.value=this.value">%
-      </div></div>
-      <div class="dvd"></div>
-      <div class="wi" style="min-width:175px"><label>Q8 廠商合作（全局預設）</label>
-        <div class="wr"><span style="font-size:10px;color:var(--sub)">預設分數(1–10)</span>
-          <input type="range" min="1" max="10" step="0.5" value="6" id="q8score" oninput="Q8S=+this.value;q8sv.value=(+this.value).toFixed(1);renderTable()">
-          <input type="number" class="ni" id="q8sv" value="6.0" min="1" max="10" step="0.5" oninput="Q8S=+this.value;q8score.value=this.value;renderTable()">
         </div>
-        <div class="wr" style="margin-top:2px"><span style="font-size:10px;color:var(--sub)">權重</span>
-          <input type="range" min="0" max="100" step="1" value="10" id="wq8" oninput="setQW('q8',+this.value);wq8v.value=this.value">
-          <input type="number" class="ni" id="wq8v" value="10" min="0" max="100" oninput="setQW('q8',+this.value);wq8.value=this.value">%
         </div>
-        <div style="font-size:10px;color:var(--sub);margin-top:3px">※ 各商品可在表格中個別調整</div>
+      </div>
+      <div class="dvd" style="width:1px;height:auto;margin:8px 16px;align-self:stretch"></div>
+      <div style="display:flex;flex-direction:column;gap:0">
+        <div style="font-size:10px;font-weight:800;color:var(--pr);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;padding-left:2px">題目計算權重</div>
+        <div class="wg">
+          <div class="wi"><label>Q2 解決需求</label><div class="wr">
+            <input type="range" min="0" max="100" step="1" value="35" id="wq2" oninput="setQW('q2',+this.value);wq2v.value=this.value">
+            <input type="number" class="ni" id="wq2v" value="35" min="0" max="100" oninput="setQW('q2',+this.value);wq2.value=this.value">%
+          </div></div>
+          <div class="wi"><label>Q3 售價購買</label><div class="wr">
+            <input type="range" min="0" max="100" step="1" value="25" id="wq3" oninput="setQW('q3',+this.value);wq3v.value=this.value">
+            <input type="number" class="ni" id="wq3v" value="25" min="0" max="100" oninput="setQW('q3',+this.value);wq3.value=this.value">%
+          </div></div>
+          <div class="wi"><label>Q4 外觀品味</label><div class="wr">
+            <input type="range" min="0" max="100" step="1" value="15" id="wq4" oninput="setQW('q4',+this.value);wq4v.value=this.value">
+            <input type="number" class="ni" id="wq4v" value="15" min="0" max="100" oninput="setQW('q4',+this.value);wq4.value=this.value">%
+          </div></div>
+          <div class="wi"><label>Q5 社群推薦</label><div class="wr">
+            <input type="range" min="0" max="100" step="1" value="15" id="wq5" oninput="setQW('q5',+this.value);wq5v.value=this.value">
+            <input type="number" class="ni" id="wq5v" value="15" min="0" max="100" oninput="setQW('q5',+this.value);wq5.value=this.value">%
+          </div></div>
+          <div class="dvd"></div>
+          <div class="wi" style="min-width:175px"><label>Q8 廠商合作（全局預設）</label>
+            <div class="wr"><span style="font-size:10px;color:var(--sub)">預設分數(1–10)</span>
+              <input type="range" min="1" max="10" step="0.5" value="6" id="q8score" oninput="Q8S=+this.value;q8sv.value=(+this.value).toFixed(1);renderTable()">
+              <input type="number" class="ni" id="q8sv" value="6.0" min="1" max="10" step="0.5" oninput="Q8S=+this.value;q8score.value=this.value;renderTable()">
+            </div>
+            <div class="wr" style="margin-top:2px"><span style="font-size:10px;color:var(--sub)">權重</span>
+              <input type="range" min="0" max="100" step="1" value="10" id="wq8" oninput="setQW('q8',+this.value);wq8v.value=this.value">
+              <input type="number" class="ni" id="wq8v" value="10" min="0" max="100" oninput="setQW('q8',+this.value);wq8.value=this.value">%
+            </div>
+            <div style="font-size:10px;color:var(--sub);margin-top:3px">※ 各商品可在表格中個別調整</div>
+          </div>
+        </div>
+        </div>
+        <div class="tw">總權重：<span id="totalW">100</span>%
+          <span id="warnW" style="display:none;color:#c0392b;font-size:10px;margin-left:3px">
+<svg width="12" height="12" viewBox="0 0 12 12" style="display:inline;vertical-align:middle;margin-right:2px" xmlns="http://www.w3.org/2000/svg"><path d="M5.5 1.5L10 9.5H1Z" fill="none" stroke="#c0392b" stroke-width="1"/><line x1="5.5" y1="4.5" x2="5.5" y2="7" stroke="#c0392b" stroke-width="1.2" stroke-linecap="round"/><circle cx="5.5" cy="8.5" r="0.6" fill="#c0392b"/></svg> 應為100%</span>
+        </div>
       </div>
     </div>
-    <div class="tw">總權重：<span id="totalW">100</span>%
-      <span id="warnW" style="display:none;color:#c0392b;font-size:10px;margin-left:3px">
-<svg width="12" height="12" viewBox="0 0 12 12" style="display:inline;vertical-align:middle;margin-right:2px" xmlns="http://www.w3.org/2000/svg"><path d="M5.5 1.5L10 9.5H1Z" fill="none" stroke="#c0392b" stroke-width="1"/><line x1="5.5" y1="4.5" x2="5.5" y2="7" stroke="#c0392b" stroke-width="1.2" stroke-linecap="round"/><circle cx="5.5" cy="8.5" r="0.6" fill="#c0392b"/></svg> 應為100%</span>
-    </div>
+    <div style="margin-top:4px;align-self:flex-end"><button class="bsm" onclick="resetOpts()">重設預設</button></div>
   </div>
-  <div class="pbody" id="p3">
+  <div class="pbody" id="p2">
     <div>
       <div style="font-size:10px;font-weight:800;color:var(--pr);text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px">分析對象</div>
       <div class="gbtns">
@@ -259,7 +268,7 @@ tr.dtr td{padding:0;border-bottom:2px solid var(--sc)}
       </div>
     </div>
   </div>
-  <div class="pbody" id="p4" style="flex-direction:row;gap:0;padding:0;width:100%;box-sizing:border-box;overflow:hidden">
+  <div class="pbody" id="p3" style="flex-direction:row;gap:0;padding:0;width:100%;box-sizing:border-box;overflow:hidden">
 
 <!-- LEFT: filter bar + cards -->
 <div style="flex:1;min-width:0;display:flex;flex-direction:column;border-right:1px solid var(--border)">
@@ -389,7 +398,7 @@ function getQ8(code){return Q8P[code]!==undefined?Q8P[code]:Q8S;}
 function switchPanel(i,el){
   document.querySelectorAll('.pbody').forEach((p,j)=>p.classList.toggle('active',i===j));
   document.querySelectorAll('.ptab').forEach((t,j)=>t.classList.toggle('active',i===j));
-  const hideTable=i===0||i===4;
+  const hideTable=i===0||i===3;
   ['toolbar','legendBar'].forEach(id=>{
     const el2=id==='legendBar'?document.getElementById(id):document.querySelector('.'+id);
     if(el2)el2.style.display=hideTable?'none':'';
@@ -397,7 +406,7 @@ function switchPanel(i,el){
   const tw=document.querySelector('.table-wrap');
   if(tw)tw.style.display=hideTable?'none':'';
   if(i===0)renderInsights();
-  if(i===4){renderRespCards();renderAssignBoard();}
+  if(i===3){renderRespCards();renderAssignBoard();}
 }
 function setOpt5(o,v){O5[o]=v;renderTable();}
 function setOpt4(o,v){O4[o]=v;renderTable();}
@@ -849,14 +858,6 @@ function renderInsights(){
     </div>
     <div class="ins-section">
       <div class="ins-title">
-        <svg width="11" height="11" viewBox="0 0 11 11" xmlns="http://www.w3.org/2000/svg"><circle cx="3" cy="5.5" r="2" fill="#52b788"/><circle cx="8" cy="5.5" r="2" fill="#ef9f6a"/><line x1="5" y1="5.5" x2="6" y2="5.5" stroke="var(--sub)" stroke-width="1"/></svg>
-        有育兒 vs 無育兒 評分差異
-      </div>
-      <div style="font-size:10px;color:var(--sub);margin-bottom:7px;line-height:1.7">${crossSentence}</div>
-      ${crossBars}
-    </div>
-    <div class="ins-section">
-      <div class="ins-title">
         <svg width="11" height="11" viewBox="0 0 11 11" xmlns="http://www.w3.org/2000/svg"><path d="M5.5 1L7 4.5H11L8 7l1 4-3.5-2L2 11l1-4L0 4.5h4z" fill="#2d6a4f"/></svg>
         評分前五高
       </div>
@@ -981,7 +982,7 @@ function renderTable(){
   if(te){echip.style.display='inline';echip.innerHTML=`淘汰 ${te} 件`;}
   else{echip.style.display='none';}
   if(document.getElementById('legendBar').classList.contains('open'))updateLegend();
-  if(document.getElementById('p3').classList.contains('active'))renderInsights();
+  if(document.getElementById('p0').classList.contains('active'))renderInsights();
 }
 function exp(code){EXPCODE=EXPCODE===code?null:code;renderTable();
   if(EXPCODE===code)setTimeout(()=>document.querySelector(`tr[data-code="${code}"]`)?.scrollIntoView({behavior:'smooth',block:'nearest'}),50);
