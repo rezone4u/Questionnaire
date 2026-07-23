@@ -1,0 +1,1151 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>選品問卷分析</title>
+<style>
+:root{--pr:#2d6a4f;--pl:#40916c;--sc:#52b788;--lt:#b7e4c7;--ll:#d8f3dc;
+  --bg:#f0faf4;--card:#fff;--text:#1b4332;--sub:#6c757d;--border:#c3e6cb;
+  --fhbg:#1d5038;--shadow:0 2px 8px rgba(45,106,79,.12);}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text);font-size:13px;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;text-rendering:optimizeLegibility}
+header{background:linear-gradient(135deg,var(--pr),var(--pl));color:#fff;padding:11px 18px;display:flex;align-items:center;gap:10px;box-shadow:0 2px 8px rgba(0,0,0,.2)}
+header h1{font-size:15px;font-weight:700}
+.hstats{display:flex;gap:6px;margin-left:auto;flex-wrap:wrap;align-items:center}
+.hchip{background:rgba(255,255,255,.18);border-radius:12px;padding:2px 8px;font-size:10px;white-space:nowrap;display:flex;align-items:center;gap:2px}
+.panels{background:var(--card);border-bottom:1px solid var(--border);box-shadow:var(--shadow);position:sticky;top:0;z-index:200}
+.ptabs{display:flex;border-bottom:1px solid var(--border)}
+.ptab{padding:7px 13px;cursor:pointer;font-size:11px;font-weight:700;color:var(--sub);border-bottom:3px solid transparent;user-select:none;transition:.1s}
+.ptab.active{color:var(--pr);border-bottom-color:var(--pr)}
+.pbody{padding:9px 16px 11px;display:none}
+.pbody.active{display:flex;flex-wrap:wrap;gap:9px;align-items:flex-start}
+.orc{display:flex;align-items:center;gap:5px;font-size:11px}
+.orl{min-width:72px;color:var(--sub)}
+.orc input[type=range]{width:80px;accent-color:var(--sc)}
+.ni{width:42px;border:1px solid var(--border);border-radius:3px;padding:2px 3px;font-size:11px;text-align:center}
+.ni:focus{outline:none;border-color:var(--sc)}
+.og{display:flex;flex-direction:column;gap:4px}
+.ogt{font-size:10px;font-weight:800;color:var(--pr);text-transform:uppercase;letter-spacing:.6px;margin-bottom:2px}
+.wg{display:flex;flex-wrap:wrap;gap:9px}
+.wi{display:flex;flex-direction:column;gap:3px;min-width:105px}
+.wi>label{font-size:10px;font-weight:800;color:var(--sub);text-transform:uppercase;letter-spacing:.4px}
+.wr{display:flex;align-items:center;gap:3px;flex-wrap:wrap}
+.wr input[type=range]{width:72px;accent-color:var(--sc)}
+.tw{display:flex;align-items:center;gap:4px;padding:5px 10px;background:var(--ll);border-radius:5px;font-size:11px;font-weight:700;color:var(--pr);white-space:nowrap;align-self:center}
+.dvd{width:1px;background:var(--border);min-height:40px;margin:0 2px}
+.gbtns{display:flex;gap:3px;flex-wrap:wrap}
+.gbtn{padding:4px 10px;border:1px solid var(--sc);border-radius:14px;cursor:pointer;font-size:11px;background:#fff;color:var(--pl);user-select:none;transition:.1s}
+.gbtn.active{background:var(--pl);color:#fff;border-color:var(--pl)}
+.bsm{padding:3px 8px;border:1px solid var(--border);border-radius:4px;cursor:pointer;font-size:10px;background:#fff;color:var(--sub)}
+.toolbar{background:#fff;border-bottom:1px solid var(--border);padding:6px 18px;display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+.tb-search{padding:4px 9px 4px 28px;border:1px solid var(--border);border-radius:5px;font-size:11px;width:160px;height:26px;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='13' height='13' viewBox='0 0 13 13'%3E%3Ccircle cx='5.5' cy='5.5' r='4' fill='none' stroke='%236c757d' stroke-width='1.3'/%3E%3Cline x1='8.5' y1='8.5' x2='12' y2='12' stroke='%236c757d' stroke-width='1.3' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat 8px center}
+.tb-search:focus{outline:none;border-color:var(--sc)}
+.elimbtns{display:flex;gap:3px}
+.ebtn{padding:3px 8px;border:1px solid var(--border);border-radius:4px;cursor:pointer;font-size:11px;background:#fff;color:var(--sub);user-select:none;transition:.1s;white-space:nowrap;display:inline-flex;align-items:center}
+.ebtn.e-all.on{background:var(--pl);color:#fff;border-color:var(--pl)}
+.ebtn.e-only.on{background:#555;color:#fff;border-color:#555}
+.ebtn.e-hide.on{background:var(--pr);color:#fff;border-color:var(--pr)}
+.ebtn.e-q7.on{background:#7b5ea7;color:#fff;border-color:#7b5ea7}
+.rfbtn{padding:3px 10px;border:1px solid var(--border);border-radius:12px;cursor:pointer;font-size:11px;background:#fff;color:var(--sub);transition:.1s}
+.rfbtn.on{background:var(--pl);color:#fff;border-color:var(--pl)}
+.rsbtn{padding:3px 10px;border:1px solid var(--border);border-radius:12px;cursor:pointer;font-size:11px;background:#fff;color:var(--sub);transition:.1s}
+.rsbtn.on{background:var(--sc);color:#fff;border-color:var(--sc)}
+.chip{display:inline-flex;align-items:center;font-size:10px;border-radius:4px;padding:2px 8px;font-weight:600;cursor:pointer;border:1.5px solid transparent;transition:.15s;user-select:none}
+.chip.normal{background:var(--ll);color:var(--pr);border-color:var(--lt)}
+.chip.selected{background:var(--pr);color:#fff;border-color:var(--pr);box-shadow:0 0 0 2px rgba(45,106,79,.3)}
+.chip.taken{background:#e8e8e8;color:#999;border-color:#ddd}
+.chip.none{background:#f5f5f5;color:#bbb;border-color:#eee;cursor:default}
+.rcard{background:#f8fffe;border:1px solid var(--border);border-radius:8px;padding:9px 12px;max-width:100%}
+.rcard-head{display:flex;align-items:center;gap:7px;margin-bottom:5px;flex-wrap:wrap}
+.tb-sum{margin-left:auto;font-size:11px;color:var(--sub)}
+.tb-sum strong{color:var(--pr)}
+.tb-legend-btn{padding:3px 8px;border:1px solid var(--sc);border-radius:4px;cursor:pointer;font-size:10px;background:#fff;color:var(--pl);margin-left:4px;display:inline-flex;align-items:center}
+.legend-bar{background:#fff;border-bottom:1px solid var(--border);padding:6px 18px;display:none;flex-wrap:wrap;gap:12px;align-items:flex-start}
+.legend-bar.open{display:flex}
+.lg-group{display:flex;flex-direction:column;gap:3px}
+.lg-title{font-size:10px;font-weight:800;color:var(--pr);text-transform:uppercase;letter-spacing:.5px;margin-bottom:2px}
+.lg-row{display:flex;align-items:center;gap:4px;font-size:10px;color:var(--sub)}
+.lg-swatch{width:12px;height:12px;border-radius:2px;flex-shrink:0}
+.table-wrap{padding:0 18px 24px;overflow-x:auto}
+table{width:100%;border-collapse:collapse;background:var(--card);border-radius:8px;overflow:hidden;box-shadow:var(--shadow);margin-top:10px}
+thead tr.sort-row th{padding:7px 5px;font-size:11px;font-weight:700;background:var(--pr);color:#fff;white-space:nowrap;user-select:none;text-align:left}
+thead tr.sort-row th.sortable{cursor:pointer}
+thead tr.sort-row th.sortable:hover{background:var(--pl)}
+thead tr.sort-row th.sorted{background:#1a4a30}
+th.num{text-align:center}
+.sarr{font-size:10px;opacity:.5;margin-left:2px}
+th.sorted .sarr{opacity:1}
+thead tr.filter-row th{background:var(--fhbg);padding:3px 4px;border-bottom:2px solid var(--sc)}
+.fc{display:flex;align-items:center;gap:2px}
+.fop{height:21px;border:1px solid rgba(255,255,255,.2);border-radius:3px;font-size:10px;padding:0 1px;cursor:pointer;color:#fff;background:rgba(255,255,255,.1);min-width:26px}
+.fop option{color:#000;background:#fff}
+.fop:focus{outline:none}
+.fval{width:44px;height:21px;border:1px solid rgba(255,255,255,.2);border-radius:3px;padding:0 3px;font-size:10px;text-align:center;color:#fff;background:rgba(255,255,255,.1)}
+.fval::placeholder{color:rgba(255,255,255,.35)}
+.fval:focus{outline:none;border-color:var(--sc)}
+.fval::-webkit-outer-spin-button,.fval::-webkit-inner-spin-button{-webkit-appearance:none}
+.fc-search input{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);border-radius:3px;padding:2px 5px;font-size:10px;color:#fff;height:21px;width:90px}
+.fc-search input::placeholder{color:rgba(255,255,255,.35)}
+.fc-search input:focus{outline:none;border-color:var(--sc)}
+tbody tr.prow{cursor:pointer;transition:.1s}
+tbody tr.prow:hover{background:#f5f5f5}
+tbody tr.prow.expanded{background:#eee}
+tbody tr.prow.elim-row{background:#e8e8e8 !important}
+tbody tr.prow.elim-row:hover{background:#ddd !important}
+tbody tr.prow.elim-row.expanded{background:#d5d5d5 !important}
+td{padding:6px 5px;border-bottom:1px solid #f0f0f0;vertical-align:middle}
+td.rank{text-align:center;font-weight:700;color:var(--sub);font-size:11px;width:26px}
+td.code{font-weight:700;color:var(--pr);font-size:11px;white-space:nowrap;width:34px}
+td.pname{font-size:12px;min-width:95px}
+td.sc-cell{width:125px}
+td.qcell{text-align:center;width:30px}
+td.q8cell{text-align:center;width:56px}
+td.bdcell{white-space:nowrap}
+td.xbtn{text-align:center;width:18px;color:var(--pl);font-size:12px}
+.sw{display:flex;align-items:center;gap:3px}
+.sb{height:8px;border-radius:4px;background:#e9ecef;flex:1;overflow:hidden}
+.sbf{height:100%;border-radius:4px;transition:width .3s}
+.sp{font-size:11px;font-weight:700;min-width:28px;text-align:right}
+.qv{display:inline-block;width:28px;height:16px;line-height:16px;border-radius:3px;text-align:center;font-size:10px;font-weight:700}
+.q8in{width:46px;height:22px;border:none;border-radius:4px;text-align:center;font-size:11px;font-weight:700;padding:0 2px;cursor:text}
+.q8in:focus{outline:2px solid var(--sc)}
+.q8in::-webkit-outer-spin-button,.q8in::-webkit-inner-spin-button{-webkit-appearance:none}
+.badge{display:inline-flex;align-items:center;border-radius:3px;padding:2px 6px;font-size:10px;font-weight:700;white-space:nowrap;cursor:pointer;border:1px solid transparent}
+.badge:hover{filter:brightness(.9)}
+.badge.anq{background:#ddd;color:#555;border-color:#bbb}
+.badge.ztai{background:#ddd;color:#555;border-color:#bbb}
+.badge.pass{background:var(--ll);color:var(--pr);border-color:var(--lt);cursor:default}
+.q6-ref{font-size:10px;color:rgba(255,255,255,.5);font-weight:400;font-style:italic;margin-left:2px}
+.er-col,.nr-col{display:none}
+body.cross-mode .er-col{display:table-cell}
+body.cross-mode .nr-col{display:table-cell}
+tr.dtr td{padding:0;border-bottom:2px solid var(--sc)}
+.dp{padding:10px 16px;background:#f8fdf9;display:none}
+.dp.open{display:block}
+.dg{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:9px}
+.dc{background:#fff;border-radius:6px;padding:8px 10px;border:1px solid var(--border)}
+.dt{font-size:11px;font-weight:700;color:var(--pr);margin-bottom:6px;display:flex;align-items:center;gap:3px}
+.db{background:var(--lt);color:var(--pr);border-radius:6px;padding:1px 5px;font-size:10px}
+.or{display:flex;align-items:center;gap:4px;margin-bottom:3px;font-size:11px}
+.ol{min-width:66px;color:var(--sub);white-space:nowrap}
+.obw{flex:1;height:10px;background:#e9ecef;border-radius:5px;overflow:hidden}
+.obf{height:100%;border-radius:5px}
+.opc{min-width:28px;text-align:right;font-weight:600}
+.ocnt{min-width:20px;text-align:right;color:var(--sub)}
+.cc{display:flex;gap:8px}
+.ch{flex:1;min-width:0}
+.ct{font-size:10px;font-weight:700;color:var(--pl);margin-bottom:4px}
+.cross-summary{grid-column:1/-1;background:#f0faf4;border:1px solid var(--lt);border-radius:6px;padding:9px 12px;font-size:11px;line-height:1.7;color:var(--text)}
+.cs-title{font-weight:700;color:var(--pr);font-size:11px;margin-bottom:4px;display:flex;align-items:center;gap:3px}
+.cs-diff-row{display:flex;align-items:center;gap:6px;margin-bottom:2px}
+.q7c{display:flex;flex-wrap:wrap;gap:4px;margin-top:3px}
+.q7k{background:var(--ll);border:1px solid var(--lt);border-radius:8px;padding:3px 7px;font-size:10px;color:var(--pr);display:inline-flex;align-items:center;gap:3px}
+.q7k.no{background:#f8f9fa;border-color:#dee2e6;color:var(--sub)}
+.exp-label{font-size:10px;font-weight:800;color:#fff;background:#2d6a4f;border-radius:3px;padding:0 3px;line-height:14px}
+.emp{color:#adb5bd;font-size:10px;font-style:italic}
+.q7legend{font-size:10px;color:var(--sub);margin-top:6px;display:flex;align-items:center;gap:4px;border-top:1px solid var(--border);padding-top:5px}
+/* Insights panel */
+.ins-section{margin-bottom:14px}
+.ins-title{font-size:10px;font-weight:800;color:var(--pr);text-transform:uppercase;letter-spacing:.6px;margin-bottom:7px;display:flex;align-items:center;gap:4px}
+.ins-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:7px}
+.ins-card{background:#fff;border:1px solid var(--border);border-radius:6px;padding:8px 10px}
+.ins-card.top{border-left:3px solid #2d6a4f}
+.ins-card.bot{border-left:3px solid #e63946}
+.ins-card.diff{border-left:3px solid #f5a623}
+.ins-card-rank{font-size:10px;font-weight:800;color:var(--sub);margin-bottom:2px;text-transform:uppercase;letter-spacing:.4px}
+.ins-card-name{font-size:12px;font-weight:700;color:var(--text);margin-bottom:2px}
+.ins-card-code{font-size:10px;color:var(--sub);margin-bottom:5px}
+.ins-card-score{font-size:18px;font-weight:800;margin-bottom:4px}
+.ins-card-note{font-size:10px;color:var(--sub);line-height:1.5}
+.ins-qbar-row{display:flex;align-items:center;gap:6px;margin-bottom:4px;font-size:10px}
+.ins-qbar-label{min-width:72px;color:var(--sub)}
+.ins-qbar-wrap{flex:1;height:8px;background:#e9ecef;border-radius:4px;overflow:hidden}
+.ins-qbar-fill{height:100%;border-radius:4px}
+.ins-qbar-val{min-width:28px;text-align:right;font-weight:700;color:var(--text)}
+.ins-diff-chip{display:inline-flex;align-items:center;gap:3px;background:var(--ll);border:1px solid var(--lt);border-radius:4px;padding:2px 7px;font-size:10px;color:var(--pr);font-weight:700;margin-right:4px;margin-bottom:4px}
+</style>
+</head>
+<body>
+<header>
+  <div style="display:flex;align-items:center;gap:6px">
+<svg width="11" height="11" viewBox="0 0 11 11" style="display:inline;vertical-align:middle;margin-right:4px" xmlns="http://www.w3.org/2000/svg"><path d="M5.5 1C3 3 1 6 2 9.5 4.5 9 7 7 8 4.5 9 7 10 9 9.5 9.5 8 6 6 3 5.5 1z" fill="#52b788"/><line x1="5.5" y1="2" x2="5.5" y2="10" stroke="#2d6a4f" stroke-width="0.7" stroke-linecap="round"/></svg>
+    <div>
+      <h1>選品問卷綜合分析</h1>
+      <div style="font-size:10px;opacity:.7;margin-top:1px">甲+乙路線合併 · 41 位受訪者 · 42 件商品</div>
+    </div>
+  </div>
+  <div class="hstats">
+    <div class="hchip"><svg width="11" height="11" viewBox="0 0 11 11" style="display:inline;vertical-align:middle;margin-right:2px" xmlns="http://www.w3.org/2000/svg"><circle cx="5.5" cy="2.8" r="2.1" fill="#2d6a4f"/><path d="M1.5 11c0-2.8 1.5-4 4-4s4 1.2 4 4" fill="#2d6a4f"/></svg> 有育兒 13</div>
+    <div class="hchip"><svg width="11" height="11" viewBox="0 0 11 11" style="display:inline;vertical-align:middle;margin-right:2px" xmlns="http://www.w3.org/2000/svg"><circle cx="5.5" cy="2.8" r="2.1" fill="#6c757d"/><path d="M1.5 11c0-2.8 1.5-4 4-4s4 1.2 4 4" fill="#6c757d"/></svg> 無育兒 28</div>
+    <span id="echip" style="display:none;background:rgba(100,100,100,.3);border-radius:10px;padding:2px 8px;font-size:10px;display:none"></span>
+  </div>
+</header>
+
+<div class="panels">
+  <div class="ptabs">
+    <div class="ptab active" onclick="switchPanel(0,this)">問卷洞察</div>
+    <div class="ptab" onclick="switchPanel(1,this)">選項計分配重</div>
+    <div class="ptab" onclick="switchPanel(2,this)">題目計算權重</div>
+    <div class="ptab" onclick="switchPanel(3,this)">分析對象</div>
+    <div class="ptab" onclick="switchPanel(4,this)">體驗名單</div>
+  </div>
+  <div class="pbody active" id="p0" style="flex-direction:column;gap:0;padding:0;overflow:hidden">
+    <div id="insightsBody" class="insightsbody-wrap" style="width:100%;padding:10px 16px 12px">
+      <div style="color:var(--sub);font-size:11px;padding:20px 0;text-align:center">切換至此頁後自動計算…</div>
+    </div>
+  </div>
+<div class="pbody" id="p1">
+    <div class="og"><div class="ogt">5 選項題（Q1–Q4）</div>
+<div class="orc"><span class="orl">完全認同</span><input type="range" min="0" max="10" step="0.5" value="5" oninput="setOpt5('完全認同',+this.value);ov0.value=+this.value"><input type="number" class="ni" id="ov0" value="5" min="0" max="10" step="0.5" oninput="setOpt5('完全認同',+this.value)"></div>
+<div class="orc"><span class="orl">認同</span><input type="range" min="0" max="10" step="0.5" value="4" oninput="setOpt5('認同',+this.value);ov1.value=+this.value"><input type="number" class="ni" id="ov1" value="4" min="0" max="10" step="0.5" oninput="setOpt5('認同',+this.value)"></div>
+<div class="orc"><span class="orl">普通</span><input type="range" min="0" max="10" step="0.5" value="3" oninput="setOpt5('普通',+this.value);ov2.value=+this.value"><input type="number" class="ni" id="ov2" value="3" min="0" max="10" step="0.5" oninput="setOpt5('普通',+this.value)"></div>
+<div class="orc"><span class="orl">不太認同</span><input type="range" min="0" max="10" step="0.5" value="2" oninput="setOpt5('不太認同',+this.value);ov3.value=+this.value"><input type="number" class="ni" id="ov3" value="2" min="0" max="10" step="0.5" oninput="setOpt5('不太認同',+this.value)"></div>
+<div class="orc"><span class="orl">完全不認同</span><input type="range" min="0" max="10" step="0.5" value="1" oninput="setOpt5('完全不認同',+this.value);ov4.value=+this.value"><input type="number" class="ni" id="ov4" value="1" min="0" max="10" step="0.5" oninput="setOpt5('完全不認同',+this.value)"></div>
+    </div>
+    <div class="dvd"></div>
+    <div class="og"><div class="ogt">4 選項題（Q5–Q6）</div>
+<div class="orc"><span class="orl">經常</span><input type="range" min="0" max="10" step="0.5" value="4" oninput="setOpt4('經常',+this.value);o4v0.value=+this.value"><input type="number" class="ni" id="o4v0" value="4" min="0" max="10" step="0.5" oninput="setOpt4('經常',+this.value)"></div>
+<div class="orc"><span class="orl">偶爾</span><input type="range" min="0" max="10" step="0.5" value="3" oninput="setOpt4('偶爾',+this.value);o4v1.value=+this.value"><input type="number" class="ni" id="o4v1" value="3" min="0" max="10" step="0.5" oninput="setOpt4('偶爾',+this.value)"></div>
+<div class="orc"><span class="orl">好像有</span><input type="range" min="0" max="10" step="0.5" value="2" oninput="setOpt4('好像有',+this.value);o4v2.value=+this.value"><input type="number" class="ni" id="o4v2" value="2" min="0" max="10" step="0.5" oninput="setOpt4('好像有',+this.value)"></div>
+<div class="orc"><span class="orl">完全沒有</span><input type="range" min="0" max="10" step="0.5" value="1" oninput="setOpt4('完全沒有',+this.value);o4v3.value=+this.value"><input type="number" class="ni" id="o4v3" value="1" min="0" max="10" step="0.5" oninput="setOpt4('完全沒有',+this.value)"></div>
+    </div>
+    <div style="margin-left:auto;align-self:flex-end"><button class="bsm" onclick="resetOpts()">重設預設</button></div>
+  </div>
+  <div class="pbody" id="p2">
+    <div class="wg">
+      <div class="wi"><label>Q2 解決需求</label><div class="wr">
+        <input type="range" min="0" max="100" step="1" value="35" id="wq2" oninput="setQW('q2',+this.value);wq2v.value=this.value">
+        <input type="number" class="ni" id="wq2v" value="35" min="0" max="100" oninput="setQW('q2',+this.value);wq2.value=this.value">%
+      </div></div>
+      <div class="wi"><label>Q3 售價購買</label><div class="wr">
+        <input type="range" min="0" max="100" step="1" value="25" id="wq3" oninput="setQW('q3',+this.value);wq3v.value=this.value">
+        <input type="number" class="ni" id="wq3v" value="25" min="0" max="100" oninput="setQW('q3',+this.value);wq3.value=this.value">%
+      </div></div>
+      <div class="wi"><label>Q4 外觀品味</label><div class="wr">
+        <input type="range" min="0" max="100" step="1" value="15" id="wq4" oninput="setQW('q4',+this.value);wq4v.value=this.value">
+        <input type="number" class="ni" id="wq4v" value="15" min="0" max="100" oninput="setQW('q4',+this.value);wq4.value=this.value">%
+      </div></div>
+      <div class="wi"><label>Q5 社群推薦</label><div class="wr">
+        <input type="range" min="0" max="100" step="1" value="15" id="wq5" oninput="setQW('q5',+this.value);wq5v.value=this.value">
+        <input type="number" class="ni" id="wq5v" value="15" min="0" max="100" oninput="setQW('q5',+this.value);wq5.value=this.value">%
+      </div></div>
+      <div class="dvd"></div>
+      <div class="wi" style="min-width:175px"><label>Q8 廠商合作（全局預設）</label>
+        <div class="wr"><span style="font-size:10px;color:var(--sub)">預設分數(1–10)</span>
+          <input type="range" min="1" max="10" step="0.5" value="6" id="q8score" oninput="Q8S=+this.value;q8sv.value=(+this.value).toFixed(1);renderTable()">
+          <input type="number" class="ni" id="q8sv" value="6.0" min="1" max="10" step="0.5" oninput="Q8S=+this.value;q8score.value=this.value;renderTable()">
+        </div>
+        <div class="wr" style="margin-top:2px"><span style="font-size:10px;color:var(--sub)">權重</span>
+          <input type="range" min="0" max="100" step="1" value="10" id="wq8" oninput="setQW('q8',+this.value);wq8v.value=this.value">
+          <input type="number" class="ni" id="wq8v" value="10" min="0" max="100" oninput="setQW('q8',+this.value);wq8.value=this.value">%
+        </div>
+        <div style="font-size:10px;color:var(--sub);margin-top:3px">※ 各商品可在表格中個別調整</div>
+      </div>
+    </div>
+    <div class="tw">總權重：<span id="totalW">100</span>%
+      <span id="warnW" style="display:none;color:#c0392b;font-size:10px;margin-left:3px">
+<svg width="12" height="12" viewBox="0 0 12 12" style="display:inline;vertical-align:middle;margin-right:2px" xmlns="http://www.w3.org/2000/svg"><path d="M5.5 1.5L10 9.5H1Z" fill="none" stroke="#c0392b" stroke-width="1"/><line x1="5.5" y1="4.5" x2="5.5" y2="7" stroke="#c0392b" stroke-width="1.2" stroke-linecap="round"/><circle cx="5.5" cy="8.5" r="0.6" fill="#c0392b"/></svg> 應為100%</span>
+    </div>
+  </div>
+  <div class="pbody" id="p3">
+    <div>
+      <div style="font-size:10px;font-weight:800;color:var(--pr);text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px">分析對象</div>
+      <div class="gbtns">
+        <button class="gbtn active" onclick="setGroup('all',this)">全體 (41)</button>
+        <button class="gbtn" onclick="setGroup('exp',this)">有育兒 (13)</button>
+        <button class="gbtn" onclick="setGroup('noexp',this)">無育兒 (28)</button>
+        <button class="gbtn" onclick="setGroup('cross',this)">交叉比較</button>
+      </div>
+    </div>
+  </div>
+  <div class="pbody" id="p4" style="flex-direction:row;gap:0;padding:0;width:100%;box-sizing:border-box;overflow:hidden">
+
+<!-- LEFT: filter bar + cards -->
+<div style="flex:1;min-width:0;display:flex;flex-direction:column;border-right:1px solid var(--border)">
+  <div style="padding:8px 14px;border-bottom:1px solid var(--border);display:flex;gap:6px;align-items:center;flex-wrap:wrap;flex-shrink:0">
+    <span style="font-size:10px;color:var(--sub);margin-right:4px">篩選：</span>
+    <button class="rfbtn on" id="rf-all" onclick="setRespFilter('all')">全部受訪者</button>
+    <button class="rfbtn" id="rf-children" onclick="setRespFilter('children')">有育兒資訊</button>
+    <button class="rfbtn" id="rf-q7" onclick="setRespFilter('q7')">有體驗意願</button>
+    <span style="margin-left:10px;width:1px;height:14px;background:var(--border);display:inline-block;vertical-align:middle"></span>
+    <span style="font-size:10px;color:var(--sub);margin-left:6px;margin-right:4px">排序：</span>
+    <button class="rsbtn on" id="rs-default" onclick="setRespSort('default')">預設</button>
+    <button class="rsbtn" id="rs-count" onclick="setRespSort('count')">體驗商品數量<span class="sarr2"></span></button>
+    <button class="rsbtn" id="rs-exp" onclick="setRespSort('exp')">有無育嬰經驗<span class="sarr2"></span></button>
+    <button class="rsbtn" id="rs-children" onclick="setRespSort('children')">有無育兒資訊<span class="sarr2"></span></button>
+    <span style="margin-left:auto;font-size:10px;color:var(--sub)">點擊標籤指定體驗者</span>
+    <button onclick="clearAssign()" style="font-size:10px;padding:2px 8px;border:1px solid var(--border);border-radius:4px;background:#fff;color:var(--sub);cursor:pointer">清除指定</button>
+  </div>
+  <div id="resp-cards" style="padding:10px 14px;display:flex;flex-direction:column;gap:10px;overflow-y:auto;flex:1;min-height:0;height:0"></div>
+</div>
+
+<!-- RIGHT: assignment board -->
+<div id="assign-board" style="width:320px;flex-shrink:0;display:flex;flex-direction:column;background:#f8fffe">
+  <div style="padding:8px 14px;border-bottom:1px solid var(--border);font-size:11px;font-weight:700;color:var(--pr);flex-shrink:0;display:flex;align-items:center;gap:6px;flex-wrap:wrap">
+    <svg width="13" height="13" viewBox="0 0 13 13" xmlns="http://www.w3.org/2000/svg"><rect x="1" y="1" width="11" height="11" rx="2" fill="none" stroke="currentColor" stroke-width="1.2"/><line x1="4" y1="4.5" x2="9" y2="4.5" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"/><line x1="4" y1="6.5" x2="9" y2="6.5" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"/><line x1="4" y1="8.5" x2="7" y2="8.5" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"/></svg>
+    體驗指定清單
+    <span id="assign-count" style="font-size:10px;color:var(--sub);font-weight:400">已指定 0 件</span>
+    <button onclick="exportAssign()" id="exportBtn" style="margin-left:auto;font-size:10px;padding:3px 9px;border:1px solid var(--sc);border-radius:4px;background:var(--sc);color:#fff;cursor:pointer;font-weight:600;display:flex;align-items:center;gap:4px">
+      <svg width="11" height="11" viewBox="0 0 11 11" xmlns="http://www.w3.org/2000/svg"><path d="M5.5 1v6M2.5 5l3 3 3-3M1 9h9" stroke="#fff" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>
+      匯出 CSV
+    </button>
+  </div>
+  <div id="assign-list" style="overflow-y:auto;padding:8px 12px;display:flex;flex-direction:column;gap:6px">
+    <div style="color:var(--sub);font-size:11px;text-align:center;margin-top:30px;font-style:italic">尚未指定任何商品</div>
+  </div>
+</div>
+
+</div>
+</div>
+
+<div class="toolbar">
+  <input class="tb-search" type="text" id="searchInput" placeholder="搜尋商品..." oninput="renderTable()">
+  <div class="elimbtns">
+    <button class="ebtn e-all on" id="btnAll" onclick="setElimMode('all')"><svg width="12" height="12" viewBox="0 0 12 12" style="display:inline;vertical-align:middle;margin-right:3px" xmlns="http://www.w3.org/2000/svg"><line x1="1.5" y1="3" x2="10.5" y2="3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/><line x1="1.5" y1="6" x2="10.5" y2="6" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/><line x1="1.5" y1="9" x2="10.5" y2="9" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>全部</button>
+    <button class="ebtn e-only" id="btnOnly" onclick="setElimMode('only')"><svg width="12" height="12" viewBox="0 0 12 12" style="display:inline;vertical-align:middle;margin-right:3px" xmlns="http://www.w3.org/2000/svg"><circle cx="6" cy="6" r="5" fill="none" stroke="currentColor" stroke-width="1.2"/><path d="M4 4l4 4M8 4l-4 4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>只看淘汰</button>
+    <button class="ebtn e-hide" id="btnHide" onclick="setElimMode('hide')"><svg width="12" height="12" viewBox="0 0 12 12" style="display:inline;vertical-align:middle;margin-right:3px" xmlns="http://www.w3.org/2000/svg"><circle cx="6" cy="6" r="5" fill="none" stroke="currentColor" stroke-width="1.2"/><path d="M3.5 6l2 2L9 4" stroke="currentColor" stroke-width="1.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>隱藏淘汰</button>
+
+    <button class="ebtn e-q7" id="btnQ7" onclick="setElimMode('q7')"><svg width="12" height="12" viewBox="0 0 12 12" style="display:inline;vertical-align:middle;margin-right:3px" xmlns="http://www.w3.org/2000/svg"><path d="M6 2a2 2 0 1 1 0 4 2 2 0 0 1 0-4z" fill="none" stroke="currentColor" stroke-width="1.2"/><path d="M2 10c0-2.2 1.8-4 4-4s4 1.8 4 4" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/><circle cx="9.5" cy="4.5" r="1.5" fill="currentColor" opacity="0.5"/></svg>只看體驗商品</button>
+  </div>
+  <button class="tb-legend-btn" onclick="toggleLegend()"><svg width="12" height="12" viewBox="0 0 12 12" style="display:inline;vertical-align:middle;margin-right:3px" xmlns="http://www.w3.org/2000/svg"><rect x="1" y="6" width="2.5" height="5.5" fill="currentColor" rx="0.3"/><rect x="4.75" y="3.5" width="2.5" height="8" fill="currentColor" rx="0.3"/><rect x="8.5" y="1" width="2.5" height="10.5" fill="currentColor" rx="0.3"/></svg>色碼說明</button>
+  <div class="tb-sum" id="summaryBar">載入中...</div>
+</div>
+
+<div class="legend-bar" id="legendBar">
+  <div class="lg-group">
+    <div class="lg-title">總加權分 色碼（1–5 分）</div>
+    <div id="lg-total"></div>
+  </div>
+  <div class="lg-group">
+    <div class="lg-title">5選項題 色碼（Q1–Q4）</div>
+    <div id="lg-q5"></div>
+  </div>
+  <div class="lg-group">
+    <div class="lg-title">4選項題 色碼（Q5–Q6）</div>
+    <div id="lg-q4"></div>
+  </div>
+  <div style="font-size:10px;color:var(--sub);align-self:flex-end;font-style:italic">* 閾值依選項配分動態調整</div>
+</div>
+
+<div class="table-wrap">
+<table>
+<thead>
+  <tr class="sort-row">
+    <th class="num sortable sorted" id="th-rank" onclick="sortBy('rank')">排名<span class="sarr" id="arr-rank">↓</span></th>
+    <th class="sortable" id="th-code" onclick="sortBy('code')">代碼<span class="sarr" id="arr-code">⇅</span></th>
+    <th>商品名稱</th>
+    <th class="sortable" id="th-total" onclick="sortBy('total')">總加權分<span class="sarr" id="arr-total">⇅</span></th>
+    <th class="num sortable" id="th-q1" onclick="sortBy('q1')">Q1 安全安心<span class="sarr" id="arr-q1">⇅</span></th>
+    <th class="num sortable" id="th-q2" onclick="sortBy('q2')">Q2 解決需求<span class="sarr" id="arr-q2">⇅</span></th>
+    <th class="num sortable" id="th-q3" onclick="sortBy('q3')">Q3 售價購買<span class="sarr" id="arr-q3">⇅</span></th>
+    <th class="num sortable" id="th-q4" onclick="sortBy('q4')">Q4 外觀品味<span class="sarr" id="arr-q4">⇅</span></th>
+    <th class="num sortable" id="th-q5" onclick="sortBy('q5')">Q5 社群推薦<span class="sarr" id="arr-q5">⇅</span></th>
+    <th class="num sortable" id="th-q6" onclick="sortBy('q6')">Q6 主動關注<span class="q6-ref">參考</span><span class="sarr" id="arr-q6">⇅</span></th>
+    <th class="num sortable er-col" id="th-er" onclick="sortBy('er')" title="有育兒總加權分排名（交叉比對）">有育兒<br>排名<span class="sarr" id="arr-er">⇅</span></th>
+    <th class="num sortable nr-col" id="th-nr" onclick="sortBy('nr')" title="無育兒總加權分排名（交叉比對）">無育兒<br>排名<span class="sarr" id="arr-nr">⇅</span></th>
+    <th class="num sortable" id="th-q8" onclick="sortBy('q8')">Q8 廠商合作<span class="sarr" id="arr-q8">⇅</span></th>
+    <th>過關/淘汰</th>
+    <th></th>
+  </tr>
+  <tr class="filter-row">
+    <th colspan="2"><div class="fc-search"><input type="text" id="codeSearch" placeholder="代碼..." oninput="renderTable()"></div></th>
+    <th></th>
+    <th><div class="fc"><select class="fop" id="ftot_op" onchange="renderTable()"><option value="any">任意</option><option value="gte" selected>≥</option><option value="gt">&gt;</option><option value="eq">=</option><option value="lte">≤</option><option value="lt">&lt;</option></select><input type="number" class="fval" id="ftot_v" placeholder="—" min="0" max="5" step="0.1" oninput="renderTable()"></div></th><th><div class="fc"><select class="fop" id="fq1_op" onchange="renderTable()"><option value="any">任意</option><option value="gte" selected>≥</option><option value="gt">&gt;</option><option value="eq">=</option><option value="lte">≤</option><option value="lt">&lt;</option></select><input type="number" class="fval" id="fq1_v" placeholder="—" min="0" max="5" step="0.1" oninput="renderTable()"></div></th><th><div class="fc"><select class="fop" id="fq2_op" onchange="renderTable()"><option value="any">任意</option><option value="gte" selected>≥</option><option value="gt">&gt;</option><option value="eq">=</option><option value="lte">≤</option><option value="lt">&lt;</option></select><input type="number" class="fval" id="fq2_v" placeholder="—" min="0" max="5" step="0.1" oninput="renderTable()"></div></th><th><div class="fc"><select class="fop" id="fq3_op" onchange="renderTable()"><option value="any">任意</option><option value="gte" selected>≥</option><option value="gt">&gt;</option><option value="eq">=</option><option value="lte">≤</option><option value="lt">&lt;</option></select><input type="number" class="fval" id="fq3_v" placeholder="—" min="0" max="5" step="0.1" oninput="renderTable()"></div></th><th><div class="fc"><select class="fop" id="fq4_op" onchange="renderTable()"><option value="any">任意</option><option value="gte" selected>≥</option><option value="gt">&gt;</option><option value="eq">=</option><option value="lte">≤</option><option value="lt">&lt;</option></select><input type="number" class="fval" id="fq4_v" placeholder="—" min="0" max="5" step="0.1" oninput="renderTable()"></div></th><th><div class="fc"><select class="fop" id="fq5_op" onchange="renderTable()"><option value="any">任意</option><option value="gte" selected>≥</option><option value="gt">&gt;</option><option value="eq">=</option><option value="lte">≤</option><option value="lt">&lt;</option></select><input type="number" class="fval" id="fq5_v" placeholder="—" min="0" max="4" step="0.1" oninput="renderTable()"></div></th><th><div class="fc"><select class="fop" id="fq6_op" onchange="renderTable()"><option value="any">任意</option><option value="gte" selected>≥</option><option value="gt">&gt;</option><option value="eq">=</option><option value="lte">≤</option><option value="lt">&lt;</option></select><input type="number" class="fval" id="fq6_v" placeholder="—" min="0" max="4" step="0.1" oninput="renderTable()"></div></th>
+    <th class="er-col"></th>
+    <th class="nr-col"></th>
+    <th><button class="bsm" onclick="clearFilters()" style="font-size:10px;padding:2px 5px">清除</button></th>
+    <th></th>
+    <th></th>
+  </tr>
+</thead>
+<tbody id="tbody"></tbody>
+</table>
+</div>
+
+<script>
+const SI={
+  anq:'<svg width="9" height="9" viewBox="0 0 9 9" style="display:inline;vertical-align:middle;margin-right:3px" xmlns="http://www.w3.org/2000/svg"><circle cx="4.5" cy="4.5" r="4.5" fill="#e63946"/></svg>',
+  zt:'<svg width="9" height="9" viewBox="0 0 9 9" style="display:inline;vertical-align:middle;margin-right:3px" xmlns="http://www.w3.org/2000/svg"><circle cx="4.5" cy="4.5" r="4.5" fill="#f5a623"/></svg>',
+  pass:'<svg width="10" height="10" viewBox="0 0 10 10" style="display:inline;vertical-align:middle;margin-right:2px" xmlns="http://www.w3.org/2000/svg"><circle cx="5" cy="5" r="4.5" fill="none" stroke="#52b788" stroke-width="1"/><path d="M3 5l1.5 1.5L8 3" stroke="#52b788" stroke-width="1.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+  baby:'<svg width="11" height="11" viewBox="0 0 11 11" style="display:inline;vertical-align:middle;margin-right:2px" xmlns="http://www.w3.org/2000/svg"><circle cx="5.5" cy="2.8" r="2.1" fill="#2d6a4f"/><path d="M1.5 11c0-2.8 1.5-4 4-4s4 1.2 4 4" fill="#2d6a4f"/></svg>',
+  doc:'<svg width="11" height="11" viewBox="0 0 11 11" style="display:inline;vertical-align:middle;margin-right:3px" xmlns="http://www.w3.org/2000/svg"><rect x="1.5" y="0.5" width="8" height="10" rx="1" fill="none" stroke="#2d6a4f" stroke-width="1"/><line x1="3.5" y1="3.5" x2="7.5" y2="3.5" stroke="#2d6a4f" stroke-width="0.8"/><line x1="3.5" y1="5.5" x2="7.5" y2="5.5" stroke="#2d6a4f" stroke-width="0.8"/><line x1="3.5" y1="7.5" x2="6.5" y2="7.5" stroke="#2d6a4f" stroke-width="0.8"/></svg>',
+  yes:'<svg width="10" height="10" viewBox="0 0 10 10" style="display:inline;vertical-align:middle;margin-right:3px" xmlns="http://www.w3.org/2000/svg"><circle cx="5" cy="5" r="4.5" fill="#d8f3dc" stroke="#52b788" stroke-width="0.8"/><path d="M2.5 5l2 2L7.5 3" stroke="#2d6a4f" stroke-width="1.2" fill="none" stroke-linecap="round"/></svg>',
+  no:'<svg width="10" height="10" viewBox="0 0 10 10" style="display:inline;vertical-align:middle;margin-right:3px" xmlns="http://www.w3.org/2000/svg"><circle cx="5" cy="5" r="4.5" fill="#ffc0c2" stroke="#e63946" stroke-width="0.8"/><path d="M3.5 3.5l3 3M6.5 3.5l-3 3" stroke="#c0392b" stroke-width="1.2" stroke-linecap="round"/></svg>',
+  chart:'<svg width="12" height="12" viewBox="0 0 12 12" style="display:inline;vertical-align:middle;margin-right:3px" xmlns="http://www.w3.org/2000/svg"><rect x="1" y="6" width="2.5" height="5.5" fill="currentColor" rx="0.3"/><rect x="4.75" y="3.5" width="2.5" height="8" fill="currentColor" rx="0.3"/><rect x="8.5" y="1" width="2.5" height="10.5" fill="currentColor" rx="0.3"/></svg>',
+};
+const RAW=[{"code":"A01","name":"菱格紋多功能媽媽包","hasQ7":false,"q7yes":[],"q7no":[],"q1":{"all":{"完全認同":19,"認同":11,"普通":8,"不太認同":3,"完全不認同":0},"exp":{"完全認同":9,"認同":3,"普通":0,"不太認同":1,"完全不認同":0},"noexp":{"完全認同":10,"認同":8,"普通":8,"不太認同":2,"完全不認同":0}},"q2":{"all":{"完全認同":12,"認同":17,"普通":9,"不太認同":3,"完全不認同":0},"exp":{"完全認同":7,"認同":5,"普通":0,"不太認同":1,"完全不認同":0},"noexp":{"完全認同":5,"認同":12,"普通":9,"不太認同":2,"完全不認同":0}},"q3":{"all":{"完全認同":4,"認同":15,"普通":10,"不太認同":11,"完全不認同":1},"exp":{"完全認同":3,"認同":5,"普通":1,"不太認同":3,"完全不認同":1},"noexp":{"完全認同":1,"認同":10,"普通":9,"不太認同":8,"完全不認同":0}},"q4":{"all":{"完全認同":5,"認同":15,"普通":9,"不太認同":8,"完全不認同":4},"exp":{"完全認同":4,"認同":5,"普通":2,"不太認同":2,"完全不認同":0},"noexp":{"完全認同":1,"認同":10,"普通":7,"不太認同":6,"完全不認同":4}},"q5":{"all":{"經常":2,"偶爾":3,"好像有":3,"完全沒有":33},"exp":{"經常":1,"偶爾":2,"好像有":2,"完全沒有":8},"noexp":{"經常":1,"偶爾":1,"好像有":1,"完全沒有":25}},"q6":{"all":{"經常":2,"偶爾":1,"好像有":5,"完全沒有":33},"exp":{"經常":1,"偶爾":1,"好像有":3,"完全沒有":8},"noexp":{"經常":1,"偶爾":0,"好像有":2,"完全沒有":25}}},{"code":"A02","name":"雙電壓即時行熱杯","hasQ7":false,"q7yes":[],"q7no":[],"q1":{"all":{"完全認同":3,"認同":21,"普通":8,"不太認同":8,"完全不認同":1},"exp":{"完全認同":0,"認同":8,"普通":1,"不太認同":4,"完全不認同":0},"noexp":{"完全認同":3,"認同":13,"普通":7,"不太認同":4,"完全不認同":1}},"q2":{"all":{"完全認同":9,"認同":11,"普通":15,"不太認同":6,"完全不認同":0},"exp":{"完全認同":2,"認同":5,"普通":5,"不太認同":1,"完全不認同":0},"noexp":{"完全認同":7,"認同":6,"普通":10,"不太認同":5,"完全不認同":0}},"q3":{"all":{"完全認同":4,"認同":14,"普通":12,"不太認同":9,"完全不認同":2},"exp":{"完全認同":0,"認同":5,"普通":4,"不太認同":3,"完全不認同":1},"noexp":{"完全認同":4,"認同":9,"普通":8,"不太認同":6,"完全不認同":1}},"q4":{"all":{"完全認同":3,"認同":15,"普通":12,"不太認同":10,"完全不認同":1},"exp":{"完全認同":0,"認同":5,"普通":3,"不太認同":4,"完全不認同":1},"noexp":{"完全認同":3,"認同":10,"普通":9,"不太認同":6,"完全不認同":0}},"q5":{"all":{"經常":1,"偶爾":4,"好像有":12,"完全沒有":24},"exp":{"經常":0,"偶爾":2,"好像有":6,"完全沒有":5},"noexp":{"經常":1,"偶爾":2,"好像有":6,"完全沒有":19}},"q6":{"all":{"經常":1,"偶爾":4,"好像有":12,"完全沒有":24},"exp":{"經常":0,"偶爾":2,"好像有":6,"完全沒有":5},"noexp":{"經常":1,"偶爾":2,"好像有":6,"完全沒有":19}}},{"code":"A03","name":"旋轉伸縮拋棄式奶瓶","hasQ7":false,"q7yes":[],"q7no":[],"q1":{"all":{"完全認同":13,"認同":13,"普通":10,"不太認同":3,"完全不認同":2},"exp":{"完全認同":5,"認同":2,"普通":4,"不太認同":2,"完全不認同":0},"noexp":{"完全認同":8,"認同":11,"普通":6,"不太認同":1,"完全不認同":2}},"q2":{"all":{"完全認同":10,"認同":14,"普通":12,"不太認同":4,"完全不認同":1},"exp":{"完全認同":3,"認同":3,"普通":5,"不太認同":2,"完全不認同":0},"noexp":{"完全認同":7,"認同":11,"普通":7,"不太認同":2,"完全不認同":1}},"q3":{"all":{"完全認同":5,"認同":12,"普通":14,"不太認同":9,"完全不認同":1},"exp":{"完全認同":1,"認同":3,"普通":5,"不太認同":4,"完全不認同":0},"noexp":{"完全認同":4,"認同":9,"普通":9,"不太認同":5,"完全不認同":1}},"q4":{"all":{"完全認同":9,"認同":16,"普通":8,"不太認同":7,"完全不認同":1},"exp":{"完全認同":2,"認同":4,"普通":4,"不太認同":3,"完全不認同":0},"noexp":{"完全認同":7,"認同":12,"普通":4,"不太認同":4,"完全不認同":1}},"q5":{"all":{"經常":3,"偶爾":6,"好像有":9,"完全沒有":23},"exp":{"經常":1,"偶爾":5,"好像有":3,"完全沒有":4},"noexp":{"經常":2,"偶爾":1,"好像有":6,"完全沒有":19}},"q6":{"all":{"經常":4,"偶爾":4,"好像有":7,"完全沒有":26},"exp":{"經常":2,"偶爾":3,"好像有":4,"完全沒有":4},"noexp":{"經常":2,"偶爾":1,"好像有":3,"完全沒有":22}}},{"code":"A04","name":"奶嘴殺菌盒","hasQ7":false,"q7yes":[],"q7no":[],"q1":{"all":{"完全認同":12,"認同":12,"普通":9,"不太認同":6,"完全不認同":2},"exp":{"完全認同":6,"認同":4,"普通":0,"不太認同":3,"完全不認同":0},"noexp":{"完全認同":6,"認同":8,"普通":9,"不太認同":3,"完全不認同":2}},"q2":{"all":{"完全認同":14,"認同":9,"普通":9,"不太認同":7,"完全不認同":2},"exp":{"完全認同":5,"認同":3,"普通":3,"不太認同":2,"完全不認同":0},"noexp":{"完全認同":9,"認同":6,"普通":6,"不太認同":5,"完全不認同":2}},"q3":{"all":{"完全認同":10,"認同":9,"普通":16,"不太認同":5,"完全不認同":1},"exp":{"完全認同":2,"認同":4,"普通":6,"不太認同":1,"完全不認同":0},"noexp":{"完全認同":8,"認同":5,"普通":10,"不太認同":4,"完全不認同":1}},"q4":{"all":{"完全認同":6,"認同":16,"普通":12,"不太認同":5,"完全不認同":2},"exp":{"完全認同":1,"認同":5,"普通":5,"不太認同":2,"完全不認同":0},"noexp":{"完全認同":5,"認同":11,"普通":7,"不太認同":3,"完全不認同":2}},"q5":{"all":{"經常":2,"偶爾":3,"好像有":10,"完全沒有":26},"exp":{"經常":1,"偶爾":2,"好像有":5,"完全沒有":5},"noexp":{"經常":1,"偶爾":1,"好像有":5,"完全沒有":21}},"q6":{"all":{"經常":2,"偶爾":3,"好像有":7,"完全沒有":29},"exp":{"經常":1,"偶爾":3,"好像有":4,"完全沒有":5},"noexp":{"經常":1,"偶爾":0,"好像有":3,"完全沒有":24}}},{"code":"A05","name":"偏光太陽眼鏡","hasQ7":false,"q7yes":[],"q7no":[],"q1":{"all":{"完全認同":9,"認同":14,"普通":13,"不太認同":5,"完全不認同":0},"exp":{"完全認同":3,"認同":4,"普通":5,"不太認同":1,"完全不認同":0},"noexp":{"完全認同":6,"認同":10,"普通":8,"不太認同":4,"完全不認同":0}},"q2":{"all":{"完全認同":5,"認同":12,"普通":14,"不太認同":10,"完全不認同":0},"exp":{"完全認同":1,"認同":4,"普通":4,"不太認同":4,"完全不認同":0},"noexp":{"完全認同":4,"認同":8,"普通":10,"不太認同":6,"完全不認同":0}},"q3":{"all":{"完全認同":1,"認同":10,"普通":10,"不太認同":18,"完全不認同":2},"exp":{"完全認同":1,"認同":2,"普通":2,"不太認同":7,"完全不認同":1},"noexp":{"完全認同":0,"認同":8,"普通":8,"不太認同":11,"完全不認同":1}},"q4":{"all":{"完全認同":12,"認同":17,"普通":6,"不太認同":6,"完全不認同":0},"exp":{"完全認同":4,"認同":4,"普通":3,"不太認同":2,"完全不認同":0},"noexp":{"完全認同":8,"認同":13,"普通":3,"不太認同":4,"完全不認同":0}},"q5":{"all":{"經常":1,"偶爾":3,"好像有":7,"完全沒有":30},"exp":{"經常":1,"偶爾":2,"好像有":2,"完全沒有":8},"noexp":{"經常":0,"偶爾":1,"好像有":5,"完全沒有":22}},"q6":{"all":{"經常":0,"偶爾":3,"好像有":7,"完全沒有":31},"exp":{"經常":0,"偶爾":2,"好像有":4,"完全沒有":7},"noexp":{"經常":0,"偶爾":1,"好像有":3,"完全沒有":24}}},{"code":"A06","name":"夾式多功能風扇","hasQ7":false,"q7yes":[],"q7no":[],"q1":{"all":{"完全認同":15,"認同":13,"普通":8,"不太認同":4,"完全不認同":1},"exp":{"完全認同":6,"認同":4,"普通":1,"不太認同":2,"完全不認同":0},"noexp":{"完全認同":9,"認同":9,"普通":7,"不太認同":2,"完全不認同":1}},"q2":{"all":{"完全認同":13,"認同":17,"普通":6,"不太認同":5,"完全不認同":0},"exp":{"完全認同":5,"認同":4,"普通":2,"不太認同":2,"完全不認同":0},"noexp":{"完全認同":8,"認同":13,"普通":4,"不太認同":3,"完全不認同":0}},"q3":{"all":{"完全認同":9,"認同":21,"普通":9,"不太認同":2,"完全不認同":0},"exp":{"完全認同":3,"認同":6,"普通":3,"不太認同":1,"完全不認同":0},"noexp":{"完全認同":6,"認同":15,"普通":6,"不太認同":1,"完全不認同":0}},"q4":{"all":{"完全認同":13,"認同":15,"普通":7,"不太認同":5,"完全不認同":1},"exp":{"完全認同":4,"認同":5,"普通":3,"不太認同":1,"完全不認同":0},"noexp":{"完全認同":9,"認同":10,"普通":4,"不太認同":4,"完全不認同":1}},"q5":{"all":{"經常":2,"偶爾":2,"好像有":6,"完全沒有":31},"exp":{"經常":1,"偶爾":1,"好像有":3,"完全沒有":8},"noexp":{"經常":1,"偶爾":1,"好像有":3,"完全沒有":23}},"q6":{"all":{"經常":2,"偶爾":4,"好像有":6,"完全沒有":29},"exp":{"經常":1,"偶爾":2,"好像有":3,"完全沒有":7},"noexp":{"經常":1,"偶爾":2,"好像有":3,"完全沒有":22}}},{"code":"A07","name":"舒眠月亮枕","hasQ7":false,"q7yes":[],"q7no":[],"q1":{"all":{"完全認同":22,"認同":17,"普通":1,"不太認同":1,"完全不認同":0},"exp":{"完全認同":9,"認同":4,"普通":0,"不太認同":0,"完全不認同":0},"noexp":{"完全認同":13,"認同":13,"普通":1,"不太認同":1,"完全不認同":0}},"q2":{"all":{"完全認同":19,"認同":19,"普通":3,"不太認同":0,"完全不認同":0},"exp":{"完全認同":8,"認同":4,"普通":1,"不太認同":0,"完全不認同":0},"noexp":{"完全認同":11,"認同":15,"普通":2,"不太認同":0,"完全不認同":0}},"q3":{"all":{"完全認同":7,"認同":14,"普通":16,"不太認同":3,"完全不認同":1},"exp":{"完全認同":4,"認同":5,"普通":3,"不太認同":1,"完全不認同":0},"noexp":{"完全認同":3,"認同":9,"普通":13,"不太認同":2,"完全不認同":1}},"q4":{"all":{"完全認同":14,"認同":15,"普通":12,"不太認同":0,"完全不認同":0},"exp":{"完全認同":4,"認同":4,"普通":5,"不太認同":0,"完全不認同":0},"noexp":{"完全認同":10,"認同":11,"普通":7,"不太認同":0,"完全不認同":0}},"q5":{"all":{"經常":11,"偶爾":7,"好像有":7,"完全沒有":16},"exp":{"經常":6,"偶爾":3,"好像有":1,"完全沒有":3},"noexp":{"經常":5,"偶爾":4,"好像有":6,"完全沒有":13}},"q6":{"all":{"經常":9,"偶爾":7,"好像有":9,"完全沒有":16},"exp":{"經常":6,"偶爾":3,"好像有":0,"完全沒有":4},"noexp":{"經常":3,"偶爾":4,"好像有":9,"完全沒有":12}}},{"code":"A08","name":"輕量秒收推車","hasQ7":false,"q7yes":[],"q7no":[],"q1":{"all":{"完全認同":17,"認同":13,"普通":9,"不太認同":2,"完全不認同":0},"exp":{"完全認同":4,"認同":4,"普通":5,"不太認同":0,"完全不認同":0},"noexp":{"完全認同":13,"認同":9,"普通":4,"不太認同":2,"完全不認同":0}},"q2":{"all":{"完全認同":17,"認同":14,"普通":10,"不太認同":0,"完全不認同":0},"exp":{"完全認同":5,"認同":3,"普通":5,"不太認同":0,"完全不認同":0},"noexp":{"完全認同":12,"認同":11,"普通":5,"不太認同":0,"完全不認同":0}},"q3":{"all":{"完全認同":9,"認同":14,"普通":17,"不太認同":1,"完全不認同":0},"exp":{"完全認同":3,"認同":4,"普通":6,"不太認同":0,"完全不認同":0},"noexp":{"完全認同":6,"認同":10,"普通":11,"不太認同":1,"完全不認同":0}},"q4":{"all":{"完全認同":12,"認同":11,"普通":16,"不太認同":2,"完全不認同":0},"exp":{"完全認同":4,"認同":3,"普通":6,"不太認同":0,"完全不認同":0},"noexp":{"完全認同":8,"認同":8,"普通":10,"不太認同":2,"完全不認同":0}},"q5":{"all":{"經常":10,"偶爾":6,"好像有":6,"完全沒有":19},"exp":{"經常":3,"偶爾":4,"好像有":1,"完全沒有":5},"noexp":{"經常":7,"偶爾":2,"好像有":5,"完全沒有":14}},"q6":{"all":{"經常":6,"偶爾":7,"好像有":10,"完全沒有":18},"exp":{"經常":3,"偶爾":3,"好像有":3,"完全沒有":4},"noexp":{"經常":3,"偶爾":4,"好像有":7,"完全沒有":14}}},{"code":"A09","name":"除臭尿布桶","hasQ7":false,"q7yes":[],"q7no":[],"q1":{"all":{"完全認同":11,"認同":17,"普通":5,"不太認同":8,"完全不認同":0},"exp":{"完全認同":1,"認同":5,"普通":2,"不太認同":5,"完全不認同":0},"noexp":{"完全認同":10,"認同":12,"普通":3,"不太認同":3,"完全不認同":0}},"q2":{"all":{"完全認同":8,"認同":16,"普通":8,"不太認同":9,"完全不認同":0},"exp":{"完全認同":0,"認同":5,"普通":3,"不太認同":5,"完全不認同":0},"noexp":{"完全認同":8,"認同":11,"普通":5,"不太認同":4,"完全不認同":0}},"q3":{"all":{"完全認同":5,"認同":13,"普通":14,"不太認同":8,"完全不認同":1},"exp":{"完全認同":0,"認同":3,"普通":4,"不太認同":5,"完全不認同":1},"noexp":{"完全認同":5,"認同":10,"普通":10,"不太認同":3,"完全不認同":0}},"q4":{"all":{"完全認同":9,"認同":19,"普通":8,"不太認同":5,"完全不認同":0},"exp":{"完全認同":1,"認同":4,"普通":4,"不太認同":4,"完全不認同":0},"noexp":{"完全認同":8,"認同":15,"普通":4,"不太認同":1,"完全不認同":0}},"q5":{"all":{"經常":2,"偶爾":7,"好像有":9,"完全沒有":23},"exp":{"經常":1,"偶爾":4,"好像有":2,"完全沒有":6},"noexp":{"經常":1,"偶爾":3,"好像有":7,"完全沒有":17}},"q6":{"all":{"經常":3,"偶爾":4,"好像有":8,"完全沒有":26},"exp":{"經常":2,"偶爾":3,"好像有":2,"完全沒有":6},"noexp":{"經常":1,"偶爾":1,"好像有":6,"完全沒有":20}}},{"code":"A10","name":"隙縫型洗衣籃","hasQ7":false,"q7yes":[],"q7no":[],"q1":{"all":{"完全認同":3,"認同":12,"普通":7,"不太認同":13,"完全不認同":6},"exp":{"完全認同":0,"認同":3,"普通":4,"不太認同":4,"完全不認同":2},"noexp":{"完全認同":3,"認同":9,"普通":3,"不太認同":9,"完全不認同":4}},"q2":{"all":{"完全認同":2,"認同":10,"普通":13,"不太認同":11,"完全不認同":5},"exp":{"完全認同":0,"認同":2,"普通":6,"不太認同":4,"完全不認同":1},"noexp":{"完全認同":2,"認同":8,"普通":7,"不太認同":7,"完全不認同":4}},"q3":{"all":{"完全認同":0,"認同":3,"普通":9,"不太認同":14,"完全不認同":15},"exp":{"完全認同":0,"認同":0,"普通":5,"不太認同":3,"完全不認同":5},"noexp":{"完全認同":0,"認同":3,"普通":4,"不太認同":11,"完全不認同":10}},"q4":{"all":{"完全認同":2,"認同":9,"普通":14,"不太認同":12,"完全不認同":4},"exp":{"完全認同":0,"認同":1,"普通":6,"不太認同":4,"完全不認同":2},"noexp":{"完全認同":2,"認同":8,"普通":8,"不太認同":8,"完全不認同":2}},"q5":{"all":{"經常":0,"偶爾":2,"好像有":9,"完全沒有":30},"exp":{"經常":0,"偶爾":0,"好像有":4,"完全沒有":9},"noexp":{"經常":0,"偶爾":2,"好像有":5,"完全沒有":21}},"q6":{"all":{"經常":1,"偶爾":3,"好像有":7,"完全沒有":30},"exp":{"經常":0,"偶爾":0,"好像有":4,"完全沒有":9},"noexp":{"經常":1,"偶爾":3,"好像有":3,"完全沒有":21}}},{"code":"B01","name":"白金矽膠寶寶湯匙","hasQ7":true,"q7yes":[{"name":"吳筱婷","unit":"店長/督導","exp":true},{"name":"許書慈","unit":"247設計團隊","exp":false},{"name":"蔡依庭","unit":"219三樓","exp":false},{"name":"王舜慧","unit":"219三樓","exp":false},{"name":"賴芓妘","unit":"219三樓","exp":true},{"name":"王怡萱","unit":"219二樓品管","exp":true},{"name":"林潔茹","unit":"219三樓","exp":true},{"name":"Danny","unit":"219三樓","exp":false},{"name":"吳承威","unit":"219三樓","exp":false},{"name":"蔡孟儒","unit":"219三樓","exp":true},{"name":"趙心慧","unit":"247設計團隊","exp":false},{"name":"黃玉如","unit":"219二樓品管","exp":false},{"name":"陳孟岑","unit":"219二樓品管","exp":false},{"name":"安久","unit":"247寵物團隊","exp":true},{"name":"鄭人豪","unit":"247寵物團隊","exp":true},{"name":"桑妮妮","unit":"219三樓","exp":true}],"q7no":[{"name":"顏思綺Nikki","unit":"儲備幹部","exp":false},{"name":"卡洛","unit":"儲備幹部","exp":false},{"name":"陳奕璇","unit":"219三樓","exp":true},{"name":"黃毓涵","unit":"219三樓","exp":false},{"name":"徐渝涵","unit":"247設計團隊","exp":false},{"name":"陳玫云","unit":"247設計團隊","exp":false},{"name":"吳郁辰","unit":"247設計團隊","exp":false},{"name":"蕭翊珊","unit":"219二樓品管","exp":false},{"name":"陳沛璟","unit":"247寵物團隊","exp":false},{"name":"Ivan","unit":"219三樓","exp":false},{"name":"何長芳","unit":"247寵物團隊","exp":true},{"name":"欣澐","unit":"247寵物團隊","exp":false},{"name":"Nancy","unit":"219三樓","exp":false},{"name":"zona","unit":"219三樓","exp":false},{"name":"洪彤茹","unit":"儲備幹部","exp":false},{"name":"林郁熒","unit":"247設計團隊","exp":false},{"name":"吳語真","unit":"247設計團隊","exp":false},{"name":"呂家婷","unit":"247設計團隊","exp":true},{"name":"翁若琦","unit":"219二樓品管","exp":false},{"name":"陳芊樺","unit":"219二樓品管","exp":true},{"name":"徐偉智","unit":"219二樓品管","exp":false},{"name":"翁詩琦","unit":"219三樓","exp":false},{"name":"朱伊云","unit":"247寵物團隊","exp":false},{"name":"Ash","unit":"219三樓","exp":false},{"name":"Chili","unit":"219三樓","exp":true}],"q1":{"all":{"完全認同":18,"認同":17,"普通":3,"不太認同":3,"完全不認同":0},"exp":{"完全認同":6,"認同":6,"普通":1,"不太認同":0,"完全不認同":0},"noexp":{"完全認同":12,"認同":11,"普通":2,"不太認同":3,"完全不認同":0}},"q2":{"all":{"完全認同":13,"認同":21,"普通":4,"不太認同":3,"完全不認同":0},"exp":{"完全認同":5,"認同":7,"普通":1,"不太認同":0,"完全不認同":0},"noexp":{"完全認同":8,"認同":14,"普通":3,"不太認同":3,"完全不認同":0}},"q3":{"all":{"完全認同":11,"認同":18,"普通":9,"不太認同":3,"完全不認同":0},"exp":{"完全認同":4,"認同":6,"普通":2,"不太認同":1,"完全不認同":0},"noexp":{"完全認同":7,"認同":12,"普通":7,"不太認同":2,"完全不認同":0}},"q4":{"all":{"完全認同":12,"認同":18,"普通":9,"不太認同":2,"完全不認同":0},"exp":{"完全認同":4,"認同":4,"普通":5,"不太認同":0,"完全不認同":0},"noexp":{"完全認同":8,"認同":14,"普通":4,"不太認同":2,"完全不認同":0}},"q5":{"all":{"經常":4,"偶爾":5,"好像有":12,"完全沒有":20},"exp":{"經常":2,"偶爾":1,"好像有":5,"完全沒有":5},"noexp":{"經常":2,"偶爾":4,"好像有":7,"完全沒有":15}},"q6":{"all":{"經常":2,"偶爾":5,"好像有":12,"完全沒有":22},"exp":{"經常":1,"偶爾":1,"好像有":6,"完全沒有":5},"noexp":{"經常":1,"偶爾":4,"好像有":6,"完全沒有":17}}},{"code":"B02","name":"白金矽膠幼童湯匙","hasQ7":true,"q7yes":[{"name":"吳筱婷","unit":"店長/督導","exp":true},{"name":"許書慈","unit":"247設計團隊","exp":false},{"name":"蔡依庭","unit":"219三樓","exp":false},{"name":"王舜慧","unit":"219三樓","exp":false},{"name":"賴芓妘","unit":"219三樓","exp":true},{"name":"王怡萱","unit":"219二樓品管","exp":true},{"name":"林潔茹","unit":"219三樓","exp":true},{"name":"Danny","unit":"219三樓","exp":false},{"name":"吳承威","unit":"219三樓","exp":false},{"name":"蔡孟儒","unit":"219三樓","exp":true},{"name":"趙心慧","unit":"247設計團隊","exp":false},{"name":"黃玉如","unit":"219二樓品管","exp":false},{"name":"陳孟岑","unit":"219二樓品管","exp":false},{"name":"安久","unit":"247寵物團隊","exp":true},{"name":"鄭人豪","unit":"247寵物團隊","exp":true},{"name":"桑妮妮","unit":"219三樓","exp":true}],"q7no":[{"name":"顏思綺Nikki","unit":"儲備幹部","exp":false},{"name":"卡洛","unit":"儲備幹部","exp":false},{"name":"陳奕璇","unit":"219三樓","exp":true},{"name":"黃毓涵","unit":"219三樓","exp":false},{"name":"徐渝涵","unit":"247設計團隊","exp":false},{"name":"陳玫云","unit":"247設計團隊","exp":false},{"name":"吳郁辰","unit":"247設計團隊","exp":false},{"name":"蕭翊珊","unit":"219二樓品管","exp":false},{"name":"陳沛璟","unit":"247寵物團隊","exp":false},{"name":"Ivan","unit":"219三樓","exp":false},{"name":"何長芳","unit":"247寵物團隊","exp":true},{"name":"欣澐","unit":"247寵物團隊","exp":false},{"name":"Nancy","unit":"219三樓","exp":false},{"name":"zona","unit":"219三樓","exp":false},{"name":"洪彤茹","unit":"儲備幹部","exp":false},{"name":"林郁熒","unit":"247設計團隊","exp":false},{"name":"吳語真","unit":"247設計團隊","exp":false},{"name":"呂家婷","unit":"247設計團隊","exp":true},{"name":"翁若琦","unit":"219二樓品管","exp":false},{"name":"陳芊樺","unit":"219二樓品管","exp":true},{"name":"徐偉智","unit":"219二樓品管","exp":false},{"name":"翁詩琦","unit":"219三樓","exp":false},{"name":"朱伊云","unit":"247寵物團隊","exp":false},{"name":"Ash","unit":"219三樓","exp":false},{"name":"Chili","unit":"219三樓","exp":true}],"q1":{"all":{"完全認同":18,"認同":18,"普通":3,"不太認同":2,"完全不認同":0},"exp":{"完全認同":6,"認同":6,"普通":1,"不太認同":0,"完全不認同":0},"noexp":{"完全認同":12,"認同":12,"普通":2,"不太認同":2,"完全不認同":0}},"q2":{"all":{"完全認同":13,"認同":21,"普通":5,"不太認同":2,"完全不認同":0},"exp":{"完全認同":6,"認同":6,"普通":1,"不太認同":0,"完全不認同":0},"noexp":{"完全認同":7,"認同":15,"普通":4,"不太認同":2,"完全不認同":0}},"q3":{"all":{"完全認同":7,"認同":21,"普通":10,"不太認同":3,"完全不認同":0},"exp":{"完全認同":4,"認同":6,"普通":2,"不太認同":1,"完全不認同":0},"noexp":{"完全認同":3,"認同":15,"普通":8,"不太認同":2,"完全不認同":0}},"q4":{"all":{"完全認同":14,"認同":18,"普通":6,"不太認同":3,"完全不認同":0},"exp":{"完全認同":5,"認同":5,"普通":3,"不太認同":0,"完全不認同":0},"noexp":{"完全認同":9,"認同":13,"普通":3,"不太認同":3,"完全不認同":0}},"q5":{"all":{"經常":3,"偶爾":6,"好像有":10,"完全沒有":22},"exp":{"經常":1,"偶爾":1,"好像有":5,"完全沒有":6},"noexp":{"經常":2,"偶爾":5,"好像有":5,"完全沒有":16}},"q6":{"all":{"經常":3,"偶爾":6,"好像有":8,"完全沒有":24},"exp":{"經常":2,"偶爾":2,"好像有":3,"完全沒有":6},"noexp":{"經常":1,"偶爾":4,"好像有":5,"完全沒有":18}}},{"code":"B03","name":"白金矽膠學習水杯","hasQ7":true,"q7yes":[{"name":"吳筱婷","unit":"店長/督導","exp":true},{"name":"許書慈","unit":"247設計團隊","exp":false},{"name":"蔡依庭","unit":"219三樓","exp":false},{"name":"王舜慧","unit":"219三樓","exp":false},{"name":"賴芓妘","unit":"219三樓","exp":true},{"name":"王怡萱","unit":"219二樓品管","exp":true},{"name":"林潔茹","unit":"219三樓","exp":true},{"name":"Danny","unit":"219三樓","exp":false},{"name":"吳承威","unit":"219三樓","exp":false},{"name":"趙心慧","unit":"247設計團隊","exp":false},{"name":"黃玉如","unit":"219二樓品管","exp":false},{"name":"陳孟岑","unit":"219二樓品管","exp":false},{"name":"安久","unit":"247寵物團隊","exp":true},{"name":"鄭人豪","unit":"247寵物團隊","exp":true},{"name":"桑妮妮","unit":"219三樓","exp":true}],"q7no":[{"name":"顏思綺Nikki","unit":"儲備幹部","exp":false},{"name":"卡洛","unit":"儲備幹部","exp":false},{"name":"陳奕璇","unit":"219三樓","exp":true},{"name":"黃毓涵","unit":"219三樓","exp":false},{"name":"徐渝涵","unit":"247設計團隊","exp":false},{"name":"陳玫云","unit":"247設計團隊","exp":false},{"name":"吳郁辰","unit":"247設計團隊","exp":false},{"name":"蕭翊珊","unit":"219二樓品管","exp":false},{"name":"陳沛璟","unit":"247寵物團隊","exp":false},{"name":"Ivan","unit":"219三樓","exp":false},{"name":"何長芳","unit":"247寵物團隊","exp":true},{"name":"欣澐","unit":"247寵物團隊","exp":false},{"name":"Nancy","unit":"219三樓","exp":false},{"name":"zona","unit":"219三樓","exp":false},{"name":"洪彤茹","unit":"儲備幹部","exp":false},{"name":"蔡孟儒","unit":"219三樓","exp":true},{"name":"林郁熒","unit":"247設計團隊","exp":false},{"name":"吳語真","unit":"247設計團隊","exp":false},{"name":"呂家婷","unit":"247設計團隊","exp":true},{"name":"翁若琦","unit":"219二樓品管","exp":false},{"name":"陳芊樺","unit":"219二樓品管","exp":true},{"name":"徐偉智","unit":"219二樓品管","exp":false},{"name":"翁詩琦","unit":"219三樓","exp":false},{"name":"朱伊云","unit":"247寵物團隊","exp":false},{"name":"Ash","unit":"219三樓","exp":false},{"name":"Chili","unit":"219三樓","exp":true}],"q1":{"all":{"完全認同":11,"認同":22,"普通":4,"不太認同":4,"完全不認同":0},"exp":{"完全認同":4,"認同":6,"普通":2,"不太認同":1,"完全不認同":0},"noexp":{"完全認同":7,"認同":16,"普通":2,"不太認同":3,"完全不認同":0}},"q2":{"all":{"完全認同":9,"認同":21,"普通":7,"不太認同":4,"完全不認同":0},"exp":{"完全認同":5,"認同":5,"普通":2,"不太認同":1,"完全不認同":0},"noexp":{"完全認同":4,"認同":16,"普通":5,"不太認同":3,"完全不認同":0}},"q3":{"all":{"完全認同":4,"認同":10,"普通":20,"不太認同":7,"完全不認同":0},"exp":{"完全認同":2,"認同":2,"普通":8,"不太認同":1,"完全不認同":0},"noexp":{"完全認同":2,"認同":8,"普通":12,"不太認同":6,"完全不認同":0}},"q4":{"all":{"完全認同":10,"認同":16,"普通":12,"不太認同":3,"完全不認同":0},"exp":{"完全認同":5,"認同":2,"普通":5,"不太認同":1,"完全不認同":0},"noexp":{"完全認同":5,"認同":14,"普通":7,"不太認同":2,"完全不認同":0}},"q5":{"all":{"經常":2,"偶爾":4,"好像有":9,"完全沒有":26},"exp":{"經常":0,"偶爾":3,"好像有":1,"完全沒有":9},"noexp":{"經常":2,"偶爾":1,"好像有":8,"完全沒有":17}},"q6":{"all":{"經常":1,"偶爾":3,"好像有":8,"完全沒有":29},"exp":{"經常":0,"偶爾":3,"好像有":1,"完全沒有":9},"noexp":{"經常":1,"偶爾":0,"好像有":7,"完全沒有":20}}},{"code":"B04","name":"嬰兒餐具2件","hasQ7":true,"q7yes":[{"name":"許書慈","unit":"247設計團隊","exp":false},{"name":"蔡依庭","unit":"219三樓","exp":false},{"name":"王舜慧","unit":"219三樓","exp":false},{"name":"賴芓妘","unit":"219三樓","exp":true},{"name":"王怡萱","unit":"219二樓品管","exp":true},{"name":"林潔茹","unit":"219三樓","exp":true},{"name":"趙心慧","unit":"247設計團隊","exp":false},{"name":"黃玉如","unit":"219二樓品管","exp":false},{"name":"陳孟岑","unit":"219二樓品管","exp":false},{"name":"鄭人豪","unit":"247寵物團隊","exp":true},{"name":"桑妮妮","unit":"219三樓","exp":true}],"q7no":[{"name":"吳筱婷","unit":"店長/督導","exp":true},{"name":"顏思綺Nikki","unit":"儲備幹部","exp":false},{"name":"卡洛","unit":"儲備幹部","exp":false},{"name":"陳奕璇","unit":"219三樓","exp":true},{"name":"黃毓涵","unit":"219三樓","exp":false},{"name":"徐渝涵","unit":"247設計團隊","exp":false},{"name":"陳玫云","unit":"247設計團隊","exp":false},{"name":"吳郁辰","unit":"247設計團隊","exp":false},{"name":"蕭翊珊","unit":"219二樓品管","exp":false},{"name":"陳沛璟","unit":"247寵物團隊","exp":false},{"name":"Ivan","unit":"219三樓","exp":false},{"name":"何長芳","unit":"247寵物團隊","exp":true},{"name":"欣澐","unit":"247寵物團隊","exp":false},{"name":"Nancy","unit":"219三樓","exp":false},{"name":"zona","unit":"219三樓","exp":false},{"name":"Danny","unit":"219三樓","exp":false},{"name":"吳承威","unit":"219三樓","exp":false},{"name":"洪彤茹","unit":"儲備幹部","exp":false},{"name":"蔡孟儒","unit":"219三樓","exp":true},{"name":"林郁熒","unit":"247設計團隊","exp":false},{"name":"吳語真","unit":"247設計團隊","exp":false},{"name":"呂家婷","unit":"247設計團隊","exp":true},{"name":"翁若琦","unit":"219二樓品管","exp":false},{"name":"陳芊樺","unit":"219二樓品管","exp":true},{"name":"徐偉智","unit":"219二樓品管","exp":false},{"name":"翁詩琦","unit":"219三樓","exp":false},{"name":"安久","unit":"247寵物團隊","exp":true},{"name":"朱伊云","unit":"247寵物團隊","exp":false},{"name":"Ash","unit":"219三樓","exp":false},{"name":"Chili","unit":"219三樓","exp":true}],"q1":{"all":{"完全認同":12,"認同":14,"普通":9,"不太認同":6,"完全不認同":0},"exp":{"完全認同":4,"認同":4,"普通":3,"不太認同":2,"完全不認同":0},"noexp":{"完全認同":8,"認同":10,"普通":6,"不太認同":4,"完全不認同":0}},"q2":{"all":{"完全認同":11,"認同":16,"普通":10,"不太認同":4,"完全不認同":0},"exp":{"完全認同":4,"認同":4,"普通":3,"不太認同":2,"完全不認同":0},"noexp":{"完全認同":7,"認同":12,"普通":7,"不太認同":2,"完全不認同":0}},"q3":{"all":{"完全認同":2,"認同":10,"普通":16,"不太認同":12,"完全不認同":1},"exp":{"完全認同":1,"認同":3,"普通":4,"不太認同":5,"完全不認同":0},"noexp":{"完全認同":1,"認同":7,"普通":12,"不太認同":7,"完全不認同":1}},"q4":{"all":{"完全認同":5,"認同":13,"普通":15,"不太認同":7,"完全不認同":1},"exp":{"完全認同":3,"認同":4,"普通":2,"不太認同":4,"完全不認同":0},"noexp":{"完全認同":2,"認同":9,"普通":13,"不太認同":3,"完全不認同":1}},"q5":{"all":{"經常":2,"偶爾":5,"好像有":7,"完全沒有":27},"exp":{"經常":1,"偶爾":2,"好像有":2,"完全沒有":8},"noexp":{"經常":1,"偶爾":3,"好像有":5,"完全沒有":19}},"q6":{"all":{"經常":2,"偶爾":5,"好像有":4,"完全沒有":30},"exp":{"經常":1,"偶爾":2,"好像有":2,"完全沒有":8},"noexp":{"經常":1,"偶爾":3,"好像有":2,"完全沒有":22}}},{"code":"B05","name":"幼兒學習餐具二件組","hasQ7":true,"q7yes":[{"name":"許書慈","unit":"247設計團隊","exp":false},{"name":"蔡依庭","unit":"219三樓","exp":false},{"name":"王舜慧","unit":"219三樓","exp":false},{"name":"賴芓妘","unit":"219三樓","exp":true},{"name":"王怡萱","unit":"219二樓品管","exp":true},{"name":"林潔茹","unit":"219三樓","exp":true},{"name":"趙心慧","unit":"247設計團隊","exp":false},{"name":"黃玉如","unit":"219二樓品管","exp":false},{"name":"陳孟岑","unit":"219二樓品管","exp":false},{"name":"鄭人豪","unit":"247寵物團隊","exp":true},{"name":"桑妮妮","unit":"219三樓","exp":true},{"name":"Chili","unit":"219三樓","exp":true}],"q7no":[{"name":"吳筱婷","unit":"店長/督導","exp":true},{"name":"顏思綺Nikki","unit":"儲備幹部","exp":false},{"name":"卡洛","unit":"儲備幹部","exp":false},{"name":"陳奕璇","unit":"219三樓","exp":true},{"name":"黃毓涵","unit":"219三樓","exp":false},{"name":"徐渝涵","unit":"247設計團隊","exp":false},{"name":"陳玫云","unit":"247設計團隊","exp":false},{"name":"吳郁辰","unit":"247設計團隊","exp":false},{"name":"蕭翊珊","unit":"219二樓品管","exp":false},{"name":"陳沛璟","unit":"247寵物團隊","exp":false},{"name":"Ivan","unit":"219三樓","exp":false},{"name":"何長芳","unit":"247寵物團隊","exp":true},{"name":"欣澐","unit":"247寵物團隊","exp":false},{"name":"Nancy","unit":"219三樓","exp":false},{"name":"zona","unit":"219三樓","exp":false},{"name":"Danny","unit":"219三樓","exp":false},{"name":"吳承威","unit":"219三樓","exp":false},{"name":"洪彤茹","unit":"儲備幹部","exp":false},{"name":"蔡孟儒","unit":"219三樓","exp":true},{"name":"林郁熒","unit":"247設計團隊","exp":false},{"name":"吳語真","unit":"247設計團隊","exp":false},{"name":"呂家婷","unit":"247設計團隊","exp":true},{"name":"翁若琦","unit":"219二樓品管","exp":false},{"name":"陳芊樺","unit":"219二樓品管","exp":true},{"name":"徐偉智","unit":"219二樓品管","exp":false},{"name":"翁詩琦","unit":"219三樓","exp":false},{"name":"安久","unit":"247寵物團隊","exp":true},{"name":"朱伊云","unit":"247寵物團隊","exp":false},{"name":"Ash","unit":"219三樓","exp":false}],"q1":{"all":{"完全認同":10,"認同":17,"普通":10,"不太認同":4,"完全不認同":0},"exp":{"完全認同":4,"認同":4,"普通":3,"不太認同":2,"完全不認同":0},"noexp":{"完全認同":6,"認同":13,"普通":7,"不太認同":2,"完全不認同":0}},"q2":{"all":{"完全認同":9,"認同":18,"普通":13,"不太認同":1,"完全不認同":0},"exp":{"完全認同":4,"認同":5,"普通":3,"不太認同":1,"完全不認同":0},"noexp":{"完全認同":5,"認同":13,"普通":10,"不太認同":0,"完全不認同":0}},"q3":{"all":{"完全認同":3,"認同":8,"普通":19,"不太認同":10,"完全不認同":1},"exp":{"完全認同":2,"認同":2,"普通":5,"不太認同":3,"完全不認同":1},"noexp":{"完全認同":1,"認同":6,"普通":14,"不太認同":7,"完全不認同":0}},"q4":{"all":{"完全認同":6,"認同":8,"普通":22,"不太認同":4,"完全不認同":1},"exp":{"完全認同":4,"認同":1,"普通":6,"不太認同":1,"完全不認同":1},"noexp":{"完全認同":2,"認同":7,"普通":16,"不太認同":3,"完全不認同":0}},"q5":{"all":{"經常":4,"偶爾":5,"好像有":8,"完全沒有":24},"exp":{"經常":3,"偶爾":2,"好像有":2,"完全沒有":6},"noexp":{"經常":1,"偶爾":3,"好像有":6,"完全沒有":18}},"q6":{"all":{"經常":5,"偶爾":4,"好像有":4,"完全沒有":28},"exp":{"經常":4,"偶爾":1,"好像有":2,"完全沒有":6},"noexp":{"經常":1,"偶爾":3,"好像有":2,"完全沒有":22}}},{"code":"B06","name":"防滑矽膠吸盤碗","hasQ7":true,"q7yes":[{"name":"卡洛","unit":"儲備幹部","exp":false},{"name":"許書慈","unit":"247設計團隊","exp":false},{"name":"蔡依庭","unit":"219三樓","exp":false},{"name":"王舜慧","unit":"219三樓","exp":false},{"name":"賴芓妘","unit":"219三樓","exp":true},{"name":"王怡萱","unit":"219二樓品管","exp":true},{"name":"林潔茹","unit":"219三樓","exp":true},{"name":"吳承威","unit":"219三樓","exp":false},{"name":"洪彤茹","unit":"儲備幹部","exp":false},{"name":"趙心慧","unit":"247設計團隊","exp":false},{"name":"黃玉如","unit":"219二樓品管","exp":false},{"name":"翁詩琦","unit":"219三樓","exp":false},{"name":"陳孟岑","unit":"219二樓品管","exp":false},{"name":"安久","unit":"247寵物團隊","exp":true},{"name":"鄭人豪","unit":"247寵物團隊","exp":true},{"name":"桑妮妮","unit":"219三樓","exp":true}],"q7no":[{"name":"吳筱婷","unit":"店長/督導","exp":true},{"name":"顏思綺Nikki","unit":"儲備幹部","exp":false},{"name":"陳奕璇","unit":"219三樓","exp":true},{"name":"黃毓涵","unit":"219三樓","exp":false},{"name":"徐渝涵","unit":"247設計團隊","exp":false},{"name":"陳玫云","unit":"247設計團隊","exp":false},{"name":"吳郁辰","unit":"247設計團隊","exp":false},{"name":"蕭翊珊","unit":"219二樓品管","exp":false},{"name":"陳沛璟","unit":"247寵物團隊","exp":false},{"name":"Ivan","unit":"219三樓","exp":false},{"name":"何長芳","unit":"247寵物團隊","exp":true},{"name":"欣澐","unit":"247寵物團隊","exp":false},{"name":"Nancy","unit":"219三樓","exp":false},{"name":"zona","unit":"219三樓","exp":false},{"name":"Danny","unit":"219三樓","exp":false},{"name":"蔡孟儒","unit":"219三樓","exp":true},{"name":"林郁熒","unit":"247設計團隊","exp":false},{"name":"吳語真","unit":"247設計團隊","exp":false},{"name":"呂家婷","unit":"247設計團隊","exp":true},{"name":"翁若琦","unit":"219二樓品管","exp":false},{"name":"陳芊樺","unit":"219二樓品管","exp":true},{"name":"徐偉智","unit":"219二樓品管","exp":false},{"name":"朱伊云","unit":"247寵物團隊","exp":false},{"name":"Ash","unit":"219三樓","exp":false},{"name":"Chili","unit":"219三樓","exp":true}],"q1":{"all":{"完全認同":20,"認同":12,"普通":5,"不太認同":4,"完全不認同":0},"exp":{"完全認同":5,"認同":4,"普通":3,"不太認同":1,"完全不認同":0},"noexp":{"完全認同":15,"認同":8,"普通":2,"不太認同":3,"完全不認同":0}},"q2":{"all":{"完全認同":17,"認同":15,"普通":6,"不太認同":3,"完全不認同":0},"exp":{"完全認同":6,"認同":4,"普通":2,"不太認同":1,"完全不認同":0},"noexp":{"完全認同":11,"認同":11,"普通":4,"不太認同":2,"完全不認同":0}},"q3":{"all":{"完全認同":10,"認同":17,"普通":10,"不太認同":4,"完全不認同":0},"exp":{"完全認同":2,"認同":6,"普通":3,"不太認同":2,"完全不認同":0},"noexp":{"完全認同":8,"認同":11,"普通":7,"不太認同":2,"完全不認同":0}},"q4":{"all":{"完全認同":20,"認同":13,"普通":6,"不太認同":2,"完全不認同":0},"exp":{"完全認同":6,"認同":5,"普通":1,"不太認同":1,"完全不認同":0},"noexp":{"完全認同":14,"認同":8,"普通":5,"不太認同":1,"完全不認同":0}},"q5":{"all":{"經常":9,"偶爾":9,"好像有":6,"完全沒有":17},"exp":{"經常":3,"偶爾":3,"好像有":2,"完全沒有":5},"noexp":{"經常":6,"偶爾":6,"好像有":4,"完全沒有":12}},"q6":{"all":{"經常":8,"偶爾":7,"好像有":4,"完全沒有":22},"exp":{"經常":2,"偶爾":4,"好像有":1,"完全沒有":6},"noexp":{"經常":6,"偶爾":3,"好像有":3,"完全沒有":16}}},{"code":"B07","name":"防滑矽膠餐盤","hasQ7":true,"q7yes":[{"name":"吳筱婷","unit":"店長/督導","exp":true},{"name":"黃毓涵","unit":"219三樓","exp":false},{"name":"許書慈","unit":"247設計團隊","exp":false},{"name":"蔡依庭","unit":"219三樓","exp":false},{"name":"王舜慧","unit":"219三樓","exp":false},{"name":"賴芓妘","unit":"219三樓","exp":true},{"name":"王怡萱","unit":"219二樓品管","exp":true},{"name":"林潔茹","unit":"219三樓","exp":true},{"name":"吳承威","unit":"219三樓","exp":false},{"name":"洪彤茹","unit":"儲備幹部","exp":false},{"name":"趙心慧","unit":"247設計團隊","exp":false},{"name":"黃玉如","unit":"219二樓品管","exp":false},{"name":"翁若琦","unit":"219二樓品管","exp":false},{"name":"翁詩琦","unit":"219三樓","exp":false},{"name":"陳孟岑","unit":"219二樓品管","exp":false},{"name":"安久","unit":"247寵物團隊","exp":true},{"name":"鄭人豪","unit":"247寵物團隊","exp":true},{"name":"桑妮妮","unit":"219三樓","exp":true}],"q7no":[{"name":"顏思綺Nikki","unit":"儲備幹部","exp":false},{"name":"卡洛","unit":"儲備幹部","exp":false},{"name":"陳奕璇","unit":"219三樓","exp":true},{"name":"徐渝涵","unit":"247設計團隊","exp":false},{"name":"陳玫云","unit":"247設計團隊","exp":false},{"name":"吳郁辰","unit":"247設計團隊","exp":false},{"name":"蕭翊珊","unit":"219二樓品管","exp":false},{"name":"陳沛璟","unit":"247寵物團隊","exp":false},{"name":"Ivan","unit":"219三樓","exp":false},{"name":"何長芳","unit":"247寵物團隊","exp":true},{"name":"欣澐","unit":"247寵物團隊","exp":false},{"name":"Nancy","unit":"219三樓","exp":false},{"name":"zona","unit":"219三樓","exp":false},{"name":"Danny","unit":"219三樓","exp":false},{"name":"蔡孟儒","unit":"219三樓","exp":true},{"name":"林郁熒","unit":"247設計團隊","exp":false},{"name":"吳語真","unit":"247設計團隊","exp":false},{"name":"呂家婷","unit":"247設計團隊","exp":true},{"name":"陳芊樺","unit":"219二樓品管","exp":true},{"name":"徐偉智","unit":"219二樓品管","exp":false},{"name":"朱伊云","unit":"247寵物團隊","exp":false},{"name":"Ash","unit":"219三樓","exp":false},{"name":"Chili","unit":"219三樓","exp":true}],"q1":{"all":{"完全認同":23,"認同":13,"普通":2,"不太認同":3,"完全不認同":0},"exp":{"完全認同":7,"認同":5,"普通":0,"不太認同":1,"完全不認同":0},"noexp":{"完全認同":16,"認同":8,"普通":2,"不太認同":2,"完全不認同":0}},"q2":{"all":{"完全認同":20,"認同":16,"普通":2,"不太認同":3,"完全不認同":0},"exp":{"完全認同":6,"認同":6,"普通":0,"不太認同":1,"完全不認同":0},"noexp":{"完全認同":14,"認同":10,"普通":2,"不太認同":2,"完全不認同":0}},"q3":{"all":{"完全認同":12,"認同":18,"普通":7,"不太認同":4,"完全不認同":0},"exp":{"完全認同":3,"認同":7,"普通":1,"不太認同":2,"完全不認同":0},"noexp":{"完全認同":9,"認同":11,"普通":6,"不太認同":2,"完全不認同":0}},"q4":{"all":{"完全認同":19,"認同":13,"普通":8,"不太認同":1,"完全不認同":0},"exp":{"完全認同":6,"認同":3,"普通":3,"不太認同":1,"完全不認同":0},"noexp":{"完全認同":13,"認同":10,"普通":5,"不太認同":0,"完全不認同":0}},"q5":{"all":{"經常":11,"偶爾":6,"好像有":6,"完全沒有":18},"exp":{"經常":3,"偶爾":4,"好像有":0,"完全沒有":6},"noexp":{"經常":8,"偶爾":2,"好像有":6,"完全沒有":12}},"q6":{"all":{"經常":10,"偶爾":6,"好像有":5,"完全沒有":20},"exp":{"經常":3,"偶爾":4,"好像有":0,"完全沒有":6},"noexp":{"經常":7,"偶爾":2,"好像有":5,"完全沒有":14}}},{"code":"B08","name":"冷凍儲存分裝盒","hasQ7":false,"q7yes":[],"q7no":[],"q1":{"all":{"完全認同":16,"認同":16,"普通":7,"不太認同":2,"完全不認同":0},"exp":{"完全認同":5,"認同":6,"普通":2,"不太認同":0,"完全不認同":0},"noexp":{"完全認同":11,"認同":10,"普通":5,"不太認同":2,"完全不認同":0}},"q2":{"all":{"完全認同":15,"認同":14,"普通":10,"不太認同":2,"完全不認同":0},"exp":{"完全認同":5,"認同":4,"普通":4,"不太認同":0,"完全不認同":0},"noexp":{"完全認同":10,"認同":10,"普通":6,"不太認同":2,"完全不認同":0}},"q3":{"all":{"完全認同":17,"認同":14,"普通":8,"不太認同":2,"完全不認同":0},"exp":{"完全認同":6,"認同":4,"普通":3,"不太認同":0,"完全不認同":0},"noexp":{"完全認同":11,"認同":10,"普通":5,"不太認同":2,"完全不認同":0}},"q4":{"all":{"完全認同":14,"認同":14,"普通":12,"不太認同":1,"完全不認同":0},"exp":{"完全認同":4,"認同":6,"普通":3,"不太認同":0,"完全不認同":0},"noexp":{"完全認同":10,"認同":8,"普通":9,"不太認同":1,"完全不認同":0}},"q5":{"all":{"經常":6,"偶爾":5,"好像有":8,"完全沒有":22},"exp":{"經常":3,"偶爾":2,"好像有":3,"完全沒有":5},"noexp":{"經常":3,"偶爾":3,"好像有":5,"完全沒有":17}},"q6":{"all":{"經常":6,"偶爾":5,"好像有":6,"完全沒有":24},"exp":{"經常":3,"偶爾":3,"好像有":1,"完全沒有":6},"noexp":{"經常":3,"偶爾":2,"好像有":5,"完全沒有":18}}},{"code":"B09","name":"鴨嘴吸管兩用水杯","hasQ7":true,"q7yes":[{"name":"許書慈","unit":"247設計團隊","exp":false},{"name":"蔡依庭","unit":"219三樓","exp":false},{"name":"王舜慧","unit":"219三樓","exp":false},{"name":"賴芓妘","unit":"219三樓","exp":true},{"name":"王怡萱","unit":"219二樓品管","exp":true},{"name":"林潔茹","unit":"219三樓","exp":true},{"name":"Danny","unit":"219三樓","exp":false},{"name":"蔡孟儒","unit":"219三樓","exp":true},{"name":"黃玉如","unit":"219二樓品管","exp":false},{"name":"翁詩琦","unit":"219三樓","exp":false},{"name":"陳孟岑","unit":"219二樓品管","exp":false},{"name":"安久","unit":"247寵物團隊","exp":true},{"name":"鄭人豪","unit":"247寵物團隊","exp":true},{"name":"桑妮妮","unit":"219三樓","exp":true}],"q7no":[{"name":"吳筱婷","unit":"店長/督導","exp":true},{"name":"顏思綺Nikki","unit":"儲備幹部","exp":false},{"name":"卡洛","unit":"儲備幹部","exp":false},{"name":"陳奕璇","unit":"219三樓","exp":true},{"name":"黃毓涵","unit":"219三樓","exp":false},{"name":"徐渝涵","unit":"247設計團隊","exp":false},{"name":"陳玫云","unit":"247設計團隊","exp":false},{"name":"吳郁辰","unit":"247設計團隊","exp":false},{"name":"蕭翊珊","unit":"219二樓品管","exp":false},{"name":"陳沛璟","unit":"247寵物團隊","exp":false},{"name":"Ivan","unit":"219三樓","exp":false},{"name":"何長芳","unit":"247寵物團隊","exp":true},{"name":"欣澐","unit":"247寵物團隊","exp":false},{"name":"Nancy","unit":"219三樓","exp":false},{"name":"zona","unit":"219三樓","exp":false},{"name":"吳承威","unit":"219三樓","exp":false},{"name":"洪彤茹","unit":"儲備幹部","exp":false},{"name":"林郁熒","unit":"247設計團隊","exp":false},{"name":"吳語真","unit":"247設計團隊","exp":false},{"name":"趙心慧","unit":"247設計團隊","exp":false},{"name":"呂家婷","unit":"247設計團隊","exp":true},{"name":"翁若琦","unit":"219二樓品管","exp":false},{"name":"陳芊樺","unit":"219二樓品管","exp":true},{"name":"徐偉智","unit":"219二樓品管","exp":false},{"name":"朱伊云","unit":"247寵物團隊","exp":false},{"name":"Ash","unit":"219三樓","exp":false},{"name":"Chili","unit":"219三樓","exp":true}],"q1":{"all":{"完全認同":17,"認同":19,"普通":5,"不太認同":0,"完全不認同":0},"exp":{"完全認同":6,"認同":6,"普通":1,"不太認同":0,"完全不認同":0},"noexp":{"完全認同":11,"認同":13,"普通":4,"不太認同":0,"完全不認同":0}},"q2":{"all":{"完全認同":17,"認同":14,"普通":9,"不太認同":1,"完全不認同":0},"exp":{"完全認同":7,"認同":4,"普通":1,"不太認同":1,"完全不認同":0},"noexp":{"完全認同":10,"認同":10,"普通":8,"不太認同":0,"完全不認同":0}},"q3":{"all":{"完全認同":9,"認同":15,"普通":15,"不太認同":2,"完全不認同":0},"exp":{"完全認同":3,"認同":4,"普通":5,"不太認同":1,"完全不認同":0},"noexp":{"完全認同":6,"認同":11,"普通":10,"不太認同":1,"完全不認同":0}},"q4":{"all":{"完全認同":12,"認同":21,"普通":8,"不太認同":0,"完全不認同":0},"exp":{"完全認同":3,"認同":7,"普通":3,"不太認同":0,"完全不認同":0},"noexp":{"完全認同":9,"認同":14,"普通":5,"不太認同":0,"完全不認同":0}},"q5":{"all":{"經常":5,"偶爾":7,"好像有":8,"完全沒有":21},"exp":{"經常":3,"偶爾":3,"好像有":3,"完全沒有":4},"noexp":{"經常":2,"偶爾":4,"好像有":5,"完全沒有":17}},"q6":{"all":{"經常":4,"偶爾":8,"好像有":7,"完全沒有":22},"exp":{"經常":3,"偶爾":3,"好像有":3,"完全沒有":4},"noexp":{"經常":1,"偶爾":5,"好像有":4,"完全沒有":18}}},{"code":"B10","name":"AX吸管水杯","hasQ7":false,"q7yes":[],"q7no":[],"q1":{"all":{"完全認同":16,"認同":16,"普通":7,"不太認同":2,"完全不認同":0},"exp":{"完全認同":8,"認同":5,"普通":0,"不太認同":0,"完全不認同":0},"noexp":{"完全認同":8,"認同":11,"普通":7,"不太認同":2,"完全不認同":0}},"q2":{"all":{"完全認同":17,"認同":14,"普通":7,"不太認同":3,"完全不認同":0},"exp":{"完全認同":9,"認同":4,"普通":0,"不太認同":0,"完全不認同":0},"noexp":{"完全認同":8,"認同":10,"普通":7,"不太認同":3,"完全不認同":0}},"q3":{"all":{"完全認同":8,"認同":13,"普通":14,"不太認同":6,"完全不認同":0},"exp":{"完全認同":4,"認同":4,"普通":5,"不太認同":0,"完全不認同":0},"noexp":{"完全認同":4,"認同":9,"普通":9,"不太認同":6,"完全不認同":0}},"q4":{"all":{"完全認同":9,"認同":15,"普通":14,"不太認同":3,"完全不認同":0},"exp":{"完全認同":6,"認同":3,"普通":4,"不太認同":0,"完全不認同":0},"noexp":{"完全認同":3,"認同":12,"普通":10,"不太認同":3,"完全不認同":0}},"q5":{"all":{"經常":10,"偶爾":5,"好像有":6,"完全沒有":20},"exp":{"經常":6,"偶爾":1,"好像有":1,"完全沒有":5},"noexp":{"經常":4,"偶爾":4,"好像有":5,"完全沒有":15}},"q6":{"all":{"經常":9,"偶爾":4,"好像有":5,"完全沒有":23},"exp":{"經常":6,"偶爾":1,"好像有":1,"完全沒有":5},"noexp":{"經常":3,"偶爾":3,"好像有":4,"完全沒有":18}}},{"code":"B11","name":"嬰兒食物金剛剪","hasQ7":false,"q7yes":[],"q7no":[],"q1":{"all":{"完全認同":23,"認同":14,"普通":3,"不太認同":1,"完全不認同":0},"exp":{"完全認同":7,"認同":4,"普通":2,"不太認同":0,"完全不認同":0},"noexp":{"完全認同":16,"認同":10,"普通":1,"不太認同":1,"完全不認同":0}},"q2":{"all":{"完全認同":24,"認同":12,"普通":4,"不太認同":1,"完全不認同":0},"exp":{"完全認同":6,"認同":3,"普通":3,"不太認同":1,"完全不認同":0},"noexp":{"完全認同":18,"認同":9,"普通":1,"不太認同":0,"完全不認同":0}},"q3":{"all":{"完全認同":22,"認同":10,"普通":7,"不太認同":2,"完全不認同":0},"exp":{"完全認同":5,"認同":2,"普通":5,"不太認同":1,"完全不認同":0},"noexp":{"完全認同":17,"認同":8,"普通":2,"不太認同":1,"完全不認同":0}},"q4":{"all":{"完全認同":19,"認同":13,"普通":8,"不太認同":0,"完全不認同":1},"exp":{"完全認同":6,"認同":4,"普通":2,"不太認同":0,"完全不認同":1},"noexp":{"完全認同":13,"認同":9,"普通":6,"不太認同":0,"完全不認同":0}},"q5":{"all":{"經常":14,"偶爾":3,"好像有":8,"完全沒有":16},"exp":{"經常":6,"偶爾":0,"好像有":3,"完全沒有":4},"noexp":{"經常":8,"偶爾":3,"好像有":5,"完全沒有":12}},"q6":{"all":{"經常":13,"偶爾":2,"好像有":10,"完全沒有":16},"exp":{"經常":6,"偶爾":0,"好像有":3,"完全沒有":4},"noexp":{"經常":7,"偶爾":2,"好像有":7,"完全沒有":12}}},{"code":"B12","name":"食物調理機","hasQ7":false,"q7yes":[],"q7no":[],"q1":{"all":{"完全認同":12,"認同":19,"普通":7,"不太認同":3,"完全不認同":0},"exp":{"完全認同":2,"認同":6,"普通":4,"不太認同":1,"完全不認同":0},"noexp":{"完全認同":10,"認同":13,"普通":3,"不太認同":2,"完全不認同":0}},"q2":{"all":{"完全認同":13,"認同":16,"普通":10,"不太認同":2,"完全不認同":0},"exp":{"完全認同":4,"認同":4,"普通":4,"不太認同":1,"完全不認同":0},"noexp":{"完全認同":9,"認同":12,"普通":6,"不太認同":1,"完全不認同":0}},"q3":{"all":{"完全認同":9,"認同":12,"普通":15,"不太認同":5,"完全不認同":0},"exp":{"完全認同":3,"認同":4,"普通":5,"不太認同":1,"完全不認同":0},"noexp":{"完全認同":6,"認同":8,"普通":10,"不太認同":4,"完全不認同":0}},"q4":{"all":{"完全認同":8,"認同":16,"普通":15,"不太認同":2,"完全不認同":0},"exp":{"完全認同":2,"認同":4,"普通":6,"不太認同":1,"完全不認同":0},"noexp":{"完全認同":6,"認同":12,"普通":9,"不太認同":1,"完全不認同":0}},"q5":{"all":{"經常":5,"偶爾":6,"好像有":11,"完全沒有":19},"exp":{"經常":3,"偶爾":1,"好像有":2,"完全沒有":7},"noexp":{"經常":2,"偶爾":5,"好像有":9,"完全沒有":12}},"q6":{"all":{"經常":4,"偶爾":5,"好像有":9,"完全沒有":23},"exp":{"經常":3,"偶爾":1,"好像有":1,"完全沒有":8},"noexp":{"經常":1,"偶爾":4,"好像有":8,"完全沒有":15}}},{"code":"C01","name":"開襟包屁衣","hasQ7":false,"q7yes":[],"q7no":[],"q1":{"all":{"完全認同":21,"認同":14,"普通":4,"不太認同":2,"完全不認同":0},"exp":{"完全認同":7,"認同":4,"普通":2,"不太認同":0,"完全不認同":0},"noexp":{"完全認同":14,"認同":10,"普通":2,"不太認同":2,"完全不認同":0}},"q2":{"all":{"完全認同":21,"認同":15,"普通":3,"不太認同":2,"完全不認同":0},"exp":{"完全認同":7,"認同":4,"普通":2,"不太認同":0,"完全不認同":0},"noexp":{"完全認同":14,"認同":11,"普通":1,"不太認同":2,"完全不認同":0}},"q3":{"all":{"完全認同":2,"認同":15,"普通":14,"不太認同":8,"完全不認同":2},"exp":{"完全認同":1,"認同":1,"普通":6,"不太認同":4,"完全不認同":1},"noexp":{"完全認同":1,"認同":14,"普通":8,"不太認同":4,"完全不認同":1}},"q4":{"all":{"完全認同":15,"認同":17,"普通":7,"不太認同":2,"完全不認同":0},"exp":{"完全認同":4,"認同":5,"普通":2,"不太認同":2,"完全不認同":0},"noexp":{"完全認同":11,"認同":12,"普通":5,"不太認同":0,"完全不認同":0}},"q5":{"all":{"經常":8,"偶爾":10,"好像有":7,"完全沒有":16},"exp":{"經常":3,"偶爾":3,"好像有":3,"完全沒有":4},"noexp":{"經常":5,"偶爾":7,"好像有":4,"完全沒有":12}},"q6":{"all":{"經常":6,"偶爾":9,"好像有":6,"完全沒有":20},"exp":{"經常":4,"偶爾":4,"好像有":1,"完全沒有":4},"noexp":{"經常":2,"偶爾":5,"好像有":5,"完全沒有":16}}},{"code":"C02","name":"新生兒專用奶嘴","hasQ7":true,"q7yes":[{"name":"許書慈","unit":"247設計團隊","exp":false},{"name":"蔡依庭","unit":"219三樓","exp":false},{"name":"王舜慧","unit":"219三樓","exp":false},{"name":"王怡萱","unit":"219二樓品管","exp":true},{"name":"林潔茹","unit":"219三樓","exp":true},{"name":"Danny","unit":"219三樓","exp":false},{"name":"吳承威","unit":"219三樓","exp":false},{"name":"蔡孟儒","unit":"219三樓","exp":true},{"name":"翁若琦","unit":"219二樓品管","exp":false},{"name":"陳芊樺","unit":"219二樓品管","exp":true},{"name":"安久","unit":"247寵物團隊","exp":true},{"name":"鄭人豪","unit":"247寵物團隊","exp":true},{"name":"桑妮妮","unit":"219三樓","exp":true}],"q7no":[{"name":"吳筱婷","unit":"店長/督導","exp":true},{"name":"顏思綺Nikki","unit":"儲備幹部","exp":false},{"name":"卡洛","unit":"儲備幹部","exp":false},{"name":"陳奕璇","unit":"219三樓","exp":true},{"name":"黃毓涵","unit":"219三樓","exp":false},{"name":"徐渝涵","unit":"247設計團隊","exp":false},{"name":"陳玫云","unit":"247設計團隊","exp":false},{"name":"吳郁辰","unit":"247設計團隊","exp":false},{"name":"蕭翊珊","unit":"219二樓品管","exp":false},{"name":"賴芓妘","unit":"219三樓","exp":true},{"name":"陳沛璟","unit":"247寵物團隊","exp":false},{"name":"Ivan","unit":"219三樓","exp":false},{"name":"何長芳","unit":"247寵物團隊","exp":true},{"name":"欣澐","unit":"247寵物團隊","exp":false},{"name":"Nancy","unit":"219三樓","exp":false},{"name":"zona","unit":"219三樓","exp":false},{"name":"洪彤茹","unit":"儲備幹部","exp":false},{"name":"林郁熒","unit":"247設計團隊","exp":false},{"name":"吳語真","unit":"247設計團隊","exp":false},{"name":"趙心慧","unit":"247設計團隊","exp":false},{"name":"呂家婷","unit":"247設計團隊","exp":true},{"name":"黃玉如","unit":"219二樓品管","exp":false},{"name":"徐偉智","unit":"219二樓品管","exp":false},{"name":"翁詩琦","unit":"219三樓","exp":false},{"name":"陳孟岑","unit":"219二樓品管","exp":false},{"name":"朱伊云","unit":"247寵物團隊","exp":false},{"name":"Ash","unit":"219三樓","exp":false},{"name":"Chili","unit":"219三樓","exp":true}],"q1":{"all":{"完全認同":13,"認同":19,"普通":7,"不太認同":1,"完全不認同":1},"exp":{"完全認同":7,"認同":5,"普通":0,"不太認同":1,"完全不認同":0},"noexp":{"完全認同":6,"認同":14,"普通":7,"不太認同":0,"完全不認同":1}},"q2":{"all":{"完全認同":14,"認同":21,"普通":6,"不太認同":0,"完全不認同":0},"exp":{"完全認同":7,"認同":4,"普通":2,"不太認同":0,"完全不認同":0},"noexp":{"完全認同":7,"認同":17,"普通":4,"不太認同":0,"完全不認同":0}},"q3":{"all":{"完全認同":13,"認同":21,"普通":7,"不太認同":0,"完全不認同":0},"exp":{"完全認同":4,"認同":6,"普通":3,"不太認同":0,"完全不認同":0},"noexp":{"完全認同":9,"認同":15,"普通":4,"不太認同":0,"完全不認同":0}},"q4":{"all":{"完全認同":8,"認同":15,"普通":14,"不太認同":2,"完全不認同":2},"exp":{"完全認同":3,"認同":5,"普通":5,"不太認同":0,"完全不認同":0},"noexp":{"完全認同":5,"認同":10,"普通":9,"不太認同":2,"完全不認同":2}},"q5":{"all":{"經常":14,"偶爾":6,"好像有":3,"完全沒有":18},"exp":{"經常":10,"偶爾":2,"好像有":0,"完全沒有":1},"noexp":{"經常":4,"偶爾":4,"好像有":3,"完全沒有":17}},"q6":{"all":{"經常":13,"偶爾":5,"好像有":2,"完全沒有":21},"exp":{"經常":9,"偶爾":3,"好像有":0,"完全沒有":1},"noexp":{"經常":4,"偶爾":2,"好像有":2,"完全沒有":20}}},{"code":"C03","name":"小小電動遊戲組","hasQ7":false,"q7yes":[],"q7no":[],"q1":{"all":{"完全認同":8,"認同":12,"普通":16,"不太認同":3,"完全不認同":2},"exp":{"完全認同":3,"認同":4,"普通":3,"不太認同":2,"完全不認同":1},"noexp":{"完全認同":5,"認同":8,"普通":13,"不太認同":1,"完全不認同":1}},"q2":{"all":{"完全認同":6,"認同":9,"普通":19,"不太認同":6,"完全不認同":1},"exp":{"完全認同":2,"認同":2,"普通":5,"不太認同":3,"完全不認同":1},"noexp":{"完全認同":4,"認同":7,"普通":14,"不太認同":3,"完全不認同":0}},"q3":{"all":{"完全認同":3,"認同":7,"普通":20,"不太認同":7,"完全不認同":4},"exp":{"完全認同":3,"認同":1,"普通":4,"不太認同":4,"完全不認同":1},"noexp":{"完全認同":0,"認同":6,"普通":16,"不太認同":3,"完全不認同":3}},"q4":{"all":{"完全認同":3,"認同":9,"普通":16,"不太認同":10,"完全不認同":3},"exp":{"完全認同":2,"認同":2,"普通":4,"不太認同":4,"完全不認同":1},"noexp":{"完全認同":1,"認同":7,"普通":12,"不太認同":6,"完全不認同":2}},"q5":{"all":{"經常":3,"偶爾":3,"好像有":7,"完全沒有":28},"exp":{"經常":1,"偶爾":2,"好像有":2,"完全沒有":8},"noexp":{"經常":2,"偶爾":1,"好像有":5,"完全沒有":20}},"q6":{"all":{"經常":2,"偶爾":4,"好像有":6,"完全沒有":29},"exp":{"經常":1,"偶爾":2,"好像有":2,"完全沒有":8},"noexp":{"經常":1,"偶爾":2,"好像有":4,"完全沒有":21}}},{"code":"C04","name":"聲光安撫小海馬","hasQ7":false,"q7yes":[],"q7no":[],"q1":{"all":{"完全認同":18,"認同":14,"普通":6,"不太認同":2,"完全不認同":1},"exp":{"完全認同":6,"認同":4,"普通":2,"不太認同":0,"完全不認同":1},"noexp":{"完全認同":12,"認同":10,"普通":4,"不太認同":2,"完全不認同":0}},"q2":{"all":{"完全認同":13,"認同":16,"普通":9,"不太認同":2,"完全不認同":1},"exp":{"完全認同":5,"認同":5,"普通":2,"不太認同":0,"完全不認同":1},"noexp":{"完全認同":8,"認同":11,"普通":7,"不太認同":2,"完全不認同":0}},"q3":{"all":{"完全認同":6,"認同":7,"普通":18,"不太認同":9,"完全不認同":1},"exp":{"完全認同":3,"認同":2,"普通":6,"不太認同":2,"完全不認同":0},"noexp":{"完全認同":3,"認同":5,"普通":12,"不太認同":7,"完全不認同":1}},"q4":{"all":{"完全認同":6,"認同":14,"普通":15,"不太認同":4,"完全不認同":2},"exp":{"完全認同":4,"認同":5,"普通":3,"不太認同":0,"完全不認同":1},"noexp":{"完全認同":2,"認同":9,"普通":12,"不太認同":4,"完全不認同":1}},"q5":{"all":{"經常":12,"偶爾":5,"好像有":3,"完全沒有":21},"exp":{"經常":7,"偶爾":1,"好像有":1,"完全沒有":4},"noexp":{"經常":5,"偶爾":4,"好像有":2,"完全沒有":17}},"q6":{"all":{"經常":10,"偶爾":5,"好像有":4,"完全沒有":22},"exp":{"經常":7,"偶爾":2,"好像有":0,"完全沒有":4},"noexp":{"經常":3,"偶爾":3,"好像有":4,"完全沒有":18}}},{"code":"C05","name":"四季動物布書","hasQ7":false,"q7yes":[],"q7no":[],"q1":{"all":{"完全認同":20,"認同":13,"普通":6,"不太認同":2,"完全不認同":0},"exp":{"完全認同":8,"認同":4,"普通":1,"不太認同":0,"完全不認同":0},"noexp":{"完全認同":12,"認同":9,"普通":5,"不太認同":2,"完全不認同":0}},"q2":{"all":{"完全認同":16,"認同":15,"普通":7,"不太認同":3,"完全不認同":0},"exp":{"完全認同":7,"認同":4,"普通":2,"不太認同":0,"完全不認同":0},"noexp":{"完全認同":9,"認同":11,"普通":5,"不太認同":3,"完全不認同":0}},"q3":{"all":{"完全認同":8,"認同":17,"普通":12,"不太認同":4,"完全不認同":0},"exp":{"完全認同":4,"認同":3,"普通":5,"不太認同":1,"完全不認同":0},"noexp":{"完全認同":4,"認同":14,"普通":7,"不太認同":3,"完全不認同":0}},"q4":{"all":{"完全認同":11,"認同":17,"普通":10,"不太認同":3,"完全不認同":0},"exp":{"完全認同":6,"認同":3,"普通":4,"不太認同":0,"完全不認同":0},"noexp":{"完全認同":5,"認同":14,"普通":6,"不太認同":3,"完全不認同":0}},"q5":{"all":{"經常":9,"偶爾":7,"好像有":7,"完全沒有":18},"exp":{"經常":5,"偶爾":2,"好像有":2,"完全沒有":4},"noexp":{"經常":4,"偶爾":5,"好像有":5,"完全沒有":14}},"q6":{"all":{"經常":8,"偶爾":6,"好像有":10,"完全沒有":17},"exp":{"經常":5,"偶爾":2,"好像有":3,"完全沒有":3},"noexp":{"經常":3,"偶爾":4,"好像有":7,"完全沒有":14}}},{"code":"C06","name":"搖鈴感統玩偶","hasQ7":false,"q7yes":[],"q7no":[],"q1":{"all":{"完全認同":17,"認同":21,"普通":2,"不太認同":1,"完全不認同":0},"exp":{"完全認同":7,"認同":6,"普通":0,"不太認同":0,"完全不認同":0},"noexp":{"完全認同":10,"認同":15,"普通":2,"不太認同":1,"完全不認同":0}},"q2":{"all":{"完全認同":16,"認同":20,"普通":4,"不太認同":1,"完全不認同":0},"exp":{"完全認同":6,"認同":7,"普通":0,"不太認同":0,"完全不認同":0},"noexp":{"完全認同":10,"認同":13,"普通":4,"不太認同":1,"完全不認同":0}},"q3":{"all":{"完全認同":6,"認同":13,"普通":19,"不太認同":3,"完全不認同":0},"exp":{"完全認同":3,"認同":5,"普通":3,"不太認同":2,"完全不認同":0},"noexp":{"完全認同":3,"認同":8,"普通":16,"不太認同":1,"完全不認同":0}},"q4":{"all":{"完全認同":19,"認同":16,"普通":4,"不太認同":2,"完全不認同":0},"exp":{"完全認同":7,"認同":4,"普通":1,"不太認同":1,"完全不認同":0},"noexp":{"完全認同":12,"認同":12,"普通":3,"不太認同":1,"完全不認同":0}},"q5":{"all":{"經常":4,"偶爾":6,"好像有":11,"完全沒有":20},"exp":{"經常":2,"偶爾":0,"好像有":4,"完全沒有":7},"noexp":{"經常":2,"偶爾":6,"好像有":7,"完全沒有":13}},"q6":{"all":{"經常":2,"偶爾":5,"好像有":12,"完全沒有":22},"exp":{"經常":2,"偶爾":0,"好像有":5,"完全沒有":6},"noexp":{"經常":0,"偶爾":5,"好像有":7,"完全沒有":16}}},{"code":"C07","name":"好吃防水圍兜","hasQ7":false,"q7yes":[],"q7no":[],"q1":{"all":{"完全認同":28,"認同":11,"普通":1,"不太認同":1,"完全不認同":0},"exp":{"完全認同":10,"認同":2,"普通":0,"不太認同":1,"完全不認同":0},"noexp":{"完全認同":18,"認同":9,"普通":1,"不太認同":0,"完全不認同":0}},"q2":{"all":{"完全認同":29,"認同":10,"普通":2,"不太認同":0,"完全不認同":0},"exp":{"完全認同":10,"認同":3,"普通":0,"不太認同":0,"完全不認同":0},"noexp":{"完全認同":19,"認同":7,"普通":2,"不太認同":0,"完全不認同":0}},"q3":{"all":{"完全認同":26,"認同":12,"普通":2,"不太認同":1,"完全不認同":0},"exp":{"完全認同":7,"認同":5,"普通":1,"不太認同":0,"完全不認同":0},"noexp":{"完全認同":19,"認同":7,"普通":1,"不太認同":1,"完全不認同":0}},"q4":{"all":{"完全認同":29,"認同":10,"普通":2,"不太認同":0,"完全不認同":0},"exp":{"完全認同":9,"認同":4,"普通":0,"不太認同":0,"完全不認同":0},"noexp":{"完全認同":20,"認同":6,"普通":2,"不太認同":0,"完全不認同":0}},"q5":{"all":{"經常":11,"偶爾":9,"好像有":10,"完全沒有":11},"exp":{"經常":4,"偶爾":3,"好像有":2,"完全沒有":4},"noexp":{"經常":7,"偶爾":6,"好像有":8,"完全沒有":7}},"q6":{"all":{"經常":10,"偶爾":9,"好像有":10,"完全沒有":12},"exp":{"經常":5,"偶爾":2,"好像有":3,"完全沒有":3},"noexp":{"經常":5,"偶爾":7,"好像有":7,"完全沒有":9}}},{"code":"C08","name":"可拆式防髒圍兜","hasQ7":false,"q7yes":[],"q7no":[],"q1":{"all":{"完全認同":20,"認同":12,"普通":7,"不太認同":2,"完全不認同":0},"exp":{"完全認同":5,"認同":4,"普通":3,"不太認同":1,"完全不認同":0},"noexp":{"完全認同":15,"認同":8,"普通":4,"不太認同":1,"完全不認同":0}},"q2":{"all":{"完全認同":14,"認同":11,"普通":8,"不太認同":7,"完全不認同":1},"exp":{"完全認同":2,"認同":5,"普通":4,"不太認同":2,"完全不認同":0},"noexp":{"完全認同":12,"認同":6,"普通":4,"不太認同":5,"完全不認同":1}},"q3":{"all":{"完全認同":9,"認同":10,"普通":14,"不太認同":7,"完全不認同":1},"exp":{"完全認同":3,"認同":4,"普通":3,"不太認同":3,"完全不認同":0},"noexp":{"完全認同":6,"認同":6,"普通":11,"不太認同":4,"完全不認同":1}},"q4":{"all":{"完全認同":11,"認同":11,"普通":12,"不太認同":7,"完全不認同":0},"exp":{"完全認同":3,"認同":4,"普通":4,"不太認同":2,"完全不認同":0},"noexp":{"完全認同":8,"認同":7,"普通":8,"不太認同":5,"完全不認同":0}},"q5":{"all":{"經常":4,"偶爾":4,"好像有":9,"完全沒有":24},"exp":{"經常":2,"偶爾":2,"好像有":2,"完全沒有":7},"noexp":{"經常":2,"偶爾":2,"好像有":7,"完全沒有":17}},"q6":{"all":{"經常":5,"偶爾":3,"好像有":7,"完全沒有":26},"exp":{"經常":3,"偶爾":1,"好像有":2,"完全沒有":7},"noexp":{"經常":2,"偶爾":2,"好像有":5,"完全沒有":19}}},{"code":"C09","name":"拋棄式防水圍兜","hasQ7":false,"q7yes":[],"q7no":[],"q1":{"all":{"完全認同":21,"認同":10,"普通":6,"不太認同":4,"完全不認同":0},"exp":{"完全認同":6,"認同":3,"普通":1,"不太認同":3,"完全不認同":0},"noexp":{"完全認同":15,"認同":7,"普通":5,"不太認同":1,"完全不認同":0}},"q2":{"all":{"完全認同":20,"認同":11,"普通":4,"不太認同":5,"完全不認同":1},"exp":{"完全認同":6,"認同":3,"普通":1,"不太認同":2,"完全不認同":1},"noexp":{"完全認同":14,"認同":8,"普通":3,"不太認同":3,"完全不認同":0}},"q3":{"all":{"完全認同":19,"認同":12,"普通":4,"不太認同":5,"完全不認同":1},"exp":{"完全認同":5,"認同":3,"普通":1,"不太認同":4,"完全不認同":0},"noexp":{"完全認同":14,"認同":9,"普通":3,"不太認同":1,"完全不認同":1}},"q4":{"all":{"完全認同":17,"認同":15,"普通":4,"不太認同":5,"完全不認同":0},"exp":{"完全認同":4,"認同":5,"普通":0,"不太認同":4,"完全不認同":0},"noexp":{"完全認同":13,"認同":10,"普通":4,"不太認同":1,"完全不認同":0}},"q5":{"all":{"經常":3,"偶爾":3,"好像有":9,"完全沒有":26},"exp":{"經常":1,"偶爾":1,"好像有":4,"完全沒有":7},"noexp":{"經常":2,"偶爾":2,"好像有":5,"完全沒有":19}},"q6":{"all":{"經常":4,"偶爾":3,"好像有":6,"完全沒有":28},"exp":{"經常":2,"偶爾":2,"好像有":2,"完全沒有":7},"noexp":{"經常":2,"偶爾":1,"好像有":4,"完全沒有":21}}},{"code":"C10","name":"組合待產包","hasQ7":false,"q7yes":[],"q7no":[],"q1":{"all":{"完全認同":23,"認同":17,"普通":0,"不太認同":1,"完全不認同":0},"exp":{"完全認同":8,"認同":4,"普通":0,"不太認同":1,"完全不認同":0},"noexp":{"完全認同":15,"認同":13,"普通":0,"不太認同":0,"完全不認同":0}},"q2":{"all":{"完全認同":24,"認同":16,"普通":0,"不太認同":1,"完全不認同":0},"exp":{"完全認同":9,"認同":3,"普通":0,"不太認同":1,"完全不認同":0},"noexp":{"完全認同":15,"認同":13,"普通":0,"不太認同":0,"完全不認同":0}},"q3":{"all":{"完全認同":19,"認同":17,"普通":5,"不太認同":0,"完全不認同":0},"exp":{"完全認同":7,"認同":4,"普通":2,"不太認同":0,"完全不認同":0},"noexp":{"完全認同":12,"認同":13,"普通":3,"不太認同":0,"完全不認同":0}},"q4":{"all":{"完全認同":14,"認同":13,"普通":13,"不太認同":1,"完全不認同":0},"exp":{"完全認同":6,"認同":2,"普通":4,"不太認同":1,"完全不認同":0},"noexp":{"完全認同":8,"認同":11,"普通":9,"不太認同":0,"完全不認同":0}},"q5":{"all":{"經常":8,"偶爾":7,"好像有":6,"完全沒有":20},"exp":{"經常":6,"偶爾":2,"好像有":1,"完全沒有":4},"noexp":{"經常":2,"偶爾":5,"好像有":5,"完全沒有":16}},"q6":{"all":{"經常":7,"偶爾":5,"好像有":6,"完全沒有":23},"exp":{"經常":6,"偶爾":2,"好像有":1,"完全沒有":4},"noexp":{"經常":1,"偶爾":3,"好像有":5,"完全沒有":19}}},{"code":"D01","name":"無痕美體霜","hasQ7":true,"q7yes":[{"name":"許書慈","unit":"247設計團隊","exp":false},{"name":"蔡依庭","unit":"219三樓","exp":false},{"name":"王舜慧","unit":"219三樓","exp":false},{"name":"王怡萱","unit":"219二樓品管","exp":true},{"name":"林潔茹","unit":"219三樓","exp":true},{"name":"吳承威","unit":"219三樓","exp":false},{"name":"蔡孟儒","unit":"219三樓","exp":true},{"name":"趙心慧","unit":"247設計團隊","exp":false},{"name":"黃玉如","unit":"219二樓品管","exp":false},{"name":"翁若琦","unit":"219二樓品管","exp":false},{"name":"陳芊樺","unit":"219二樓品管","exp":true},{"name":"翁詩琦","unit":"219三樓","exp":false},{"name":"安久","unit":"247寵物團隊","exp":true},{"name":"鄭人豪","unit":"247寵物團隊","exp":true},{"name":"桑妮妮","unit":"219三樓","exp":true}],"q7no":[{"name":"吳筱婷","unit":"店長/督導","exp":true},{"name":"顏思綺Nikki","unit":"儲備幹部","exp":false},{"name":"卡洛","unit":"儲備幹部","exp":false},{"name":"陳奕璇","unit":"219三樓","exp":true},{"name":"黃毓涵","unit":"219三樓","exp":false},{"name":"徐渝涵","unit":"247設計團隊","exp":false},{"name":"陳玫云","unit":"247設計團隊","exp":false},{"name":"吳郁辰","unit":"247設計團隊","exp":false},{"name":"蕭翊珊","unit":"219二樓品管","exp":false},{"name":"賴芓妘","unit":"219三樓","exp":true},{"name":"陳沛璟","unit":"247寵物團隊","exp":false},{"name":"Ivan","unit":"219三樓","exp":false},{"name":"何長芳","unit":"247寵物團隊","exp":true},{"name":"欣澐","unit":"247寵物團隊","exp":false},{"name":"Nancy","unit":"219三樓","exp":false},{"name":"zona","unit":"219三樓","exp":false},{"name":"Danny","unit":"219三樓","exp":false},{"name":"洪彤茹","unit":"儲備幹部","exp":false},{"name":"林郁熒","unit":"247設計團隊","exp":false},{"name":"吳語真","unit":"247設計團隊","exp":false},{"name":"呂家婷","unit":"247設計團隊","exp":true},{"name":"徐偉智","unit":"219二樓品管","exp":false},{"name":"陳孟岑","unit":"219二樓品管","exp":false},{"name":"朱伊云","unit":"247寵物團隊","exp":false},{"name":"Ash","unit":"219三樓","exp":false},{"name":"Chili","unit":"219三樓","exp":true}],"q1":{"all":{"完全認同":13,"認同":20,"普通":7,"不太認同":1,"完全不認同":0},"exp":{"完全認同":3,"認同":7,"普通":3,"不太認同":0,"完全不認同":0},"noexp":{"完全認同":10,"認同":13,"普通":4,"不太認同":1,"完全不認同":0}},"q2":{"all":{"完全認同":12,"認同":21,"普通":8,"不太認同":0,"完全不認同":0},"exp":{"完全認同":2,"認同":9,"普通":2,"不太認同":0,"完全不認同":0},"noexp":{"完全認同":10,"認同":12,"普通":6,"不太認同":0,"完全不認同":0}},"q3":{"all":{"完全認同":7,"認同":19,"普通":15,"不太認同":0,"完全不認同":0},"exp":{"完全認同":0,"認同":4,"普通":9,"不太認同":0,"完全不認同":0},"noexp":{"完全認同":7,"認同":15,"普通":6,"不太認同":0,"完全不認同":0}},"q4":{"all":{"完全認同":5,"認同":9,"普通":24,"不太認同":2,"完全不認同":1},"exp":{"完全認同":1,"認同":3,"普通":9,"不太認同":0,"完全不認同":0},"noexp":{"完全認同":4,"認同":6,"普通":15,"不太認同":2,"完全不認同":1}},"q5":{"all":{"經常":7,"偶爾":6,"好像有":11,"完全沒有":17},"exp":{"經常":2,"偶爾":4,"好像有":3,"完全沒有":4},"noexp":{"經常":5,"偶爾":2,"好像有":8,"完全沒有":13}},"q6":{"all":{"經常":4,"偶爾":6,"好像有":7,"完全沒有":24},"exp":{"經常":2,"偶爾":4,"好像有":3,"完全沒有":4},"noexp":{"經常":2,"偶爾":2,"好像有":4,"完全沒有":20}}},{"code":"D02","name":"精油按摩乳","hasQ7":true,"q7yes":[{"name":"吳筱婷","unit":"店長/督導","exp":true},{"name":"卡洛","unit":"儲備幹部","exp":false},{"name":"陳奕璇","unit":"219三樓","exp":true},{"name":"黃毓涵","unit":"219三樓","exp":false},{"name":"許書慈","unit":"247設計團隊","exp":false},{"name":"蔡依庭","unit":"219三樓","exp":false},{"name":"王舜慧","unit":"219三樓","exp":false},{"name":"蕭翊珊","unit":"219二樓品管","exp":false},{"name":"賴芓妘","unit":"219三樓","exp":true},{"name":"王怡萱","unit":"219二樓品管","exp":true},{"name":"林潔茹","unit":"219三樓","exp":true},{"name":"Danny","unit":"219三樓","exp":false},{"name":"吳承威","unit":"219三樓","exp":false},{"name":"洪彤茹","unit":"儲備幹部","exp":false},{"name":"趙心慧","unit":"247設計團隊","exp":false},{"name":"呂家婷","unit":"247設計團隊","exp":true},{"name":"翁若琦","unit":"219二樓品管","exp":false},{"name":"翁詩琦","unit":"219三樓","exp":false},{"name":"鄭人豪","unit":"247寵物團隊","exp":true},{"name":"桑妮妮","unit":"219三樓","exp":true},{"name":"朱伊云","unit":"247寵物團隊","exp":false}],"q7no":[{"name":"顏思綺Nikki","unit":"儲備幹部","exp":false},{"name":"徐渝涵","unit":"247設計團隊","exp":false},{"name":"陳玫云","unit":"247設計團隊","exp":false},{"name":"吳郁辰","unit":"247設計團隊","exp":false},{"name":"陳沛璟","unit":"247寵物團隊","exp":false},{"name":"Ivan","unit":"219三樓","exp":false},{"name":"何長芳","unit":"247寵物團隊","exp":true},{"name":"欣澐","unit":"247寵物團隊","exp":false},{"name":"Nancy","unit":"219三樓","exp":false},{"name":"zona","unit":"219三樓","exp":false},{"name":"蔡孟儒","unit":"219三樓","exp":true},{"name":"林郁熒","unit":"247設計團隊","exp":false},{"name":"吳語真","unit":"247設計團隊","exp":false},{"name":"黃玉如","unit":"219二樓品管","exp":false},{"name":"陳芊樺","unit":"219二樓品管","exp":true},{"name":"徐偉智","unit":"219二樓品管","exp":false},{"name":"陳孟岑","unit":"219二樓品管","exp":false},{"name":"安久","unit":"247寵物團隊","exp":true},{"name":"Ash","unit":"219三樓","exp":false},{"name":"Chili","unit":"219三樓","exp":true}],"q1":{"all":{"完全認同":17,"認同":18,"普通":5,"不太認同":1,"完全不認同":0},"exp":{"完全認同":4,"認同":7,"普通":2,"不太認同":0,"完全不認同":0},"noexp":{"完全認同":13,"認同":11,"普通":3,"不太認同":1,"完全不認同":0}},"q2":{"all":{"完全認同":13,"認同":15,"普通":11,"不太認同":2,"完全不認同":0},"exp":{"完全認同":4,"認同":6,"普通":3,"不太認同":0,"完全不認同":0},"noexp":{"完全認同":9,"認同":9,"普通":8,"不太認同":2,"完全不認同":0}},"q3":{"all":{"完全認同":5,"認同":20,"普通":9,"不太認同":7,"完全不認同":0},"exp":{"完全認同":1,"認同":7,"普通":3,"不太認同":2,"完全不認同":0},"noexp":{"完全認同":4,"認同":13,"普通":6,"不太認同":5,"完全不認同":0}},"q4":{"all":{"完全認同":14,"認同":21,"普通":6,"不太認同":0,"完全不認同":0},"exp":{"完全認同":3,"認同":6,"普通":4,"不太認同":0,"完全不認同":0},"noexp":{"完全認同":11,"認同":15,"普通":2,"不太認同":0,"完全不認同":0}},"q5":{"all":{"經常":3,"偶爾":6,"好像有":11,"完全沒有":21},"exp":{"經常":1,"偶爾":1,"好像有":6,"完全沒有":5},"noexp":{"經常":2,"偶爾":5,"好像有":5,"完全沒有":16}},"q6":{"all":{"經常":3,"偶爾":4,"好像有":10,"完全沒有":24},"exp":{"經常":1,"偶爾":2,"好像有":4,"完全沒有":6},"noexp":{"經常":2,"偶爾":2,"好像有":6,"完全沒有":18}}},{"code":"D03","name":"衛蓓欣屁屁膏","hasQ7":true,"q7yes":[{"name":"許書慈","unit":"247設計團隊","exp":false},{"name":"蔡依庭","unit":"219三樓","exp":false},{"name":"王怡萱","unit":"219二樓品管","exp":true},{"name":"林潔茹","unit":"219三樓","exp":true},{"name":"吳承威","unit":"219三樓","exp":false},{"name":"蔡孟儒","unit":"219三樓","exp":true},{"name":"黃玉如","unit":"219二樓品管","exp":false},{"name":"翁若琦","unit":"219二樓品管","exp":false},{"name":"陳芊樺","unit":"219二樓品管","exp":true},{"name":"鄭人豪","unit":"247寵物團隊","exp":true},{"name":"桑妮妮","unit":"219三樓","exp":true}],"q7no":[{"name":"吳筱婷","unit":"店長/督導","exp":true},{"name":"顏思綺Nikki","unit":"儲備幹部","exp":false},{"name":"卡洛","unit":"儲備幹部","exp":false},{"name":"陳奕璇","unit":"219三樓","exp":true},{"name":"黃毓涵","unit":"219三樓","exp":false},{"name":"徐渝涵","unit":"247設計團隊","exp":false},{"name":"陳玫云","unit":"247設計團隊","exp":false},{"name":"吳郁辰","unit":"247設計團隊","exp":false},{"name":"王舜慧","unit":"219三樓","exp":false},{"name":"蕭翊珊","unit":"219二樓品管","exp":false},{"name":"賴芓妘","unit":"219三樓","exp":true},{"name":"陳沛璟","unit":"247寵物團隊","exp":false},{"name":"Ivan","unit":"219三樓","exp":false},{"name":"何長芳","unit":"247寵物團隊","exp":true},{"name":"欣澐","unit":"247寵物團隊","exp":false},{"name":"Nancy","unit":"219三樓","exp":false},{"name":"zona","unit":"219三樓","exp":false},{"name":"Danny","unit":"219三樓","exp":false},{"name":"洪彤茹","unit":"儲備幹部","exp":false},{"name":"林郁熒","unit":"247設計團隊","exp":false},{"name":"吳語真","unit":"247設計團隊","exp":false},{"name":"趙心慧","unit":"247設計團隊","exp":false},{"name":"呂家婷","unit":"247設計團隊","exp":true},{"name":"徐偉智","unit":"219二樓品管","exp":false},{"name":"翁詩琦","unit":"219三樓","exp":false},{"name":"陳孟岑","unit":"219二樓品管","exp":false},{"name":"安久","unit":"247寵物團隊","exp":true},{"name":"朱伊云","unit":"247寵物團隊","exp":false},{"name":"Ash","unit":"219三樓","exp":false},{"name":"Chili","unit":"219三樓","exp":true}],"q1":{"all":{"完全認同":24,"認同":13,"普通":4,"不太認同":0,"完全不認同":0},"exp":{"完全認同":10,"認同":2,"普通":1,"不太認同":0,"完全不認同":0},"noexp":{"完全認同":14,"認同":11,"普通":3,"不太認同":0,"完全不認同":0}},"q2":{"all":{"完全認同":20,"認同":18,"普通":3,"不太認同":0,"完全不認同":0},"exp":{"完全認同":8,"認同":5,"普通":0,"不太認同":0,"完全不認同":0},"noexp":{"完全認同":12,"認同":13,"普通":3,"不太認同":0,"完全不認同":0}},"q3":{"all":{"完全認同":22,"認同":18,"普通":1,"不太認同":0,"完全不認同":0},"exp":{"完全認同":10,"認同":3,"普通":0,"不太認同":0,"完全不認同":0},"noexp":{"完全認同":12,"認同":15,"普通":1,"不太認同":0,"完全不認同":0}},"q4":{"all":{"完全認同":12,"認同":13,"普通":15,"不太認同":1,"完全不認同":0},"exp":{"完全認同":7,"認同":2,"普通":4,"不太認同":0,"完全不認同":0},"noexp":{"完全認同":5,"認同":11,"普通":11,"不太認同":1,"完全不認同":0}},"q5":{"all":{"經常":14,"偶爾":3,"好像有":6,"完全沒有":18},"exp":{"經常":10,"偶爾":0,"好像有":1,"完全沒有":2},"noexp":{"經常":4,"偶爾":3,"好像有":5,"完全沒有":16}},"q6":{"all":{"經常":12,"偶爾":4,"好像有":2,"完全沒有":23},"exp":{"經常":9,"偶爾":1,"好像有":1,"完全沒有":2},"noexp":{"經常":3,"偶爾":3,"好像有":1,"完全沒有":21}}},{"code":"D04","name":"嬰兒防曬乳","hasQ7":false,"q7yes":[],"q7no":[],"q1":{"all":{"完全認同":16,"認同":19,"普通":5,"不太認同":1,"完全不認同":0},"exp":{"完全認同":6,"認同":6,"普通":1,"不太認同":0,"完全不認同":0},"noexp":{"完全認同":10,"認同":13,"普通":4,"不太認同":1,"完全不認同":0}},"q2":{"all":{"完全認同":17,"認同":17,"普通":6,"不太認同":1,"完全不認同":0},"exp":{"完全認同":6,"認同":6,"普通":1,"不太認同":0,"完全不認同":0},"noexp":{"完全認同":11,"認同":11,"普通":5,"不太認同":1,"完全不認同":0}},"q3":{"all":{"完全認同":11,"認同":22,"普通":7,"不太認同":1,"完全不認同":0},"exp":{"完全認同":5,"認同":5,"普通":2,"不太認同":1,"完全不認同":0},"noexp":{"完全認同":6,"認同":17,"普通":5,"不太認同":0,"完全不認同":0}},"q4":{"all":{"完全認同":7,"認同":20,"普通":13,"不太認同":1,"完全不認同":0},"exp":{"完全認同":4,"認同":5,"普通":4,"不太認同":0,"完全不認同":0},"noexp":{"完全認同":3,"認同":15,"普通":9,"不太認同":1,"完全不認同":0}},"q5":{"all":{"經常":5,"偶爾":9,"好像有":8,"完全沒有":19},"exp":{"經常":3,"偶爾":6,"好像有":1,"完全沒有":3},"noexp":{"經常":2,"偶爾":3,"好像有":7,"完全沒有":16}},"q6":{"all":{"經常":4,"偶爾":9,"好像有":5,"完全沒有":23},"exp":{"經常":2,"偶爾":7,"好像有":1,"完全沒有":3},"noexp":{"經常":2,"偶爾":2,"好像有":4,"完全沒有":20}}},{"code":"D05","name":"寶寶防蚊噴霧","hasQ7":false,"q7yes":[],"q7no":[],"q1":{"all":{"完全認同":13,"認同":18,"普通":9,"不太認同":1,"完全不認同":0},"exp":{"完全認同":3,"認同":6,"普通":3,"不太認同":1,"完全不認同":0},"noexp":{"完全認同":10,"認同":12,"普通":6,"不太認同":0,"完全不認同":0}},"q2":{"all":{"完全認同":13,"認同":19,"普通":8,"不太認同":1,"完全不認同":0},"exp":{"完全認同":3,"認同":6,"普通":3,"不太認同":1,"完全不認同":0},"noexp":{"完全認同":10,"認同":13,"普通":5,"不太認同":0,"完全不認同":0}},"q3":{"all":{"完全認同":8,"認同":16,"普通":10,"不太認同":7,"完全不認同":0},"exp":{"完全認同":3,"認同":3,"普通":3,"不太認同":4,"完全不認同":0},"noexp":{"完全認同":5,"認同":13,"普通":7,"不太認同":3,"完全不認同":0}},"q4":{"all":{"完全認同":11,"認同":16,"普通":13,"不太認同":1,"完全不認同":0},"exp":{"完全認同":2,"認同":2,"普通":8,"不太認同":1,"完全不認同":0},"noexp":{"完全認同":9,"認同":14,"普通":5,"不太認同":0,"完全不認同":0}},"q5":{"all":{"經常":5,"偶爾":6,"好像有":2,"完全沒有":28},"exp":{"經常":1,"偶爾":2,"好像有":0,"完全沒有":10},"noexp":{"經常":4,"偶爾":4,"好像有":2,"完全沒有":18}},"q6":{"all":{"經常":3,"偶爾":6,"好像有":4,"完全沒有":28},"exp":{"經常":1,"偶爾":2,"好像有":0,"完全沒有":10},"noexp":{"經常":2,"偶爾":4,"好像有":4,"完全沒有":18}}},{"code":"D06","name":"掰掰小黑蚊","hasQ7":true,"q7yes":[{"name":"許書慈","unit":"247設計團隊","exp":false},{"name":"蔡依庭","unit":"219三樓","exp":false},{"name":"王舜慧","unit":"219三樓","exp":false},{"name":"蕭翊珊","unit":"219二樓品管","exp":false},{"name":"賴芓妘","unit":"219三樓","exp":true},{"name":"王怡萱","unit":"219二樓品管","exp":true},{"name":"zona","unit":"219三樓","exp":false},{"name":"林潔茹","unit":"219三樓","exp":true},{"name":"吳承威","unit":"219三樓","exp":false},{"name":"洪彤茹","unit":"儲備幹部","exp":false},{"name":"蔡孟儒","unit":"219三樓","exp":true},{"name":"趙心慧","unit":"247設計團隊","exp":false},{"name":"呂家婷","unit":"247設計團隊","exp":true},{"name":"翁若琦","unit":"219二樓品管","exp":false},{"name":"陳芊樺","unit":"219二樓品管","exp":true},{"name":"鄭人豪","unit":"247寵物團隊","exp":true}],"q7no":[{"name":"吳筱婷","unit":"店長/督導","exp":true},{"name":"顏思綺Nikki","unit":"儲備幹部","exp":false},{"name":"卡洛","unit":"儲備幹部","exp":false},{"name":"陳奕璇","unit":"219三樓","exp":true},{"name":"黃毓涵","unit":"219三樓","exp":false},{"name":"徐渝涵","unit":"247設計團隊","exp":false},{"name":"陳玫云","unit":"247設計團隊","exp":false},{"name":"吳郁辰","unit":"247設計團隊","exp":false},{"name":"陳沛璟","unit":"247寵物團隊","exp":false},{"name":"Ivan","unit":"219三樓","exp":false},{"name":"何長芳","unit":"247寵物團隊","exp":true},{"name":"欣澐","unit":"247寵物團隊","exp":false},{"name":"Nancy","unit":"219三樓","exp":false},{"name":"Danny","unit":"219三樓","exp":false},{"name":"林郁熒","unit":"247設計團隊","exp":false},{"name":"吳語真","unit":"247設計團隊","exp":false},{"name":"黃玉如","unit":"219二樓品管","exp":false},{"name":"徐偉智","unit":"219二樓品管","exp":false},{"name":"翁詩琦","unit":"219三樓","exp":false},{"name":"陳孟岑","unit":"219二樓品管","exp":false},{"name":"安久","unit":"247寵物團隊","exp":true},{"name":"桑妮妮","unit":"219三樓","exp":true},{"name":"朱伊云","unit":"247寵物團隊","exp":false},{"name":"Ash","unit":"219三樓","exp":false},{"name":"Chili","unit":"219三樓","exp":true}],"q1":{"all":{"完全認同":13,"認同":17,"普通":10,"不太認同":1,"完全不認同":0},"exp":{"完全認同":3,"認同":5,"普通":5,"不太認同":0,"完全不認同":0},"noexp":{"完全認同":10,"認同":12,"普通":5,"不太認同":1,"完全不認同":0}},"q2":{"all":{"完全認同":15,"認同":17,"普通":7,"不太認同":2,"完全不認同":0},"exp":{"完全認同":4,"認同":4,"普通":4,"不太認同":1,"完全不認同":0},"noexp":{"完全認同":11,"認同":13,"普通":3,"不太認同":1,"完全不認同":0}},"q3":{"all":{"完全認同":10,"認同":19,"普通":8,"不太認同":4,"完全不認同":0},"exp":{"完全認同":3,"認同":3,"普通":5,"不太認同":2,"完全不認同":0},"noexp":{"完全認同":7,"認同":16,"普通":3,"不太認同":2,"完全不認同":0}},"q4":{"all":{"完全認同":9,"認同":18,"普通":12,"不太認同":2,"完全不認同":0},"exp":{"完全認同":1,"認同":6,"普通":6,"不太認同":0,"完全不認同":0},"noexp":{"完全認同":8,"認同":12,"普通":6,"不太認同":2,"完全不認同":0}},"q5":{"all":{"經常":8,"偶爾":8,"好像有":9,"完全沒有":16},"exp":{"經常":5,"偶爾":3,"好像有":3,"完全沒有":2},"noexp":{"經常":3,"偶爾":5,"好像有":6,"完全沒有":14}},"q6":{"all":{"經常":7,"偶爾":9,"好像有":10,"完全沒有":15},"exp":{"經常":6,"偶爾":4,"好像有":1,"完全沒有":2},"noexp":{"經常":1,"偶爾":5,"好像有":9,"完全沒有":13}}},{"code":"D07","name":"嬰兒柔濕巾","hasQ7":false,"q7yes":[],"q7no":[],"q1":{"all":{"完全認同":31,"認同":9,"普通":1,"不太認同":0,"完全不認同":0},"exp":{"完全認同":12,"認同":1,"普通":0,"不太認同":0,"完全不認同":0},"noexp":{"完全認同":19,"認同":8,"普通":1,"不太認同":0,"完全不認同":0}},"q2":{"all":{"完全認同":31,"認同":9,"普通":1,"不太認同":0,"完全不認同":0},"exp":{"完全認同":11,"認同":2,"普通":0,"不太認同":0,"完全不認同":0},"noexp":{"完全認同":20,"認同":7,"普通":1,"不太認同":0,"完全不認同":0}},"q3":{"all":{"完全認同":19,"認同":15,"普通":3,"不太認同":4,"完全不認同":0},"exp":{"完全認同":7,"認同":3,"普通":1,"不太認同":2,"完全不認同":0},"noexp":{"完全認同":12,"認同":12,"普通":2,"不太認同":2,"完全不認同":0}},"q4":{"all":{"完全認同":15,"認同":12,"普通":10,"不太認同":4,"完全不認同":0},"exp":{"完全認同":6,"認同":3,"普通":3,"不太認同":1,"完全不認同":0},"noexp":{"完全認同":9,"認同":9,"普通":7,"不太認同":3,"完全不認同":0}},"q5":{"all":{"經常":17,"偶爾":7,"好像有":6,"完全沒有":11},"exp":{"經常":8,"偶爾":3,"好像有":0,"完全沒有":2},"noexp":{"經常":9,"偶爾":4,"好像有":6,"完全沒有":9}},"q6":{"all":{"經常":15,"偶爾":7,"好像有":8,"完全沒有":11},"exp":{"經常":8,"偶爾":2,"好像有":2,"完全沒有":1},"noexp":{"經常":7,"偶爾":5,"好像有":6,"完全沒有":10}}},{"code":"D08","name":"口手濕紙巾","hasQ7":true,"q7yes":[{"name":"吳筱婷","unit":"店長/督導","exp":true},{"name":"卡洛","unit":"儲備幹部","exp":false},{"name":"許書慈","unit":"247設計團隊","exp":false},{"name":"吳郁辰","unit":"247設計團隊","exp":false},{"name":"蔡依庭","unit":"219三樓","exp":false},{"name":"王舜慧","unit":"219三樓","exp":false},{"name":"王怡萱","unit":"219二樓品管","exp":true},{"name":"林潔茹","unit":"219三樓","exp":true},{"name":"吳承威","unit":"219三樓","exp":false},{"name":"洪彤茹","unit":"儲備幹部","exp":false},{"name":"蔡孟儒","unit":"219三樓","exp":true},{"name":"趙心慧","unit":"247設計團隊","exp":false},{"name":"翁若琦","unit":"219二樓品管","exp":false},{"name":"陳孟岑","unit":"219二樓品管","exp":false},{"name":"桑妮妮","unit":"219三樓","exp":true}],"q7no":[{"name":"顏思綺Nikki","unit":"儲備幹部","exp":false},{"name":"陳奕璇","unit":"219三樓","exp":true},{"name":"黃毓涵","unit":"219三樓","exp":false},{"name":"徐渝涵","unit":"247設計團隊","exp":false},{"name":"陳玫云","unit":"247設計團隊","exp":false},{"name":"蕭翊珊","unit":"219二樓品管","exp":false},{"name":"賴芓妘","unit":"219三樓","exp":true},{"name":"陳沛璟","unit":"247寵物團隊","exp":false},{"name":"Ivan","unit":"219三樓","exp":false},{"name":"何長芳","unit":"247寵物團隊","exp":true},{"name":"欣澐","unit":"247寵物團隊","exp":false},{"name":"Nancy","unit":"219三樓","exp":false},{"name":"zona","unit":"219三樓","exp":false},{"name":"Danny","unit":"219三樓","exp":false},{"name":"林郁熒","unit":"247設計團隊","exp":false},{"name":"吳語真","unit":"247設計團隊","exp":false},{"name":"呂家婷","unit":"247設計團隊","exp":true},{"name":"黃玉如","unit":"219二樓品管","exp":false},{"name":"陳芊樺","unit":"219二樓品管","exp":true},{"name":"徐偉智","unit":"219二樓品管","exp":false},{"name":"翁詩琦","unit":"219三樓","exp":false},{"name":"安久","unit":"247寵物團隊","exp":true},{"name":"鄭人豪","unit":"247寵物團隊","exp":true},{"name":"朱伊云","unit":"247寵物團隊","exp":false},{"name":"Ash","unit":"219三樓","exp":false},{"name":"Chili","unit":"219三樓","exp":true}],"q1":{"all":{"完全認同":12,"認同":12,"普通":11,"不太認同":6,"完全不認同":0},"exp":{"完全認同":3,"認同":4,"普通":4,"不太認同":2,"完全不認同":0},"noexp":{"完全認同":9,"認同":8,"普通":7,"不太認同":4,"完全不認同":0}},"q2":{"all":{"完全認同":11,"認同":14,"普通":11,"不太認同":5,"完全不認同":0},"exp":{"完全認同":3,"認同":3,"普通":5,"不太認同":2,"完全不認同":0},"noexp":{"完全認同":8,"認同":11,"普通":6,"不太認同":3,"完全不認同":0}},"q3":{"all":{"完全認同":5,"認同":10,"普通":14,"不太認同":9,"完全不認同":3},"exp":{"完全認同":2,"認同":2,"普通":2,"不太認同":7,"完全不認同":0},"noexp":{"完全認同":3,"認同":8,"普通":12,"不太認同":2,"完全不認同":3}},"q4":{"all":{"完全認同":11,"認同":15,"普通":13,"不太認同":2,"完全不認同":0},"exp":{"完全認同":2,"認同":5,"普通":6,"不太認同":0,"完全不認同":0},"noexp":{"完全認同":9,"認同":10,"普通":7,"不太認同":2,"完全不認同":0}},"q5":{"all":{"經常":5,"偶爾":5,"好像有":4,"完全沒有":27},"exp":{"經常":2,"偶爾":3,"好像有":0,"完全沒有":8},"noexp":{"經常":3,"偶爾":2,"好像有":4,"完全沒有":19}},"q6":{"all":{"經常":5,"偶爾":4,"好像有":5,"完全沒有":27},"exp":{"經常":2,"偶爾":3,"好像有":0,"完全沒有":8},"noexp":{"經常":3,"偶爾":1,"好像有":5,"完全沒有":19}}},{"code":"D09","name":"抗菌濕紙巾","hasQ7":true,"q7yes":[{"name":"吳筱婷","unit":"店長/督導","exp":true},{"name":"卡洛","unit":"儲備幹部","exp":false},{"name":"許書慈","unit":"247設計團隊","exp":false},{"name":"吳郁辰","unit":"247設計團隊","exp":false},{"name":"蔡依庭","unit":"219三樓","exp":false},{"name":"王舜慧","unit":"219三樓","exp":false},{"name":"王怡萱","unit":"219二樓品管","exp":true},{"name":"zona","unit":"219三樓","exp":false},{"name":"林潔茹","unit":"219三樓","exp":true},{"name":"Danny","unit":"219三樓","exp":false},{"name":"洪彤茹","unit":"儲備幹部","exp":false},{"name":"蔡孟儒","unit":"219三樓","exp":true},{"name":"趙心慧","unit":"247設計團隊","exp":false},{"name":"黃玉如","unit":"219二樓品管","exp":false},{"name":"翁若琦","unit":"219二樓品管","exp":false},{"name":"陳孟岑","unit":"219二樓品管","exp":false},{"name":"鄭人豪","unit":"247寵物團隊","exp":true},{"name":"桑妮妮","unit":"219三樓","exp":true},{"name":"Chili","unit":"219三樓","exp":true}],"q7no":[{"name":"顏思綺Nikki","unit":"儲備幹部","exp":false},{"name":"陳奕璇","unit":"219三樓","exp":true},{"name":"黃毓涵","unit":"219三樓","exp":false},{"name":"徐渝涵","unit":"247設計團隊","exp":false},{"name":"陳玫云","unit":"247設計團隊","exp":false},{"name":"蕭翊珊","unit":"219二樓品管","exp":false},{"name":"賴芓妘","unit":"219三樓","exp":true},{"name":"陳沛璟","unit":"247寵物團隊","exp":false},{"name":"Ivan","unit":"219三樓","exp":false},{"name":"何長芳","unit":"247寵物團隊","exp":true},{"name":"欣澐","unit":"247寵物團隊","exp":false},{"name":"Nancy","unit":"219三樓","exp":false},{"name":"吳承威","unit":"219三樓","exp":false},{"name":"林郁熒","unit":"247設計團隊","exp":false},{"name":"吳語真","unit":"247設計團隊","exp":false},{"name":"呂家婷","unit":"247設計團隊","exp":true},{"name":"陳芊樺","unit":"219二樓品管","exp":true},{"name":"徐偉智","unit":"219二樓品管","exp":false},{"name":"翁詩琦","unit":"219三樓","exp":false},{"name":"安久","unit":"247寵物團隊","exp":true},{"name":"朱伊云","unit":"247寵物團隊","exp":false},{"name":"Ash","unit":"219三樓","exp":false}],"q1":{"all":{"完全認同":12,"認同":22,"普通":5,"不太認同":1,"完全不認同":1},"exp":{"完全認同":3,"認同":6,"普通":4,"不太認同":0,"完全不認同":0},"noexp":{"完全認同":9,"認同":16,"普通":1,"不太認同":1,"完全不認同":1}},"q2":{"all":{"完全認同":12,"認同":20,"普通":8,"不太認同":0,"完全不認同":1},"exp":{"完全認同":3,"認同":6,"普通":4,"不太認同":0,"完全不認同":0},"noexp":{"完全認同":9,"認同":14,"普通":4,"不太認同":0,"完全不認同":1}},"q3":{"all":{"完全認同":5,"認同":12,"普通":11,"不太認同":11,"完全不認同":2},"exp":{"完全認同":1,"認同":3,"普通":4,"不太認同":5,"完全不認同":0},"noexp":{"完全認同":4,"認同":9,"普通":7,"不太認同":6,"完全不認同":2}},"q4":{"all":{"完全認同":7,"認同":17,"普通":14,"不太認同":3,"完全不認同":0},"exp":{"完全認同":1,"認同":8,"普通":4,"不太認同":0,"完全不認同":0},"noexp":{"完全認同":6,"認同":9,"普通":10,"不太認同":3,"完全不認同":0}},"q5":{"all":{"經常":4,"偶爾":4,"好像有":6,"完全沒有":27},"exp":{"經常":2,"偶爾":1,"好像有":2,"完全沒有":8},"noexp":{"經常":2,"偶爾":3,"好像有":4,"完全沒有":19}},"q6":{"all":{"經常":5,"偶爾":4,"好像有":6,"完全沒有":26},"exp":{"經常":2,"偶爾":1,"好像有":2,"完全沒有":8},"noexp":{"經常":3,"偶爾":3,"好像有":4,"完全沒有":18}}},{"code":"D10","name":"嬰兒洗衣精","hasQ7":false,"q7yes":[],"q7no":[],"q1":{"all":{"完全認同":22,"認同":17,"普通":1,"不太認同":1,"完全不認同":0},"exp":{"完全認同":8,"認同":5,"普通":0,"不太認同":0,"完全不認同":0},"noexp":{"完全認同":14,"認同":12,"普通":1,"不太認同":1,"完全不認同":0}},"q2":{"all":{"完全認同":22,"認同":17,"普通":1,"不太認同":1,"完全不認同":0},"exp":{"完全認同":8,"認同":5,"普通":0,"不太認同":0,"完全不認同":0},"noexp":{"完全認同":14,"認同":12,"普通":1,"不太認同":1,"完全不認同":0}},"q3":{"all":{"完全認同":13,"認同":18,"普通":8,"不太認同":1,"完全不認同":1},"exp":{"完全認同":5,"認同":4,"普通":4,"不太認同":0,"完全不認同":0},"noexp":{"完全認同":8,"認同":14,"普通":4,"不太認同":1,"完全不認同":1}},"q4":{"all":{"完全認同":18,"認同":20,"普通":3,"不太認同":0,"完全不認同":0},"exp":{"完全認同":6,"認同":5,"普通":2,"不太認同":0,"完全不認同":0},"noexp":{"完全認同":12,"認同":15,"普通":1,"不太認同":0,"完全不認同":0}},"q5":{"all":{"經常":4,"偶爾":8,"好像有":5,"完全沒有":24},"exp":{"經常":3,"偶爾":4,"好像有":3,"完全沒有":3},"noexp":{"經常":1,"偶爾":4,"好像有":2,"完全沒有":21}},"q6":{"all":{"經常":4,"偶爾":7,"好像有":5,"完全沒有":25},"exp":{"經常":4,"偶爾":4,"好像有":2,"完全沒有":3},"noexp":{"經常":0,"偶爾":3,"好像有":3,"完全沒有":22}}}];
+const RESP_ALL=[{"name":"吳筱婷","unit":"店長/督導","gender":"生理女","exp":true,"children_info":"2位公主  13y 11y","q7yes":["B01","B02","B03","B07","D02","D08","D09"]},{"name":"顏思綺Nikki","unit":"儲備幹部","gender":"生理女","exp":false,"children_info":"","q7yes":[]},{"name":"卡洛","unit":"儲備幹部","gender":"生理女","exp":false,"children_info":"","q7yes":["B06","D02","D08","D09"]},{"name":"陳奕璇","unit":"219三樓","gender":"生理女","exp":true,"children_info":"","q7yes":["D02"]},{"name":"黃毓涵","unit":"219三樓","gender":"生理女","exp":false,"children_info":"","q7yes":["B07","D02"]},{"name":"徐渝涵","unit":"247設計團隊","gender":"生理女","exp":false,"children_info":"","q7yes":[]},{"name":"許書慈","unit":"247設計團隊","gender":"生理女","exp":false,"children_info":"","q7yes":["B01","B02","B03","B04","B05","B06","B07","B09","C02","D01","D02","D03","D06","D08","D09"]},{"name":"陳玫云","unit":"247設計團隊","gender":"生理女","exp":false,"children_info":"","q7yes":[]},{"name":"吳郁辰","unit":"247設計團隊","gender":"生理女","exp":false,"children_info":"","q7yes":["D08","D09"]},{"name":"蔡依庭","unit":"219三樓","gender":"生理女","exp":false,"children_info":"","q7yes":["B01","B02","B03","B04","B05","B06","B07","B09","C02","D01","D02","D03","D06","D08","D09"]},{"name":"王舜慧","unit":"219三樓","gender":"生理女","exp":false,"children_info":"","q7yes":["B01","B02","B03","B04","B05","B06","B07","B09","C02","D01","D02","D06","D08","D09"]},{"name":"蕭翊珊","unit":"219二樓品管","gender":"生理女","exp":false,"children_info":"","q7yes":["D02","D06"]},{"name":"賴芓妘","unit":"219三樓","gender":"生理女","exp":true,"children_info":"","q7yes":["B01","B02","B03","B04","B05","B06","B07","B09","D02","D06"]},{"name":"王怡萱","unit":"219二樓品管","gender":"生理女","exp":true,"children_info":"","q7yes":["B01","B02","B03","B04","B05","B06","B07","B09","C02","D01","D02","D03","D06","D08","D09"]},{"name":"陳沛璟","unit":"247寵物團隊","gender":"生理女","exp":false,"children_info":"","q7yes":[]},{"name":"Ivan","unit":"219三樓","gender":"生理男","exp":false,"children_info":"","q7yes":[]},{"name":"何長芳","unit":"247寵物團隊","gender":"生理女","exp":true,"children_info":"","q7yes":[]},{"name":"欣澐","unit":"247寵物團隊","gender":"生理女","exp":false,"children_info":"","q7yes":[]},{"name":"Nancy","unit":"219三樓","gender":"生理女","exp":false,"children_info":"","q7yes":[]},{"name":"zona","unit":"219三樓","gender":"生理女","exp":false,"children_info":"","q7yes":["D06","D09"]},{"name":"林潔茹","unit":"219三樓","gender":"生理女","exp":true,"children_info":"","q7yes":["D01","D02","D03","D06","D08","D09","C02","B01","B02","B03","B04","B05","B06","B07","B09"]},{"name":"Danny","unit":"219三樓","gender":"生理男","exp":false,"children_info":"","q7yes":["D02","D09","C02","B01","B02","B03","B09"]},{"name":"吳承威","unit":"219三樓","gender":"生理男","exp":false,"children_info":"","q7yes":["D01","D02","D03","D06","D08","C02","B01","B02","B03","B06","B07"]},{"name":"洪彤茹","unit":"儲備幹部","gender":"生理女","exp":false,"children_info":"","q7yes":["D02","D06","D08","D09","B06","B07"]},{"name":"蔡孟儒","unit":"219三樓","gender":"生理男","exp":true,"children_info":"沒有小孩","q7yes":["D01","D03","D06","D08","D09","C02","B01","B02","B09"]},{"name":"林郁熒","unit":"247設計團隊","gender":"生理女","exp":false,"children_info":"","q7yes":[]},{"name":"吳語真","unit":"247設計團隊","gender":"生理女","exp":false,"children_info":"","q7yes":[]},{"name":"趙心慧","unit":"247設計團隊","gender":"生理女","exp":false,"children_info":"","q7yes":["D01","D02","D06","D08","D09","B01","B02","B03","B04","B05","B06","B07"]},{"name":"呂家婷","unit":"247設計團隊","gender":"生理女","exp":true,"children_info":"","q7yes":["D02","D06"]},{"name":"黃玉如","unit":"219二樓品管","gender":"生理女","exp":false,"children_info":"","q7yes":["D01","D03","D09","B01","B02","B03","B04","B05","B06","B07","B09"]},{"name":"翁若琦","unit":"219二樓品管","gender":"生理女","exp":false,"children_info":"","q7yes":["D01","D02","D03","D06","D08","D09","C02","B07"]},{"name":"陳芊樺","unit":"219二樓品管","gender":"生理女","exp":true,"children_info":"3歲女 5歲男","q7yes":["D01","D03","D06","C02"]},{"name":"徐偉智","unit":"219二樓品管","gender":"生理男","exp":false,"children_info":"","q7yes":[]},{"name":"翁詩琦","unit":"219三樓","gender":"生理女","exp":false,"children_info":"","q7yes":["D01","D02","B06","B07","B09"]},{"name":"陳孟岑","unit":"219二樓品管","gender":"生理女","exp":false,"children_info":"","q7yes":["D08","D09","B01","B02","B03","B04","B05","B06","B07","B09"]},{"name":"安久","unit":"247寵物團隊","gender":"生理女","exp":true,"children_info":"","q7yes":["D01","C02","B01","B02","B03","B06","B07","B09"]},{"name":"鄭人豪","unit":"247寵物團隊","gender":"生理男","exp":true,"children_info":"","q7yes":["D01","D02","D03","D06","D09","C02","B01","B02","B03","B04","B05","B06","B07","B09"]},{"name":"桑妮妮","unit":"219三樓","gender":"生理女","exp":true,"children_info":"一男一女 高一國一","q7yes":["D01","D02","D03","D08","D09","C02","B01","B02","B03","B04","B05","B06","B07","B09"]},{"name":"朱伊云","unit":"247寵物團隊","gender":"生理女","exp":false,"children_info":"","q7yes":["D02"]},{"name":"Ash","unit":"219三樓","gender":"生理女","exp":false,"children_info":"","q7yes":[]},{"name":"Chili","unit":"219三樓","gender":"生理女","exp":true,"children_info":"4歲男寶","q7yes":["D09","B05"]}];
+
+const O5L=['完全認同','認同','普通','不太認同','完全不認同'];
+const O4L=['經常','偶爾','好像有','完全沒有'];
+const OC={'完全認同':'#2d6a4f','認同':'#52b788','普通':'#ffd166','不太認同':'#ef9f6a','完全不認同':'#e63946','經常':'#2d6a4f','偶爾':'#52b788','好像有':'#ffd166','完全沒有':'#e63946'};
+let O5={'完全認同':5,'認同':4,'普通':3,'不太認同':2,'完全不認同':1};
+let O4={'經常':4,'偶爾':3,'好像有':2,'完全沒有':1};
+let QW={q2:35,q3:25,q4:15,q5:15,q8:10};
+let Q8S=6,Q8P={},GRP='all',EXPCODE=null,ELIMMODE='all',SCOL='rank',SDIR=-1;
+
+function getQ8(code){return Q8P[code]!==undefined?Q8P[code]:Q8S;}
+function switchPanel(i,el){
+  document.querySelectorAll('.pbody').forEach((p,j)=>p.classList.toggle('active',i===j));
+  document.querySelectorAll('.ptab').forEach((t,j)=>t.classList.toggle('active',i===j));
+  const hideTable=i===0||i===4;
+  ['toolbar','legendBar'].forEach(id=>{
+    const el2=id==='legendBar'?document.getElementById(id):document.querySelector('.'+id);
+    if(el2)el2.style.display=hideTable?'none':'';
+  });
+  const tw=document.querySelector('.table-wrap');
+  if(tw)tw.style.display=hideTable?'none':'';
+  if(i===0)renderInsights();
+  if(i===4){renderRespCards();renderAssignBoard();}
+}
+function setOpt5(o,v){O5[o]=v;renderTable();}
+function setOpt4(o,v){O4[o]=v;renderTable();}
+function setQW(q,v){
+  QW[q]=v;const t=Object.values(QW).reduce((a,b)=>a+b,0);
+  totalW.textContent=t;warnW.style.display=Math.abs(t-100)<.5?'none':'inline-flex';renderTable();
+}
+function resetOpts(){
+  O5L.forEach((o,i)=>{O5[o]=5-i;document.getElementById('ov'+i).value=5-i;});
+  O4L.forEach((o,i)=>{O4[o]=4-i;document.getElementById('o4v'+i).value=4-i;});renderTable();
+}
+function setGroup(g,btn){
+  GRP=g;document.querySelectorAll('.gbtn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');EXPCODE=null;renderTable();
+}
+function setElimMode(m){
+  ELIMMODE=m;['all','only','hide'].forEach(k=>{
+    const b=document.getElementById('btn'+k.charAt(0).toUpperCase()+k.slice(1));
+    b.classList.toggle('on',k===m);
+  });renderTable();
+}
+function clearFilters(){
+  ['ftot','fq1','fq2','fq3','fq4','fq5','fq6'].forEach(id=>{
+    const v=document.getElementById(id+'_v');if(v)v.value='';
+    const o=document.getElementById(id+'_op');if(o)o.value='gte';
+  });searchInput.value='';codeSearch.value='';renderTable();
+}
+function sortBy(col){SDIR=SCOL===col?SDIR*-1:-1;SCOL=col;renderTable();}
+function toggleLegend(){
+  const lb=document.getElementById('legendBar');lb.classList.toggle('open');
+  if(lb.classList.contains('open'))updateLegend();
+}
+
+function qAvg(c,ow){let s=0,n=0;for(const[o,v]of Object.entries(c)){if(ow[o]!==undefined){s+=ow[o]*v;n+=v;}}return n?s/n:null;}
+function norm5(a,ow){if(a===null)return null;const mx=Math.max(...Object.values(ow)),mn=Math.min(...Object.values(ow));return mx===mn?a:(a-mn)/(mx-mn)*4+1;}
+function q8n(v){return(v-1)/9*4+1;}
+function gk(){return GRP==='cross'?'all':GRP;}
+
+function calcTotal(d){
+  const g=gk();let ws=0,wt=0;
+  for(const q of['q2','q3','q4']){const w=QW[q]||0;if(!w)continue;const a=qAvg(d[q][g],O5);if(a!==null){ws+=norm5(a,O5)*w;wt+=w;}}
+  const w5=QW['q5']||0;if(w5){const a=qAvg(d['q5'][g],O4);if(a!==null){ws+=norm5(a,O4)*w5;wt+=w5;}}
+  const w8=QW['q8']||0;if(w8){ws+=q8n(getQ8(d.code))*w8;wt+=w8;}
+  return wt?ws/wt:0;
+}
+function calcTotalFor(d,grp){
+  let ws=0,wt=0;
+  for(const q of['q2','q3','q4']){const w=QW[q]||0;if(!w)continue;const a=qAvg(d[q][grp],O5);if(a!==null){ws+=norm5(a,O5)*w;wt+=w;}}
+  const w5=QW['q5']||0;if(w5){const a=qAvg(d['q5'][grp],O4);if(a!==null){ws+=norm5(a,O4)*w5;wt+=w5;}}
+  const w8=QW['q8']||0;if(w8){ws+=q8n(getQ8(d.code))*w8;wt+=w8;}
+  return wt?ws/wt:0;
+}
+function isAnquan(d){
+  const g=gk(),avg=qAvg(d['q1'][g],O5);if(avg===null||avg>=4)return false;
+  const c=d['q1'][g];let tot=0,bl=0;
+  for(const[o,v]of Object.entries(c)){tot+=v;if((O5[o]||0)<4)bl+=v;}
+  return tot&&bl/tot>=0.8;
+}
+function isZong(d){return calcTotal(d)<3;}
+function applyOp(val,op,th){
+  if(th===null||th===''||isNaN(th))return true;
+  const t=parseFloat(th);
+  return op==='gte'?val>=t:op==='gt'?val>t:op==='eq'?Math.abs(val-t)<.05:op==='lte'?val<=t:op==='lt'?val<t:true;
+}
+function gf(id){return{op:document.getElementById(id+'_op').value,v:document.getElementById(id+'_v').value};}
+
+// Round to 2dp before colour comparison to avoid floating-point display mismatch
+function sc(score){const s=Math.round(score*100)/100;return s>=4?'#2d6a4f':s>=3?'#f5a623':'#e63946';}
+function qcc(a,mx,mn){
+  if(a===null)return'#dee2e6';
+  const r=mx===mn?0:Math.round((a-mn)/(mx-mn)*1000)/1000;
+  return r>=.75?'#d8f3dc':r>=.5?'#fff3cd':'#ffc0c2';
+}
+
+function crossSummary(d){
+  const qDefs=[
+    {q:'q1',name:'Q1 安全安心',ow:O5,max:Math.max(...Object.values(O5))},
+    {q:'q2',name:'Q2 解決需求',ow:O5,max:Math.max(...Object.values(O5))},
+    {q:'q3',name:'Q3 售價購買',ow:O5,max:Math.max(...Object.values(O5))},
+    {q:'q4',name:'Q4 外觀品味',ow:O5,max:Math.max(...Object.values(O5))},
+    {q:'q5',name:'Q5 社群推薦',ow:O4,max:Math.max(...Object.values(O4))},
+    {q:'q6',name:'Q6 主動關注',ow:O4,max:Math.max(...Object.values(O4))},
+  ];
+  const diffs=qDefs.map(({q,name,ow,max})=>{
+    const aE=qAvg(d[q]['exp'],ow),aN=qAvg(d[q]['noexp'],ow);
+    return{name,aE,aN,max,diff:(aE!==null&&aN!==null)?aE-aN:null};
+  }).filter(x=>x.diff!==null);
+  if(!diffs.length)return'<p class="emp">資料不足，無法進行交叉分析。</p>';
+  const sorted=[...diffs].sort((a,b)=>Math.abs(b.diff)-Math.abs(a.diff));
+  const top=sorted[0],bot=sorted[sorted.length-1];
+  const avgAbsDiff=diffs.reduce((s,x)=>s+Math.abs(x.diff),0)/diffs.length;
+  const overall=avgAbsDiff<0.25?'整體兩組評分相近，一致性高。':avgAbsDiff>0.6?'整體兩組落差較明顯，育兒經驗可能影響評感。':'整體兩組有一定差異，值得關注。';
+  const rows=sorted.map(x=>{
+    const pct=Math.abs(x.diff)/x.max*100;
+    const clr=x.diff>0?'#52b788':'#ef9f6a';
+    return`<div class="cs-diff-row">
+      <span style="min-width:90px;font-size:10px;color:var(--sub)">${x.name}</span>
+      <span style="min-width:30px;font-size:10px;font-weight:700;color:var(--pr)">${(x.aE??0).toFixed(2)}</span>
+      <span style="font-size:10px;color:var(--sub)">有育兒</span>
+      <div style="flex:1;height:6px;background:#e9ecef;border-radius:3px;overflow:hidden">
+        <div style="width:${Math.min(pct*2,100)}%;height:100%;background:${clr};border-radius:3px"></div>
+      </div>
+      <span style="font-size:10px;color:var(--sub)">無育兒</span>
+      <span style="min-width:30px;font-size:10px;font-weight:700;color:var(--pl)">${(x.aN??0).toFixed(2)}</span>
+      <span style="min-width:38px;font-size:10px;color:${Math.abs(x.diff)>0.4?'#c0392b':'var(--sub)'}">Δ${Math.abs(x.diff).toFixed(2)}</span>
+    </div>`;
+  }).join('');
+  return`<div class="cross-summary">
+    <div class="cs-title">${SI.chart} 交叉分析摘要</div>
+    ${rows}
+    <div style="margin-top:7px;padding-top:7px;border-top:1px solid var(--border);font-size:10px;color:var(--sub)">
+      最大差異：<strong>${top.name}</strong>（${top.diff>0?'有育兒':'無育兒'}組較高，差 ${Math.abs(top.diff).toFixed(2)} 分）
+      ${sorted.length>1?`· 最小差異：<strong>${bot.name}</strong>（差 ${Math.abs(bot.diff).toFixed(2)} 分）`:''}
+      · ${overall}
+    </div>
+  </div>`;
+}
+
+function optB(c,ow,labels){
+  const tot=Object.values(c).reduce((a,b)=>a+b,0);
+  if(!tot)return'<div class="emp">無資料</div>';
+  return labels.map(o=>{const n=c[o]||0,p=tot?n/tot*100:0;
+    const sc=ow[o]!==undefined?` [${ow[o]}]`:'';
+    return`<div class="or"><div class="ol">${o}${sc}</div>
+      <div class="obw"><div class="obf" style="width:${p.toFixed(1)}%;background:${OC[o]}"></div></div>
+      <div class="opc">${p.toFixed(0)}%</div><div class="ocnt">(${n})</div></div>`;
+  }).join('');
+}
+
+function buildDet(d){
+  const g=GRP;let h='<div class="dp open"><div class="dg">';
+  const qs=[
+    {q:'q1',l:'Q1 安全安心',opts:O5L,ow:O5},
+    {q:'q2',l:'Q2 解決需求',opts:O5L,ow:O5},
+    {q:'q3',l:'Q3 售價購買',opts:O5L,ow:O5},
+    {q:'q4',l:'Q4 外觀品味',opts:O5L,ow:O5},
+    {q:'q5',l:'Q5 社群推薦',opts:O4L,ow:O4},
+    {q:'q6',l:'Q6 主動關注（不計分）',opts:O4L,ow:O4},
+  ];
+  for(const{q,l,opts,ow}of qs){
+    const mx=Math.max(...Object.values(ow));
+    if(g==='cross'){
+      const aE=qAvg(d[q]['exp'],ow),aN=qAvg(d[q]['noexp'],ow);
+      h+=`<div class="dc"><div class="dt">${l}</div><div class="cc">
+        <div class="ch"><div class="ct">${SI.baby} 有育兒 — ${aE?aE.toFixed(2):'N/A'}/${mx}</div>${optB(d[q]['exp'],ow,opts)}</div>
+        <div class="ch"><div class="ct">${SI.person||''} 無育兒 — ${aN?aN.toFixed(2):'N/A'}/${mx}</div>${optB(d[q]['noexp'],ow,opts)}</div>
+      </div></div>`;
+    }else{
+      const arr=g==='exp'?d[q]['exp']:g==='noexp'?d[q]['noexp']:d[q]['all'];
+      const a=qAvg(arr,ow);
+      h+=`<div class="dc"><div class="dt">${l}<span class="db">均分 ${a?a.toFixed(2):'N/A'}/${mx}</span></div>${optB(arr,ow,opts)}</div>`;
+    }
+  }
+  if(g==='cross'){h+=crossSummary(d);}
+  if(d.hasQ7){
+    const yesExp=d.q7yes.filter(p=>p.exp).length;
+    const yesNoExp=d.q7yes.filter(p=>!p.exp).length;
+    const yc=d.q7yes.map(p=>`<span class="q7k">${p.exp?SI.baby:''}<span>${p.name}${p.unit?' · '+p.unit:''}</span></span>`).join('');
+    const nc=d.q7no.map(p=>`<span class="q7k no">${p.exp?`<span style="font-size:10px;font-weight:800;color:#2d6a4f">${SI.baby}</span>`:''}<span>${p.name}</span></span>`).join('');
+    h+=`<div class="dc" style="grid-column:1/-1">
+      <div class="dt">${SI.doc} Q7 深入體驗意願 — 是 ${d.q7yes.length} 人 / 否 ${d.q7no.length} 人</div>
+      <div style="display:flex;gap:10px;margin-bottom:6px;font-size:10px">
+        <span style="color:var(--pr)">${SI.baby} 有育兒經驗：<strong>${yesExp}</strong></span>
+        <span style="color:var(--sub)">無育兒經驗：<strong>${yesNoExp}</strong></span>
+      </div>
+      <div style="display:flex;align-items:center;gap:4px;font-size:10px;font-weight:800;color:var(--pr);margin-bottom:3px">${SI.yes} 有意願</div>
+      <div class="q7c">${yc||'<span class="emp">無</span>'}</div>
+      <div style="display:flex;align-items:center;gap:4px;font-size:10px;font-weight:800;color:var(--sub);margin:7px 0 3px">${SI.no} 無意願</div>
+      <div class="q7c">${nc||'<span class="emp">無</span>'}</div>
+      <div class="q7legend">${SI.baby} = 有育兒經驗</div>
+    </div>`;
+  }
+  return h+'</div></div>';
+}
+
+function updateLegend(){
+  const mS5=Math.max(...Object.values(O5)),nS5=Math.min(...Object.values(O5));
+  const mS4=Math.max(...Object.values(O4)),nS4=Math.min(...Object.values(O4));
+  const sw=[['#d8f3dc','綠'],['#fff3cd','黃'],['#ffc0c2','紅']];
+  const tT=['≥4.0','≥3.0','<3.0'];
+  const q5H=(nS5+.75*(mS5-nS5)).toFixed(1),q5L=(nS5+.5*(mS5-nS5)).toFixed(1);
+  const q4H=(nS4+.75*(mS4-nS4)).toFixed(1),q4L=(nS4+.5*(mS4-nS4)).toFixed(1);
+  const q5T=[`≥${q5H}`,`≥${q5L}`,`<${q5L}`];
+  const q4T=[`≥${q4H}`,`≥${q4L}`,`<${q4L}`];
+  function lgR(t){return sw.map(([c,n],i)=>`<div class="lg-row"><div class="lg-swatch" style="background:${c}"></div>${n} ${t[i]||''}</div>`).join('');}
+  document.getElementById('lg-total').innerHTML=lgR(tT);
+  document.getElementById('lg-q5').innerHTML=lgR(q5T);
+  document.getElementById('lg-q4').innerHTML=lgR(q4T);
+}
+
+function renderInsights(){
+  const g=gk();
+  const qKeys=['q1','q2','q3','q4','q5','q6'];
+  const q5=['q1','q2','q3','q4','q5']; // scoring Qs
+  const qN={q1:'Q1 安全安心',q2:'Q2 解決需求',q3:'Q3 售價購買',q4:'Q4 外觀品味',q5:'Q5 社群推薦',q6:'Q6 主動關注'};
+  const qNS={q1:'安全安心',q2:'解決需求',q3:'售價購買',q4:'外觀品味',q5:'社群推薦',q6:'主動關注'};
+  const qOW={q1:O5,q2:O5,q3:O5,q4:O5,q5:O4,q6:O4};
+  const qMx={},qMn={};
+  for(const q of qKeys){qMx[q]=Math.max(...Object.values(qOW[q]));qMn[q]=Math.min(...Object.values(qOW[q]));}
+  function nr(a,q){return a!==null&&qMx[q]!==qMn[q]?(a-qMn[q])/(qMx[q]-qMn[q]):null;}
+  function qColor(r){return r>=.75?'#2d6a4f':r>=.5?'#f5a623':'#e63946';}
+
+  // Score all products
+  const scored=RAW.map(d=>{
+    const tot=calcTotal(d);
+    const a={},n={};
+    for(const q of qKeys){a[q]=qAvg(d[q][g],qOW[q]);n[q]=nr(a[q],q);}
+    return{...d,tot,a,n,aq:isAnquan(d),zt:isZong(d)};
+  }).sort((a,b)=>b.tot-a.tot);
+
+  const N=scored.length;
+  const aqCnt=scored.filter(d=>d.aq).length;
+  const ztCnt=scored.filter(d=>d.zt).length;
+  const elimCnt=aqCnt+ztCnt;
+  const greenCnt=scored.filter(d=>Math.round(d.tot*100)/100>=4).length;
+  const yelCnt=scored.filter(d=>{const s=Math.round(d.tot*100)/100;return s>=3&&s<4;}).length;
+  const redCnt=scored.filter(d=>Math.round(d.tot*100)/100<3).length;
+  const avgTotal=(scored.reduce((s,d)=>s+d.tot,0)/N).toFixed(2);
+  const grpLabel={all:'全體',exp:'有育兒',noexp:'無育兒',cross:'全體（交叉）'}[GRP];
+
+  // ── Per-Q: raw averages + tier counts ──────────────────────────────────────
+  const qData={};
+  for(const q of qKeys){
+    const vals=scored.map(d=>d.a[q]).filter(v=>v!==null);
+    const norms=scored.map(d=>d.n[q]).filter(v=>v!==null);
+    const avg=vals.reduce((a,b)=>a+b,0)/vals.length;
+    const avgNr=norms.reduce((a,b)=>a+b,0)/norms.length;
+    const grn=norms.filter(r=>r>=.75).length;
+    const yel=norms.filter(r=>r>=.5&&r<.75).length;
+    const red=norms.filter(r=>r<.5).length;
+    qData[q]={avg,avgNr,grn,yel,red};
+  }
+  const qSortedByAvg=[...qKeys].sort((a,b)=>qData[b].avgNr-qData[a].avgNr);
+
+  // Generate insight sentence per Q
+  function qInsight(q){
+    const {avg,grn,yel,red}=qData[q];
+    const hi=grn,lo=red,tot=grn+yel+red;
+    const pctHi=Math.round(hi/tot*100);
+    if(pctHi>=70) return `${pctHi}% 商品達優（≥${(qMn[q]+.75*(qMx[q]-qMn[q])).toFixed(1)}），整體表現強勢。`;
+    if(pctHi>=40) return `${pctHi}% 商品達優，中等表現，${Math.round(lo/tot*100)}% 偏低需留意。`;
+    if(lo>=hi) return `${Math.round(lo/tot*100)}% 商品評分偏低（低於門檻），為整體弱項，建議重點關注。`;
+    return `表現分散，${grn} 件優/${yel} 件中/${red} 件低。`;
+  }
+
+  // ── Exp vs Noexp comparison ─────────────────────────────────────────────────
+  const expQA={},noexpQA={};
+  for(const q of qKeys){
+    const ow=qOW[q];
+    const eV=RAW.map(d=>qAvg(d[q]['exp'],ow)).filter(v=>v!==null);
+    const nV=RAW.map(d=>qAvg(d[q]['noexp'],ow)).filter(v=>v!==null);
+    expQA[q]=eV.reduce((a,b)=>a+b,0)/eV.length;
+    noexpQA[q]=nV.reduce((a,b)=>a+b,0)/nV.length;
+  }
+  // Biggest gap Qs
+  const crossDiffs=q5.map(q=>({q,diff:expQA[q]-noexpQA[q],absD:Math.abs(expQA[q]-noexpQA[q])})).sort((a,b)=>b.absD-a.absD);
+  const topCross=crossDiffs[0];
+  const expHigher=crossDiffs.filter(x=>x.diff>0.1);
+  const noexpHigher=crossDiffs.filter(x=>x.diff<-0.1);
+  const expTotAvg=(Object.values(expQA).slice(0,5).reduce((a,b)=>a+b,0)/5).toFixed(2);
+  const noexpTotAvg=(Object.values(noexpQA).slice(0,5).reduce((a,b)=>a+b,0)/5).toFixed(2);
+
+  // ── Top 3 / Bottom 3 ────────────────────────────────────────────────────────
+  const top5=scored.slice(0,5);
+  const bot5=[...scored].slice(-5).reverse();
+  function bestQ(d){return qKeys.reduce((a,b)=>((d.n[a]??-1)>(d.n[b]??-1)?a:b));}
+  function worstQ(d){return qKeys.reduce((a,b)=>((d.n[a]??2)<(d.n[b]??2)?a:b));}
+
+  function miniScores(d){
+    return qKeys.map(q=>{
+      const r=d.n[q];const av=d.a[q];
+      const bg=r!==null?qColor(r):'#dee2e6';
+      return `<span style="display:inline-block;background:${bg};color:#fff;border-radius:3px;padding:1px 4px;font-size:10px;font-weight:700;margin:1px">${q.toUpperCase()} ${av!==null?av.toFixed(1):'—'}</span>`;
+    }).join('');
+  }
+
+  function topCard(d,rank){
+    const bq=bestQ(d);const sc_=sc(d.tot);
+    const profile=`強項 ${qNS[bq]}（${(d.a[bq]??0).toFixed(2)}/${qMx[bq]}），各維度均衡性${d.n[worstQ(d)]>=.5?'高，沒有明顯弱項':'中，弱項為'+qNS[worstQ(d)]}。`;
+    return `<div class="ins-card top">
+      <div class="ins-card-rank">#${rank}</div>
+      <div class="ins-card-name">${d.name}</div>
+      <div class="ins-card-code">${d.code}</div>
+      <div class="ins-card-score" style="color:${sc_}">${d.tot.toFixed(2)}</div>
+      <div style="margin:4px 0 5px">${miniScores(d)}</div>
+      <div class="ins-card-note">${profile}</div>
+    </div>`;
+  }
+
+  function botCard(d,rank){
+    const wq=worstQ(d);const sc_=sc(d.tot);
+    const tag=d.aq?'安全淘汰':d.zt?'總分淘汰':'低分';
+    const reason=d.aq?`Q1安全安心均分（${d.a.q1?.toFixed(2)}）偏低，且逾80%受訪者評分低於標準。`:
+      d.zt?`加權總分（${d.tot.toFixed(2)}）未達3分門檻，主要弱項為${qNS[wq]}（${(d.a[wq]??0).toFixed(2)}/${qMx[wq]}）。`:
+      `雖通過門檻（${d.tot.toFixed(2)}），相對位於後段，主要弱項為${qNS[wq]}（${(d.a[wq]??0).toFixed(2)}/${qMx[wq]}）。`;
+    return `<div class="ins-card bot">
+      <div class="ins-card-rank">#${43-rank} · ${tag}</div>
+      <div class="ins-card-name">${d.name}</div>
+      <div class="ins-card-code">${d.code}</div>
+      <div class="ins-card-score" style="color:${sc_}">${d.tot.toFixed(2)}</div>
+      <div style="margin:4px 0 5px">${miniScores(d)}</div>
+      <div class="ins-card-note">${reason}</div>
+    </div>`;
+  }
+
+  // ── Q distribution table ────────────────────────────────────────────────────
+  let qDistHtml='';
+  for(const q of qSortedByAvg){
+    const {avg,avgNr,grn,yel,red}=qData[q];
+    const clr=qColor(avgNr);
+    const pG=Math.round(grn/N*100),pY=Math.round(yel/N*100),pR=Math.round(red/N*100);
+    const ins=qInsight(q);
+    qDistHtml+=`<div style="margin-bottom:9px;padding:7px 9px;background:#fff;border:1px solid var(--border);border-radius:5px;border-left:3px solid ${clr}">
+      <div style="display:flex;align-items:center;gap:7px;margin-bottom:4px">
+        <span style="font-size:11px;font-weight:700;color:var(--text);min-width:90px">${qN[q]}</span>
+        <span style="font-size:13px;font-weight:800;color:${clr}">${avg.toFixed(2)}</span>
+        <div style="flex:1;height:6px;background:#e9ecef;border-radius:3px;overflow:hidden">
+          <div style="display:flex;height:100%">
+            <div style="width:${pG}%;background:#2d6a4f;border-radius:3px 0 0 3px"></div>
+            <div style="width:${pY}%;background:#f5a623"></div>
+            <div style="width:${pR}%;background:#e63946;border-radius:0 3px 3px 0"></div>
+          </div>
+        </div>
+        <span style="font-size:11px;white-space:nowrap;color:#2d6a4f">${pG}%</span>
+        <span style="font-size:11px;white-space:nowrap;color:#f5a623">${pY}%</span>
+        <span style="font-size:11px;white-space:nowrap;color:#e63946">${pR}%</span>
+      </div>
+      <div style="font-size:10px;color:var(--sub)">${ins}</div>
+    </div>`;
+  }
+
+  // Cross section
+  const crossSentence=topCross?`最大差異來自「${qNS[topCross.q]}」（有育兒 ${expQA[topCross.q].toFixed(2)} vs 無育兒 ${noexpQA[topCross.q].toFixed(2)}，差距 ${topCross.absD.toFixed(2)} 分）。`
+    +`${expHigher.length>noexpHigher.length?'有育兒組整體評分較嚴格':'無育兒組整體評分較寬鬆'}，`
+    +`整體均分有育兒 ${expTotAvg} vs 無育兒 ${noexpTotAvg}。`:'資料不足。';
+
+  // Cross Q bar
+  const crossBars=crossDiffs.map(({q,diff,absD})=>{
+    const pct=Math.min(absD*200,100);
+    const clr=diff>0?'#52b788':'#ef9f6a';
+    const dir=diff>0?`有育兒高 +${absD.toFixed(2)}`:`無育兒高 +${absD.toFixed(2)}`;
+    return `<div class="ins-qbar-row" style="margin-bottom:4px">
+      <div class="ins-qbar-label" style="font-size:12px">${qNS[q]}</div>
+      <div class="ins-qbar-wrap"><div class="ins-qbar-fill" style="width:${pct}%;background:${clr}"></div></div>
+      <div style="min-width:90px;font-size:12px;color:${clr};font-weight:700">${dir}</div>
+    </div>`;
+  }).join('');
+
+  // ── Respondent structure charts (donut) ─────────────────────────
+  function donutChart(v1,v2,c1,c2,lbl1,lbl2,title){
+    const R=28,CX=36,CY=36,circ=2*Math.PI*R;
+    const arc1=circ*(v1/(v1+v2));
+    const pct1=Math.round(v1/(v1+v2)*100);
+    const pct2=100-pct1;
+    return '<div style="display:flex;flex-direction:column;align-items:center;gap:4px">'
+      +'<div style="font-size:11px;font-weight:700;color:var(--sub);margin-bottom:2px">'+title+'</div>'
+      +'<svg width="72" height="72" viewBox="0 0 72 72">'
+        +'<circle cx="'+CX+'" cy="'+CY+'" r="'+R+'" fill="none" stroke="'+c2+'" stroke-width="10"/>'
+        +'<circle cx="'+CX+'" cy="'+CY+'" r="'+R+'" fill="none" stroke="'+c1+'" stroke-width="10"'
+          +' stroke-dasharray="'+arc1.toFixed(2)+' '+(circ-arc1).toFixed(2)+'"'
+          +' stroke-dashoffset="'+(circ/4).toFixed(2)+'" stroke-linecap="round"/>'
+        +'<text x="'+CX+'" y="'+(CY+1)+'" text-anchor="middle" dominant-baseline="middle" font-size="11" font-weight="700" fill="#333">'+(v1+v2)+'</text>'
+        +'<text x="'+CX+'" y="'+(CY+13)+'" text-anchor="middle" dominant-baseline="middle" font-size="10" fill="var(--sub)">人</text>'
+      +'</svg>'
+      +'<div style="display:flex;flex-direction:column;gap:2px;font-size:10px">'
+        +'<div><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:'+c1+';margin-right:4px"></span>'+lbl1+' '+v1+'人（'+pct1+'%）</div>'
+        +'<div><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:'+c2+';margin-right:4px"></span>'+lbl2+' '+v2+'人（'+pct2+'%）</div>'
+      +'</div></div>';
+  }
+  const _female=RESP_ALL.filter(r=>r.gender==='生理女').length;
+  const _male=RESP_ALL.length-_female;
+  const _expCnt=RESP_ALL.filter(r=>r.exp).length;
+  const _noexpCnt=RESP_ALL.length-_expCnt;
+  const structureCharts=donutChart(_female,_male,'#52b788','#74c0fc','生理女','生理男','性別')
+    +donutChart(_expCnt,_noexpCnt,'#b197fc','#d0ebff','有育嬰經驗','無育嬰經驗','育嬰經驗');
+  const html=`
+    <div style="display:flex;width:100%;border:1px solid var(--border);border-radius:8px;background:#fff;margin-bottom:14px;overflow:hidden">
+      <!-- Col 1: 受訪者結構 (donuts) -->
+      <div style="padding:14px 20px;flex-shrink:0;display:flex;flex-direction:column">
+        <div class="ins-title" style="margin-bottom:10px">
+          <svg width="11" height="11" viewBox="0 0 11 11" xmlns="http://www.w3.org/2000/svg"><circle cx="5.5" cy="5.5" r="5" fill="none" stroke="#2d6a4f" stroke-width="1.2"/><circle cx="5.5" cy="5.5" r="2" fill="#2d6a4f"/></svg>
+          受訪者結構
+        </div>
+        <div style="display:flex;gap:24px;align-items:flex-start">${structureCharts}</div>
+      </div>
+      <!-- Divider -->
+      <div style="width:1px;background:var(--border);flex-shrink:0;margin:10px 0"></div>
+      <!-- Col 2: 整體概況 distribution bar -->
+      <div style="padding:14px 20px;flex:1;display:flex;flex-direction:column">
+        <div class="ins-title" style="margin-bottom:10px">
+          <svg width="11" height="11" viewBox="0 0 11 11" xmlns="http://www.w3.org/2000/svg"><circle cx="5.5" cy="5.5" r="5" fill="none" stroke="var(--pr)" stroke-width="1"/><line x1="5.5" y1="2" x2="5.5" y2="5.5" stroke="var(--pr)" stroke-width="1.2" stroke-linecap="round"/><line x1="5.5" y1="5.5" x2="8" y2="7.5" stroke="var(--pr)" stroke-width="1.2" stroke-linecap="round"/></svg>
+          整體概況 · ${grpLabel}
+          <span style="font-size:10px;font-weight:400;color:var(--sub);margin-left:6px">共 ${N} 件商品</span>
+        </div>
+        <!-- Score distribution rows -->
+        <div style="display:flex;flex-direction:column;gap:10px;width:100%">
+          <div style="display:flex;align-items:center;gap:10px">
+            <span style="font-size:12px;color:#2d6a4f;font-weight:700;width:88px;flex-shrink:0">綠色（≥4.0）</span>
+            <div style="flex:1;height:12px;background:#eee;border-radius:6px;overflow:hidden">
+              <div style="width:${Math.round(greenCnt/N*100)}%;height:100%;background:#2d6a4f;border-radius:6px"></div>
+            </div>
+            <strong style="font-size:15px;color:#2d6a4f;width:30px;text-align:right;flex-shrink:0">${greenCnt}</strong>
+            <span style="font-size:12px;color:var(--sub);width:36px;flex-shrink:0">${Math.round(greenCnt/N*100)}%</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px">
+            <span style="font-size:12px;color:#c47d00;font-weight:700;width:88px;flex-shrink:0">黃色（3–4）</span>
+            <div style="flex:1;height:12px;background:#eee;border-radius:6px;overflow:hidden">
+              <div style="width:${Math.round(yelCnt/N*100)}%;height:100%;background:#f5a623;border-radius:6px"></div>
+            </div>
+            <strong style="font-size:15px;color:#f5a623;width:30px;text-align:right;flex-shrink:0">${yelCnt}</strong>
+            <span style="font-size:12px;color:var(--sub);width:36px;flex-shrink:0">${Math.round(yelCnt/N*100)}%</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px">
+            <span style="font-size:12px;color:#e63946;font-weight:700;width:88px;flex-shrink:0">紅色（＜3）</span>
+            <div style="flex:1;height:12px;background:#eee;border-radius:6px;overflow:hidden">
+              <div style="width:${Math.round(redCnt/N*100)}%;height:100%;background:#e63946;border-radius:6px"></div>
+            </div>
+            <strong style="font-size:15px;color:#e63946;width:30px;text-align:right;flex-shrink:0">${redCnt}</strong>
+            <span style="font-size:12px;color:var(--sub);width:36px;flex-shrink:0">${Math.round(redCnt/N*100)}%</span>
+          </div>
+        </div>
+      </div>
+      <!-- Divider -->
+      <div style="width:1px;background:var(--border);flex-shrink:0;margin:10px 0"></div>
+      <!-- Col 3: 淘汰概況 -->
+      <div style="padding:14px 20px;flex-shrink:0;display:flex;flex-direction:column;min-width:160px">
+        <div class="ins-title" style="margin-bottom:10px">
+          <svg width="11" height="11" viewBox="0 0 11 11" xmlns="http://www.w3.org/2000/svg"><circle cx="5.5" cy="5.5" r="5" fill="none" stroke="#888" stroke-width="1"/><line x1="3.5" y1="3.5" x2="7.5" y2="7.5" stroke="#888" stroke-width="1.2" stroke-linecap="round"/><line x1="7.5" y1="3.5" x2="3.5" y2="7.5" stroke="#888" stroke-width="1.2" stroke-linecap="round"/></svg>
+          淘汰商品
+        </div>
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <div>
+            <div style="font-size:10px;color:var(--sub);margin-bottom:2px">安全淘汰</div>
+            <strong style="font-size:22px;color:#6c757d">${aqCnt}</strong><span style="font-size:10px;color:var(--sub);margin-left:4px">件</span>
+          </div>
+          <div>
+            <div style="font-size:10px;color:var(--sub);margin-bottom:2px">總分淘汰</div>
+            <strong style="font-size:22px;color:#6c757d">${ztCnt}</strong><span style="font-size:10px;color:var(--sub);margin-left:4px">件</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="ins-section">
+      <div class="ins-title">
+        <svg width="12" height="12" viewBox="0 0 12 12" xmlns="http://www.w3.org/2000/svg"><rect x="1" y="6" width="2.5" height="5.5" fill="var(--pr)" rx="0.3"/><rect x="4.75" y="3.5" width="2.5" height="8" fill="var(--pr)" rx="0.3"/><rect x="8.5" y="1" width="2.5" height="10.5" fill="var(--pr)" rx="0.3"/></svg>
+        各評分維度分析（綠/黃/紅 為各梯次商品佔比）
+      </div>
+      ${qDistHtml}
+    </div>
+    <div class="ins-section">
+      <div class="ins-title">
+        <svg width="11" height="11" viewBox="0 0 11 11" xmlns="http://www.w3.org/2000/svg"><circle cx="3" cy="5.5" r="2" fill="#52b788"/><circle cx="8" cy="5.5" r="2" fill="#ef9f6a"/><line x1="5" y1="5.5" x2="6" y2="5.5" stroke="var(--sub)" stroke-width="1"/></svg>
+        有育兒 vs 無育兒 評分差異
+      </div>
+      <div style="font-size:10px;color:var(--sub);margin-bottom:7px;line-height:1.7">${crossSentence}</div>
+      ${crossBars}
+    </div>
+    <div class="ins-section">
+      <div class="ins-title">
+        <svg width="11" height="11" viewBox="0 0 11 11" xmlns="http://www.w3.org/2000/svg"><path d="M5.5 1L7 4.5H11L8 7l1 4-3.5-2L2 11l1-4L0 4.5h4z" fill="#2d6a4f"/></svg>
+        評分前五高
+      </div>
+      <div class="ins-grid">${top5.map((d,i)=>topCard(d,i+1)).join('')}</div>
+    </div>
+    <div class="ins-section">
+      <div class="ins-title">
+        <svg width="11" height="11" viewBox="0 0 11 11" xmlns="http://www.w3.org/2000/svg"><circle cx="5.5" cy="5.5" r="5" fill="none" stroke="#e63946" stroke-width="1"/><line x1="3.5" y1="3.5" x2="7.5" y2="7.5" stroke="#e63946" stroke-width="1.2" stroke-linecap="round"/><line x1="7.5" y1="3.5" x2="3.5" y2="7.5" stroke="#e63946" stroke-width="1.2" stroke-linecap="round"/></svg>
+        評分後五低
+      </div>
+      <div class="ins-grid">${bot5.map((d,i)=>botCard(d,i+1)).join('')}</div>
+    </div>
+  `;
+  document.getElementById('insightsBody').innerHTML=html;
+}
+
+function renderTable(){
+  const g=gk();
+  const mS5=Math.max(...Object.values(O5)),nS5=Math.min(...Object.values(O5));
+  const mS4=Math.max(...Object.values(O4)),nS4=Math.min(...Object.values(O4));
+  const search=(searchInput.value||'').toLowerCase().trim();
+  const codesearch=(codeSearch.value||'').toLowerCase().trim();
+  const ftot=gf('ftot'),fqs=[1,2,3,4,5,6].map(i=>gf('fq'+i));
+
+  // Pre-compute exp/noexp ranks
+  document.body.classList.toggle('cross-mode',GRP==='cross');
+  const expScores=Object.fromEntries(RAW.map(d=>[d.code,calcTotalFor(d,'exp')]));
+  const noexpScores=Object.fromEntries(RAW.map(d=>[d.code,calcTotalFor(d,'noexp')]));
+  const sortedExp=[...RAW].sort((a,b)=>expScores[b.code]-expScores[a.code]);
+  const sortedNoexp=[...RAW].sort((a,b)=>noexpScores[b.code]-noexpScores[a.code]);
+  const expRank=Object.fromEntries(sortedExp.map((d,i)=>[d.code,i+1]));
+  const noexpRank=Object.fromEntries(sortedNoexp.map((d,i)=>[d.code,i+1]));
+
+  let rows=RAW.map(d=>{
+    const a={q1:qAvg(d['q1'][g],O5),q2:qAvg(d['q2'][g],O5),q3:qAvg(d['q3'][g],O5),
+              q4:qAvg(d['q4'][g],O5),q5:qAvg(d['q5'][g],O4),q6:qAvg(d['q6'][g],O4)};
+    const tot=calcTotal(d),aq=isAnquan(d),zt=isZong(d),elim=aq||zt;
+    const av=[a.q1,a.q2,a.q3,a.q4,a.q5,a.q6];
+    const failsF=fqs.some(({op,v},i)=>av[i]!==null&&v!==''&&!applyOp(av[i],op,v))||
+                 (ftot.v!==''&&!applyOp(tot,ftot.op,ftot.v));
+    const nm=!search||(d.name+d.code).toLowerCase().includes(search);
+    const cm=!codesearch||d.code.toLowerCase().includes(codesearch);
+    return{...d,a,tot,aq,zt,elim,failsF,nm,cm,er:expRank[d.code],nr:noexpRank[d.code]};
+  });
+
+  rows.sort((x,y)=>{
+    let va,vb;
+    if(SCOL==='rank'||SCOL==='total'){va=x.tot;vb=y.tot;}
+    else if(SCOL==='code'){va=x.code;vb=y.code;return(va<vb?-1:va>vb?1:0)*SDIR;}
+    else if(SCOL==='q8'){va=getQ8(x.code);vb=getQ8(y.code);}
+    else if(SCOL==='er'){va=x.er??99;vb=y.er??99;return(va-vb)*SDIR;}
+    else if(SCOL==='nr'){va=x.nr??99;vb=y.nr??99;return(va-vb)*SDIR;}
+    else{va=x.a[SCOL]??-Infinity;vb=y.a[SCOL]??-Infinity;}
+    return(va-vb)*SDIR;
+  });
+
+  ['rank','code','total','q1','q2','q3','q4','q5','q6','q8','er','nr'].forEach(c=>{
+    const a=document.getElementById('arr-'+c),t=document.getElementById('th-'+c);
+    if(!a)return;
+    a.textContent=c===SCOL?(SDIR===-1?'↓':'↑'):'⇅';
+    t?.classList.toggle('sorted',c===SCOL);
+  });
+
+  const tbody=document.getElementById('tbody');tbody.innerHTML='';
+  let shown=0,aqCnt=0,ztCnt=0,rank=0;
+
+  rows.forEach(d=>{
+    if(d.aq)aqCnt++;if(d.zt)ztCnt++;
+    if(!d.nm||!d.cm||d.failsF)return;
+    if(ELIMMODE==='only'&&!d.elim)return;
+    if(ELIMMODE==='hide'&&d.elim)return;
+    if(ELIMMODE==='q7'&&!d.hasQ7)return;
+    shown++;rank++;
+
+    const sc_=sc(d.tot);
+    const tp=((d.tot-1)/4*100).toFixed(1);
+    const qcells=[
+      {a:d.a.q1,mx:mS5,mn:nS5},{a:d.a.q2,mx:mS5,mn:nS5},
+      {a:d.a.q3,mx:mS5,mn:nS5},{a:d.a.q4,mx:mS5,mn:nS5},
+      {a:d.a.q5,mx:mS4,mn:nS4},{a:d.a.q6,mx:mS4,mn:nS4},
+    ].map(({a,mx,mn})=>`<td class="qcell"><span class="qv" style="background:${qcc(a,mx,mn)}">${a!==null?a.toFixed(1):'-'}</span></td>`).join('');
+
+    const q8val=getQ8(d.code);
+    const q8bg=qcc(q8n(q8val),5,1);
+    const q8html=`<td class="q8cell" onclick="event.stopPropagation()"><input type="number" class="q8in" min="1" max="10" step="0.5" value="${q8val.toFixed(1)}" style="background:${q8bg}" data-code="${d.code}" onchange="Q8P[this.dataset.code]=+this.value;renderTable()" title="廠商合作分數（1–10）"></td>`;
+
+    let bh='';
+    if(d.aq||d.zt)bh=`<span class="badge ztai">淘汰</span>`;
+    else bh=`<span class="badge pass">過關</span>`;
+
+    const isExp=EXPCODE===d.code;
+    const tr=document.createElement('tr');
+    let cls='prow'+(isExp?' expanded':'');
+    if(d.elim)cls+=' elim-row';
+    tr.className=cls;tr.dataset.code=d.code;
+    const isCross=GRP==='cross';
+      const erD=isCross?d.er:null;
+      const nrD=isCross?d.nr:null;
+
+      const crossCols=isCross?`<td class="rank er-col" style="font-size:12px;color:#333">${d.er}</td><td class="rank nr-col" style="font-size:12px;color:#333">${d.nr}</td>`:'<td class="er-col"></td><td class="nr-col"></td>';
+      tr.innerHTML=`<td class="rank">${rank}</td><td class="code">${d.code}</td>
+      <td class="pname">${d.name}</td>
+      <td class="sc-cell"><div class="sw"><div class="sb"><div class="sbf" style="width:${tp}%;background:${sc_}"></div></div>
+        <div class="sp" style="color:${sc_}">${d.tot.toFixed(2)}</div></div></td>
+      ${qcells}${crossCols}${q8html}
+      <td class="bdcell">${bh}</td>
+      <td class="xbtn">${isExp?'▲':'▼'}</td>`;
+    tr.addEventListener('click',()=>{EXPCODE=EXPCODE===d.code?null:d.code;renderTable();
+      if(EXPCODE===d.code)setTimeout(()=>document.querySelector(`tr[data-code="${d.code}"]`)?.scrollIntoView({behavior:'smooth',block:'nearest'}),50);
+    });
+    tbody.appendChild(tr);
+    const dtr=document.createElement('tr');dtr.className='dtr';
+    const dtd=document.createElement('td');dtd.colSpan=13;
+    dtd.innerHTML=isExp?buildDet(d):'<div class="dp"></div>';
+    dtr.appendChild(dtd);tbody.appendChild(dtr);
+  });
+
+  const gl={all:'全體',exp:'有育兒',noexp:'無育兒',cross:'交叉比較'}[GRP];
+  summaryBar.innerHTML=`<strong>${gl}</strong> · 顯示 <strong>${shown}</strong>/42 · ${SI.anq} 安全淘汰 <strong>${aqCnt}</strong> · ${SI.zt} 總分淘汰 <strong>${ztCnt}</strong>`;
+  const te=aqCnt+ztCnt;
+  const echip=document.getElementById('echip');
+  if(te){echip.style.display='inline';echip.innerHTML=`淘汰 ${te} 件`;}
+  else{echip.style.display='none';}
+  if(document.getElementById('legendBar').classList.contains('open'))updateLegend();
+  if(document.getElementById('p3').classList.contains('active'))renderInsights();
+}
+function exp(code){EXPCODE=EXPCODE===code?null:code;renderTable();
+  if(EXPCODE===code)setTimeout(()=>document.querySelector(`tr[data-code="${code}"]`)?.scrollIntoView({behavior:'smooth',block:'nearest'}),50);
+}
+renderTable();
+renderInsights();
+
+let RESP_FILTER='all';
+let RESP_SORT='default';
+let RESP_SORT_DIR=1;// 1=desc(多→少/有→無), -1=asc
+let ASSIGN={};// code->personIndex
+
+function setRespFilter(f){
+  RESP_FILTER=f;
+  document.querySelectorAll('.rfbtn').forEach(b=>b.classList.remove('on'));
+  document.getElementById('rf-'+f)?.classList.add('on');
+  renderRespCards();
+}
+function setRespSort(s){
+  if(RESP_SORT===s&&s!=='default') RESP_SORT_DIR*=-1;
+  else{RESP_SORT=s;RESP_SORT_DIR=1;}
+  document.querySelectorAll('.rsbtn').forEach(b=>{b.classList.remove('on');b.querySelector('.sarr2')&&(b.querySelector('.sarr2').textContent='');});
+  const btn=document.getElementById('rs-'+s);
+  if(btn){btn.classList.add('on');const arr=btn.querySelector('.sarr2');if(arr)arr.textContent=RESP_SORT_DIR===1?' ↓':' ↑';}
+  renderRespCards();
+}
+
+function clearAssign(){
+  ASSIGN={};
+  renderRespCards();
+  renderAssignBoard();
+}
+
+function toggleAssign(code,personIdx){
+  if(ASSIGN[code]===personIdx){delete ASSIGN[code];}
+  else{ASSIGN[code]=personIdx;}
+  renderRespCards();
+  renderAssignBoard();
+}
+
+function renderRespCards(){
+  const el=document.getElementById('resp-cards');
+  if(!el||typeof RESP_ALL==='undefined')return;
+  let list=RESP_ALL;
+  if(RESP_FILTER==='children') list=list.filter(r=>r.children_info);
+  if(RESP_FILTER==='q7') list=list.filter(r=>r.q7yes&&r.q7yes.length>0);
+  const D=RESP_SORT_DIR;
+  if(RESP_SORT==='count') list=[...list].sort((a,b)=>D*((b.q7yes?.length||0)-(a.q7yes?.length||0)));
+  else if(RESP_SORT==='exp') list=[...list].sort((a,b)=>D*((b.exp?1:0)-(a.exp?1:0)));
+  else if(RESP_SORT==='children') list=[...list].sort((a,b)=>D*((b.children_info?1:0)-(a.children_info?1:0)));
+  
+  const CN={"A01": "菱格紋多功能媽媽包", "A02": "雙電壓即時行熱杯", "A03": "旋轉伸縮拋棄式奶瓶", "A04": "奶嘴殺菌盒", "A05": "偏光太陽眼鏡", "A06": "夾式多功能風扇", "A07": "舒眠月亮枕", "A08": "輕量秒收推車", "A09": "除臭尿布桶", "A10": "隙縫型洗衣籃", "B01": "白金矽膠寶寶湯匙", "B02": "白金矽膠幼童湯匙", "B03": "白金矽膠學習水杯", "B04": "嬰兒餐具2件", "B05": "幼兒學習餐具二件組", "B06": "防滑矽膠吸盤碗", "B07": "防滑矽膠餐盤", "B08": "冷凍儲存分裝盒", "B09": "鴨嘴吸管兩用水杯", "B10": "AX吸管水杯", "B11": "嬰兒食物金剛剪", "B12": "食物調理機", "C01": "開襟包屁衣", "C02": "新生兒專用奶嘴", "C03": "小小電動遊戲組", "C04": "聲光安撫小海馬", "C05": "四季動物布書", "C06": "搖鈴感統玩偶", "C07": "好吃防水圍兜", "C08": "可拆式防髒圍兜", "C09": "拋棄式防水圍兜", "C10": "組合待產包", "D01": "無痕美體霜", "D02": "精油按摩乳", "D03": "衛蓓欣屁屁膏", "D04": "嬰兒防曬乳", "D05": "寶寶防蚊噴霧", "D06": "掰掰小黑蚊", "D07": "嬰兒柔濕巾", "D08": "口手濕紙巾", "D09": "抗菌濕紙巾", "D10": "嬰兒洗衣精"};
+  
+  el.innerHTML=list.map((r,vi)=>{
+    const realIdx=RESP_ALL.indexOf(r);
+    const expBadge=r.exp?'<span style="font-size:10px;color:#7b5ea7;background:#f3eeff;border-radius:10px;padding:1px 7px">有育兒經驗</span>':'<span style="font-size:10px;color:var(--sub);background:#f5f5f5;border-radius:10px;padding:1px 7px">無育兒經驗</span>';
+    const childBadge=r.children_info?`<span style="font-size:10px;color:#1565c0;background:#e3f2fd;border-radius:10px;padding:1px 7px">✦育兒資訊</span>`:'';
+    
+    let chipsHtml='';
+    if(r.q7yes&&r.q7yes.length>0){
+      chipsHtml=r.q7yes.map(code=>{
+        const nm=CN[code]||code;
+        const assignedTo=ASSIGN[code];
+        let cls,onclick;
+        if(assignedTo===undefined){
+          cls='chip normal';onclick=`toggleAssign('${code}',${realIdx})`;
+        } else if(assignedTo===realIdx){
+          cls='chip selected';onclick=`toggleAssign('${code}',${realIdx})`;
+        } else {
+          cls='chip taken';onclick='';
+        }
+        return `<span class="${cls}" ${onclick?`onclick="${onclick}"`:''}>${code} ${nm}</span>`;
+      }).join(' ');
+    } else {
+      chipsHtml='<span style="font-size:10px;color:#bbb;font-style:italic">無體驗意願商品</span>';
+    }
+    
+    const childRow=r.children_info?`<div style="font-size:11px;margin-bottom:6px"><span style="color:var(--sub);font-size:10px">育兒資訊：</span>${r.children_info}</div>`:'';
+    const q7cnt=r.q7yes?r.q7yes.length:0;
+    const q7label=q7cnt>0?`<span style="font-size:10px;color:var(--sub)">體驗意願 ${q7cnt} 項：</span>`:'';
+    
+    return `<div class="rcard">
+  <div class="rcard-head">
+    <span style="font-weight:700;font-size:13px;color:var(--pr)">${r.name}</span>
+    <span style="font-size:10px;color:var(--sub);background:#f0f0f0;border-radius:10px;padding:1px 7px">${r.unit}</span>
+    ${expBadge}${childBadge}
+  </div>
+  ${childRow}
+  <div style="margin-bottom:3px">${q7label}</div>
+  <div style="display:flex;flex-wrap:wrap;gap:4px">${chipsHtml}</div>
+</div>`;
+  }).join('');
+}
+
+function exportAssign(){
+  const CN={"B01":"白金矽膠寶寶湯匙","B02":"白金矽膠幼童湯匙","B03":"白金矽膠學習水杯","B04":"嬰兒餐具2件","B05":"幼兒學習餐具二件組","B06":"防滑矽膠吸盤碗","B07":"防滑矽膠餐盤","B08":"冷凍儲存分裝盒","B09":"鴨嘴吸管兩用水杯","B10":"AX吸管水杯","B11":"嬰兒食物金剛剪","B12":"食物調理機","C01":"開襟包屁衣","C02":"新生兒專用奶嘴","C03":"小小電動遊戲組","C04":"聲光安撫小海馬","C05":"四季動物布書","C06":"搖鈴感統玩偶","C07":"好吃防水圍兜","C08":"可拆式防髒圍兜","C09":"拋棄式防水圍兜","C10":"組合待產包","D01":"無痕美體霜","D02":"精油按摩乳","D03":"衛蓓欣屁屁膏","D04":"嬰兒防曬乳","D05":"寶寶防蚊噴霧","D06":"掰掰小黑蚊","D07":"嬰兒柔濕巾","D08":"口手濕紙巾","D09":"抗菌濕紙巾","D10":"嬰兒洗衣精","A01":"菱格紋多功能媽媽包","A02":"雙電壓即時行熱杯","A03":"旋轉伸縮拋棄式奶瓶","A04":"奶嘴殺菌盒","A05":"偏光太陽眼鏡","A06":"夾式多功能風扇","A07":"舒眠月亮枕","A08":"輕量秒收推車","A09":"除臭尿布桶","A10":"隙縫型洗衣籃"};
+  const entries=Object.entries(ASSIGN);
+  if(entries.length===0){alert('尚未指定任何商品，無法匯出。');return;}
+  // Sort by person then code
+  entries.sort((a,b)=>{
+    if(a[1]!==b[1])return a[1]-b[1];
+    return a[0].localeCompare(b[0]);
+  });
+  const header='指定體驗者,單位,育嬰經驗,育兒資訊,商品代碼,商品名稱';
+  const rows=entries.map(([code,pidx])=>{
+    const r=RESP_ALL[parseInt(pidx)];
+    if(!r)return'';
+    const expLabel=r.exp?'有育嬰經驗':'無育嬰經驗';
+    const childInfo=r.children_info?r.children_info:'';
+    return [r.name,r.unit,expLabel,'"'+childInfo+'"',code,CN[code]||''].join(',');
+  }).filter(Boolean);
+  const csv='﻿'+[header,...rows].join('\n');// BOM for Excel UTF-8
+  const blob=new Blob([csv],{type:'text/csv;charset=utf-8'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;a.download='體驗指定清單.csv';a.click();
+  URL.revokeObjectURL(url);
+}
+
+function renderAssignBoard(){
+  const list=document.getElementById('assign-list');
+  const cnt=document.getElementById('assign-count');
+  if(!list||typeof RESP_ALL==='undefined')return;
+  const CN={"B01":"白金矽膠寶寶湯匙","B02":"白金矽膠幼童湯匙","B03":"白金矽膠學習水杯","B04":"嬰兒餐具2件","B05":"幼兒學習餐具二件組","B06":"防滑矽膠吸盤碗","B07":"防滑矽膠餐盤","B08":"冷凍儲存分裝盒","B09":"鴨嘴吸管兩用水杯","B10":"AX吸管水杯","B11":"嬰兒食物金剛剪","B12":"食物調理機","C01":"開襟包屁衣","C02":"新生兒專用奶嘴","C03":"小小電動遊戲組","C04":"聲光安撫小海馬","C05":"四季動物布書","C06":"搖鈴感統玩偶","C07":"好吃防水圍兜","C08":"可拆式防髒圍兜","C09":"拋棄式防水圍兜","C10":"組合待產包","D01":"無痕美體霜","D02":"精油按摩乳","D03":"衛蓓欣屁屁膏","D04":"嬰兒防曬乳","D05":"寶寶防蚊噴霧","D06":"掰掰小黑蚊","D07":"嬰兒柔濕巾","D08":"口手濕紙巾","D09":"抗菌濕紙巾","D10":"嬰兒洗衣精","A01":"菱格紋多功能媽媽包","A02":"雙電壓即時行熱杯","A03":"旋轉伸縮拋棄式奶瓶","A04":"奶嘴殺菌盒","A05":"偏光太陽眼鏡","A06":"夾式多功能風扇","A07":"舒眠月亮枕","A08":"輕量秒收推車","A09":"除臭尿布桶","A10":"隙縫型洗衣籃"};
+  const entries=Object.entries(ASSIGN);
+  if(cnt) cnt.textContent='已指定 '+entries.length+' 件';
+  if(entries.length===0){
+    list.innerHTML='<div style="color:var(--sub);font-size:11px;text-align:center;margin-top:30px;font-style:italic">尚未指定任何商品</div>';
+    return;
+  }
+  // Sort by product code
+  entries.sort((a,b)=>a[0].localeCompare(b[0]));
+  // Group by person
+  const byPerson={};
+  entries.forEach(([code,pidx])=>{
+    if(!byPerson[pidx]) byPerson[pidx]=[];
+    byPerson[pidx].push(code);
+  });
+  list.innerHTML=Object.entries(byPerson).map(([pidx,codes])=>{
+    const r=RESP_ALL[parseInt(pidx)];
+    if(!r)return'';
+    return `<div style="border:1px solid var(--border);border-radius:6px;padding:8px 10px;background:#fff">
+  <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px">
+    <span style="font-weight:700;font-size:12px;color:var(--pr)">${r.name}</span>
+    <span style="font-size:10px;color:var(--sub);background:#f0f0f0;border-radius:8px;padding:1px 6px">${r.unit}</span>
+  </div>
+  <div style="display:flex;flex-wrap:wrap;gap:3px">
+    ${codes.map(code=>`<span onclick="toggleAssign('${code}',${pidx})" style="font-size:10px;background:var(--pr);color:#fff;border-radius:3px;padding:2px 7px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:3px">${code}<span style="opacity:.7;font-size:10px">${CN[code]||''}</span></span>`).join('')}
+  </div>
+</div>`;
+  }).join('');
+}
+
+// Auto-scale to window
+  // devicePixelRatio<=1 = 低DPI大螢幕(如32吋1080p)，需補1.1倍提升清晰度
+  function fitToWindow(){
+    const MIN_W=1380;
+    const dpr=window.devicePixelRatio||1;
+    const base=dpr<=1?1.1:1.0;
+    const ratio=window.innerWidth>=MIN_W?base:window.innerWidth/MIN_W;
+    document.body.style.zoom=ratio;
+  }
+  window.addEventListener('resize',fitToWindow);
+  fitToWindow();
+</script>
+</body>
+</html>
