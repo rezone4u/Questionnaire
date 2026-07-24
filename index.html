@@ -924,22 +924,32 @@ function renderAnalysis(){
   // Q card insights
   const qColors={q1:'#2d6a4f',q2:'#40916c',q3:'#c47d00',q4:'#6c757d',q5:'#e63946',q6:'#b5170e'};
   const qDetail={
-    q1:'共識最高：29/42件達高分，兩組差距最小。<br>例外：A09除臭尿布桶，有育兒組僅3.15，遠低於無育兒組4.04。',
-    q2:'與Q1高度連動；低分商品（洗衣籃、太陽眼鏡）在Q1也同樣偏低，<br>非嬰幼兒核心品遭雙重質疑。',
-    q3:'篩選力最強，標準差最高（0.50）；僅10件達高分。<br>無育兒組對售價接受度略寬（+0.06），選品關鍵分水嶺。',
-    q4:'兩組最一致（差距僅0.03）；27件集中中等分。<br>驚喜：D10嬰兒洗衣精外觀全場第二（4.37）。',
-    q5:'整體最弱：53%選「完全沒有」，42件中零件達高分。<br>有育兒者因親子社群接觸較多而明顯偏高（+0.47）。',
-    q6:'比Q5還低：58%選「完全沒有」。<br>差距為六題最大（+0.63），品牌黏著度普遍偏弱。'
+    q1:'兩族群差距最小（+0.03），共識度最高。29/42件達高分，顯示「安全安心」是嬰幼兒選品的基本門檻，大多數商品都能通過。'
+      +'<br>值得注意：A09 除臭尿布桶有育兒組僅3.15，遠低於無育兒組4.04（差距0.89），是Q1族群落差最大的商品——有育兒者對「消臭效果是否真的安心」有更高標準與現實期待。',
+    q2:'與Q1高度連動，評分趨勢幾乎一致。低分商品（洗衣籃、太陽眼鏡）在Q1也同樣偏低，顯示非嬰幼兒核心品類同時遭到安全性與實用性的雙重質疑。'
+      +'<br>兩族群差距同樣微小（+0.03），代表「是否真的解決需求」的判斷不因育兒經驗而有明顯分歧——評分高低主要取決於商品本身的類型與定位。',
+    q3:'六題中篩選力最強、標準差最高（0.50），是真正拉開商品排名的關鍵題。僅10/42件達高分，中低段密集，代表大多數受訪者對售價有明確的心理門檻。'
+      +'<br>無育兒組接受度略高（均分+0.06），可能因無育兒家庭日常支出壓力較小而願意接受偏高定價；有育兒組則對性價比更敏感。此題是選品優先順序的主要分水嶺。',
+    q4:'兩族群最為一致（差距僅0.03），且27/42件集中在中段，代表外觀品味是「不加分也不扣分」的題目——商品只要外觀不出錯即可，難以靠設計大幅拉開差距。'
+      +'<br>亮點：D10 嬰兒洗衣精外觀均分全場最高（4.37），在日用品中以包裝設計突圍。',
+    q5:'整體表現最弱：53% 受訪者選「完全沒有」，42件商品中零件達高分門檻，全數落入低分區。這代表受訪者普遍未在社群上主動接觸這批商品。'
+      +'<br>有育兒組均分1.93，無育兒組僅1.46，差距0.47——是六題中差距第二大。有育兒者因參與親子社群、媽媽社群較多，偶有接觸機會，但整體仍處於低曝光狀態，選品時可將「社群聲量」列為加分參考，而非必要條件。',
+    q6:'六題中平均分最低、族群差距最大（+0.63）。58% 受訪者選「完全沒有」，顯示品牌黏著度在這批商品中幾乎不存在。'
+      +'<br>有育兒組均分1.93，無育兒組僅1.30。有育兒者因長期使用嬰兒用品，對少數品牌有較深印象（如特定奶瓶、濕巾品牌），但仍是少數。整體而言，品牌知名度對此次選品的影響有限，建議聚焦於Q2實用性與Q3價格帶的組合判斷。'
   };
 
   const qCards=qStatsList.map(s=>{
     const clr=qColors[s.q];
-    const diffStr=s.diff>=0?`有育兒高 +${s.diff.toFixed(2)}`:`無育兒高 +${Math.abs(s.diff).toFixed(2)}`;
-    const diffClr=Math.abs(s.diff)>0.1?(s.diff>0?'#2d6a4f':'#e07b39'):'#6c757d';
+    const expClr=s.diff>0.05?'#2d6a4f':s.diff<-0.05?'#6c757d':'#444';
+    const noexpClr=s.diff<-0.05?'#e07b39':s.diff>0.05?'#6c757d':'#444';
+    const groupLine='<span style="color:'+expClr+';font-weight:'+(s.diff>0.05?'700':'400')+'">有育兒 '+s.avgExp.toFixed(2)+'</span>'
+      +' <span style="color:var(--sub)">／</span> '
+      +'<span style="color:'+noexpClr+';font-weight:'+(s.diff<-0.05?'700':'400')+'">無育兒 '+s.avgNoexp.toFixed(2)+'</span>'
+      +' <span style="color:var(--sub);font-size:9px">（滿'+s.mx+'）</span>';
     return '<div style="flex:1;min-width:155px;background:#fff;border:1px solid var(--border);border-radius:8px;padding:10px 12px;border-top:3px solid '+clr+'">'
       +'<div style="font-size:10px;font-weight:800;color:'+clr+';letter-spacing:.5px;margin-bottom:2px">'+s.q.toUpperCase()+' '+qNS[s.q]+'</div>'
       +'<div style="font-size:19px;font-weight:700;color:'+clr+'">'+s.avgAll.toFixed(2)+'<span style="font-size:10px;color:var(--sub);font-weight:400"> /'+s.mx+'</span></div>'
-      +'<div style="font-size:10px;color:'+diffClr+';margin:2px 0 5px">'+diffStr+'</div>'
+      +'<div style="font-size:10px;margin:2px 0 5px">'+groupLine+'</div>'
       +'<div style="font-size:10px;color:var(--sub);line-height:1.6;margin-bottom:6px">'+qDetail[s.q]+'</div>'
       +'<div style="display:flex;gap:4px">'
       +'<span style="font-size:9px;background:#d8f3dc;color:#2d6a4f;border-radius:3px;padding:1px 5px">高'+s.hi+'件</span>'
@@ -984,10 +994,19 @@ function renderAnalysis(){
     +'<td style="padding:4px 8px;font-size:10px">'+r.children_info+'</td>'
     +'</tr>').join('');
 
+  const expTopStr=expBetter.map(r=>`${r.code} ${r.name}（+${rankNoexp[r.code]-rankExp[r.code]}名）`).join('、');
+  const noexpTopStr=noexpBetter.map(r=>`${r.code} ${r.name}（+${rankExp[r.code]-rankNoexp[r.code]}名）`).join('、');
+  const rankNote='<div style="background:#f8fffe;border:1px solid var(--border);border-radius:8px;padding:10px 14px;font-size:10px;color:var(--sub);line-height:1.8;margin-bottom:14px">'
+    +'<b style="color:var(--text)">說明：</b>以下排名以「加權總分（Q2×'+QW.q2+'%＋Q3×'+QW.q3+'%＋Q4×'+QW.q4+'%＋Q5×'+QW.q5+'%）」分組計算，分別比較有育兒組與無育兒組各自的排名，再取差距最大的前5名。'
+    +'<br>🟢 <b style="color:#2d6a4f">有育兒組特別偏好</b>：'+expTopStr+'——有育兒者因實際使用經驗，對這類商品的需求感與評分顯著偏高。'
+    +'<br>🟠 <b style="color:#e07b39">無育兒組特別偏好</b>：'+noexpTopStr+'——這類商品在無育兒組排名明顯偏高，可能因外觀設計感或「送禮想像」驅動，有育兒者對實際功能有更嚴格的現實評估。'
+    +'</div>';
+
   const html=
     '<div style="font-size:10px;font-weight:800;color:var(--pr);letter-spacing:.5px;margin-bottom:10px">各題問卷洞察</div>'
     +'<div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px">'+qCards+'</div>'
     +'<div style="font-size:10px;font-weight:800;color:var(--pr);letter-spacing:.5px;margin-bottom:8px">族群排名差異</div>'
+    +rankNote
     +'<div style="display:flex;gap:14px;flex-wrap:wrap;margin-bottom:18px">'
     +rankTable(expBetter,true,'🟢 有育兒組特別偏好（排名差距最大 Top 5）','#d8f3dc')
     +rankTable(noexpBetter,false,'🟠 無育兒組特別偏好（排名差距最大 Top 5）','#fde8d0')
