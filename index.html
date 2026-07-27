@@ -237,6 +237,14 @@ tr.dtr td{padding:0;border-bottom:2px solid var(--sc)}
             <input type="number" class="ni" id="wq5v" value="15" min="0" max="100" oninput="setQW('q5',+this.value);wq5.value=this.value">%
           </div></div>
           <div class="dvd"></div>
+          <div class="wi" style="min-width:155px"><label>Q5 社群推薦（全局預設）</label>
+            <div class="wr"><span style="font-size:10px;color:var(--sub)">預設分數(1–4)</span>
+              <input type="range" min="1" max="4" step="0.1" value="1" id="q5gScore" oninput="Q5S=+this.value;q5gsv.value=(+this.value).toFixed(1);renderTable()" disabled>
+              <input type="number" class="ni" id="q5gsv" placeholder="問卷" min="1" max="4" step="0.1" oninput="if(this.value){Q5S=+this.value;q5gScore.value=this.value;q5gScore.disabled=false;}else{Q5S=null;q5gScore.disabled=true;}renderTable()">
+            </div>
+            <div style="font-size:10px;color:var(--sub);margin-top:3px">留空＝各商品使用問卷均分</div>
+          </div>
+          <div class="dvd"></div>
           <div class="wi" style="min-width:175px"><label>Q8 廠商合作（全局預設）</label>
             <div class="wr"><span style="font-size:10px;color:var(--sub)">預設分數(1–10)</span>
               <input type="range" min="1" max="10" step="0.5" value="6" id="q8score" oninput="Q8S=+this.value;q8sv.value=(+this.value).toFixed(1);renderTable()">
@@ -400,6 +408,7 @@ let O5={'完全認同':5,'認同':4,'普通':3,'不太認同':2,'完全不認同
 let O4={'經常':4,'偶爾':3,'好像有':2,'完全沒有':1};
 let QW={q2:35,q3:25,q4:15,q5:15,q8:10};
 let Q8S=6,Q8P={},GRP='all',EXPCODE=null,ELIMMODE='all',SCOL='rank',SDIR=-1;
+let Q5OV={},Q6OV={},Q5S=null;
 
 function getQ8(code){return Q8P[code]!==undefined?Q8P[code]:Q8S;}
 function switchPanel(i,el){
@@ -424,7 +433,21 @@ function setQW(q,v){
 }
 function resetOpts(){
   O5L.forEach((o,i)=>{O5[o]=5-i;document.getElementById('ov'+i).value=5-i;});
-  O4L.forEach((o,i)=>{O4[o]=4-i;document.getElementById('o4v'+i).value=4-i;});renderTable();
+  O4L.forEach((o,i)=>{O4[o]=4-i;document.getElementById('o4v'+i).value=4-i;});
+  const defQW={q2:35,q3:25,q4:15,q5:15,q8:10};
+  for(const[q,v]of Object.entries(defQW)){QW[q]=v;const el=document.getElementById('wq'+q.slice(1));if(el)el.value=v;const elv=document.getElementById('wq'+q.slice(1)+'v');if(elv)elv.value=v;}
+  const t=Object.values(QW).reduce((a,b)=>a+b,0);totalW.textContent=t;warnW.style.display='none';
+  Q8S=6;q8score.value=6;q8sv.value='6.0';
+  Q5S=null;q5gScore.value=1;q5gScore.disabled=true;q5gsv.value='';
+  Q8P={};Q5OV={};Q6OV={};
+  renderTable();
+}
+function setQOV(qkey,code,val){
+  const ov=qkey==='q5'?Q5OV:Q6OV;
+  if(val===''||val===null){delete ov[code];}
+  else{const v=parseFloat(val);if(!isNaN(v)&&v>=1&&v<=4)ov[code]=v;}
+  renderTable();
+  if(document.getElementById('p0').classList.contains('active'))renderInsights();
 }
 function setGroup(g,btn){
   GRP=g;document.querySelectorAll('.gbtn').forEach(b=>b.classList.remove('active'));
@@ -449,6 +472,8 @@ function toggleLegend(){
 }
 
 function qAvg(c,ow){let s=0,n=0;for(const[o,v]of Object.entries(c)){if(ow[o]!==undefined){s+=ow[o]*v;n+=v;}}return n?s/n:null;}
+function getQ5Avg(d,grp){return Q5OV[d.code]!==undefined?Q5OV[d.code]:Q5S!==null?Q5S:qAvg(d['q5'][grp],O4);}
+function getQ6Avg(d,grp){return Q6OV[d.code]!==undefined?Q6OV[d.code]:qAvg(d['q6'][grp],O4);}
 function norm5(a,ow){if(a===null)return null;const mx=Math.max(...Object.values(ow)),mn=Math.min(...Object.values(ow));return mx===mn?a:(a-mn)/(mx-mn)*4+1;}
 function q8n(v){return(v-1)/9*4+1;}
 function gk(){return GRP==='cross'?'all':GRP;}
@@ -456,14 +481,14 @@ function gk(){return GRP==='cross'?'all':GRP;}
 function calcTotal(d){
   const g=gk();let ws=0,wt=0;
   for(const q of['q2','q3','q4']){const w=QW[q]||0;if(!w)continue;const a=qAvg(d[q][g],O5);if(a!==null){ws+=norm5(a,O5)*w;wt+=w;}}
-  const w5=QW['q5']||0;if(w5){const a=qAvg(d['q5'][g],O4);if(a!==null){ws+=norm5(a,O4)*w5;wt+=w5;}}
+  const w5=QW['q5']||0;if(w5){const a=getQ5Avg(d,g);if(a!==null){ws+=norm5(a,O4)*w5;wt+=w5;}}
   const w8=QW['q8']||0;if(w8){ws+=q8n(getQ8(d.code))*w8;wt+=w8;}
   return wt?ws/wt:0;
 }
 function calcTotalFor(d,grp){
   let ws=0,wt=0;
   for(const q of['q2','q3','q4']){const w=QW[q]||0;if(!w)continue;const a=qAvg(d[q][grp],O5);if(a!==null){ws+=norm5(a,O5)*w;wt+=w;}}
-  const w5=QW['q5']||0;if(w5){const a=qAvg(d['q5'][grp],O4);if(a!==null){ws+=norm5(a,O4)*w5;wt+=w5;}}
+  const w5=QW['q5']||0;if(w5){const a=getQ5Avg(d,grp);if(a!==null){ws+=norm5(a,O4)*w5;wt+=w5;}}
   const w8=QW['q8']||0;if(w8){ws+=q8n(getQ8(d.code))*w8;wt+=w8;}
   return wt?ws/wt:0;
 }
@@ -485,7 +510,8 @@ function gf(id){return{op:document.getElementById(id+'_op').value,v:document.get
 function sc(score){const s=Math.round(score*100)/100;return s>=4?'#2d6a4f':s>=3?'#f5a623':'#e63946';}
 function qcc(a,mx,mn){
   if(a===null)return'#dee2e6';
-  const r=mx===mn?0:Math.round((a-mn)/(mx-mn)*1000)/1000;
+  const av=Math.round(a*10)/10;
+  const r=mx===mn?0:Math.round((av-mn)/(mx-mn)*1000)/1000;
   return r>=.75?'#d8f3dc':r>=.5?'#fff3cd':'#ffc0c2';
 }
 
@@ -1051,7 +1077,7 @@ function renderTable(){
 
   let rows=RAW.map(d=>{
     const a={q1:qAvg(d['q1'][g],O5),q2:qAvg(d['q2'][g],O5),q3:qAvg(d['q3'][g],O5),
-              q4:qAvg(d['q4'][g],O5),q5:qAvg(d['q5'][g],O4),q6:qAvg(d['q6'][g],O4)};
+              q4:qAvg(d['q4'][g],O5),q5:getQ5Avg(d,g),q6:getQ6Avg(d,g)};
     const tot=calcTotal(d),aq=isAnquan(d),zt=isZong(d),elim=aq||zt;
     const av=[a.q1,a.q2,a.q3,a.q4,a.q5,a.q6];
     const failsF=fqs.some(({op,v},i)=>av[i]!==null&&v!==''&&!applyOp(av[i],op,v))||
@@ -1092,11 +1118,17 @@ function renderTable(){
 
     const sc_=sc(d.tot);
     const tp=((d.tot-1)/4*100).toFixed(1);
+    const q56inp=(qk,ov,aVal)=>{
+      const bg=aVal!==null?qcc(aVal,mS4,nS4):'#eee';
+      const ph=aVal!==null?aVal.toFixed(1):'-';
+      return `<td class="q8cell" onclick="event.stopPropagation()"><input type="number" class="q8in" min="1" max="4" step="0.1" value="${ov!==undefined?ov.toFixed(1):''}" placeholder="${ph}" style="background:${bg}" data-code="${d.code}" onchange="setQOV('${qk}',this.dataset.code,this.value)" title="${qk==='q5'?'Q5 社群推薦':'Q6 主動關注'}（1–4，留空=問卷均分${ph}）"></td>`;
+    };
     const qcells=[
       {a:d.a.q1,mx:mS5,mn:nS5},{a:d.a.q2,mx:mS5,mn:nS5},
       {a:d.a.q3,mx:mS5,mn:nS5},{a:d.a.q4,mx:mS5,mn:nS5},
-      {a:d.a.q5,mx:mS4,mn:nS4},{a:d.a.q6,mx:mS4,mn:nS4},
-    ].map(({a,mx,mn})=>`<td class="qcell"><span class="qv" style="background:${qcc(a,mx,mn)}">${a!==null?a.toFixed(1):'-'}</span></td>`).join('');
+    ].map(({a,mx,mn})=>`<td class="qcell"><span class="qv" style="background:${qcc(a,mx,mn)}">${a!==null?a.toFixed(1):'-'}</span></td>`).join('')
+    +q56inp('q5',Q5OV[d.code],d.a.q5)
+    +q56inp('q6',Q6OV[d.code],d.a.q6);
 
     const q8val=getQ8(d.code);
     const q8bg=qcc(q8n(q8val),5,1);
