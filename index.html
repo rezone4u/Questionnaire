@@ -184,13 +184,14 @@ tr.dtr td{padding:0;border-bottom:2px solid var(--sc)}
 
 <div class="panels">
   <div class="ptabs">
-    <div class="ptab active" onclick="switchPanel(0,this)">問卷洞察</div>
+    <div class="ptab" onclick="switchPanel(0,this)">問卷洞察</div>
     <div class="ptab" onclick="switchPanel(1,this)">配重設定</div>
     <div class="ptab" onclick="switchPanel(2,this)">分析對象</div>
     <div class="ptab" onclick="switchPanel(3,this)">體驗名單</div>
-    <div class="ptab" onclick="switchPanel(4,this)">族群洞察</div>
+    <div class="ptab active" onclick="switchPanel(4,this)">族群洞察</div>
+    <div class="ptab" onclick="switchPanel(5,this)">活動洞察</div>
   </div>
-  <div class="pbody active" id="p0" style="flex-direction:column;gap:0;padding:0;overflow:hidden;height:calc(100vh - 78px)">
+  <div class="pbody" id="p0" style="flex-direction:column;gap:0;padding:0;overflow:hidden;height:calc(100vh - 78px)">
     <div id="insightsBody" class="insightsbody-wrap" style="width:100%;padding:10px 16px 12px;overflow-y:auto;height:100%">
       <div style="color:var(--sub);font-size:11px;padding:20px 0;text-align:center">切換至此頁後自動計算…</div>
     </div>
@@ -264,7 +265,14 @@ tr.dtr td{padding:0;border-bottom:2px solid var(--sc)}
         </div>
       </div>
     </div>
-    <div style="margin-top:4px;align-self:flex-end"><button class="bsm" onclick="resetOpts()">重設預設</button></div>
+    <div style="display:flex;align-items:center;gap:8px;margin-top:4px;align-self:flex-end">
+      <button class="bsm" onclick="toggleQ7Sum()">📋 Q7 體驗意願分佈</button>
+      <button class="bsm" onclick="resetOpts()">重設預設</button>
+    </div>
+    <div id="q7SumWrap" style="display:none;width:100%;padding:8px 0 4px;border-top:1px solid var(--border);margin-top:6px">
+      <div style="font-size:10px;font-weight:800;color:var(--pr);margin-bottom:5px">Q7 深入體驗意願 — 商品別（點擊列展開人員名單）</div>
+      <div id="q7SumBody" style="max-height:240px;overflow-y:auto"></div>
+    </div>
   </div>
   <div class="pbody" id="p2">
     <div>
@@ -315,9 +323,52 @@ tr.dtr td{padding:0;border-bottom:2px solid var(--sc)}
 </div>
 </div>
 
-<div class="pbody" id="p4" style="flex-direction:column;gap:0;padding:0;overflow:hidden;height:calc(100vh - 78px)">
+<div class="pbody active" id="p4" style="flex-direction:column;gap:0;padding:0;overflow:hidden;height:calc(100vh - 78px)">
   <div id="analysisBody" style="width:100%;padding:12px 18px 16px;overflow-y:auto;height:100%">
     <div style="color:var(--sub);font-size:11px;padding:20px 0;text-align:center">切換至此頁後自動計算…</div>
+  </div>
+</div>
+
+<div class="pbody" id="p5" style="flex-direction:column;gap:0;padding:0;overflow:hidden;height:calc(100vh - 78px)">
+  <div style="width:100%;padding:14px 20px 20px;overflow-y:auto;height:100%;display:flex;flex-direction:column;gap:16px">
+
+    <!-- 做對的事 -->
+    <div style="background:#fff;border:1px solid var(--border);border-radius:10px;overflow:hidden">
+      <div style="background:#d8f3dc;padding:10px 16px;display:flex;align-items:center;gap:8px">
+        <span style="font-size:16px">✅</span>
+        <span style="font-size:13px;font-weight:800;color:#1b4332;letter-spacing:.5px">做對的事</span>
+      </div>
+      <div style="padding:14px 16px;font-size:14px;color:var(--text);line-height:1.9;display:flex;flex-direction:column;gap:6px">
+        <div><span style="font-weight:700;color:#2d6a4f;margin-right:6px">1.</span>商品一次性展開評測，讓消費者在真實接觸的當下，直接反映疑問與在意的資訊，有效捕捉第一手感受。</div>
+        <div><span style="font-weight:700;color:#2d6a4f;margin-right:6px">2.</span>評測過程提供商品功能說明與使用情境介紹，使受試者在充分理解商品的前提下給予回饋；受試者也反映，若缺乏解說環節，評分結果將有極大落差。</div>
+      </div>
+    </div>
+
+    <!-- 可以突破或調整的事 -->
+    <div style="background:#fff;border:1px solid var(--border);border-radius:10px;overflow:hidden">
+      <div style="background:#fff3cd;padding:10px 16px;display:flex;align-items:center;gap:8px">
+        <span style="font-size:16px">🔄</span>
+        <span style="font-size:13px;font-weight:800;color:#7d5a00;letter-spacing:.5px">可以突破或調整的事</span>
+      </div>
+      <div style="padding:14px 16px;font-size:14px;color:var(--text);line-height:1.9;display:flex;flex-direction:column;gap:6px">
+        <div><span style="font-weight:700;color:#c47d00;margin-right:6px">1.</span>Q5、Q6 的問法不夠明確，多數受訪者有所反應，從評分結果也可看出題目缺乏鑑別力，建議下次重新設計問題方向。</div>
+        <div><span style="font-weight:700;color:#c47d00;margin-right:6px">2.</span>可提供同性質商品作為現場比較基準，並附上該類商品的市場行情價，讓受訪者在有參照的情況下，對「價格合理性」做出更有依據的判斷。</div>
+        <div><span style="font-weight:700;color:#c47d00;margin-right:6px">3.</span>各商品的獨家賣點或功能特點標示應保持一致，避免描述落差導致受訪者對商品產生混淆或不必要的疑問。</div>
+      </div>
+    </div>
+
+    <!-- 獲得資訊 -->
+    <div style="background:#fff;border:1px solid var(--border);border-radius:10px;overflow:hidden">
+      <div style="background:#e8d5f7;padding:10px 16px;display:flex;align-items:center;gap:8px">
+        <span style="font-size:16px">💡</span>
+        <span style="font-size:13px;font-weight:800;color:#4a1a7a;letter-spacing:.5px">獲得資訊</span>
+      </div>
+      <div style="padding:14px 16px;font-size:14px;color:var(--text);line-height:1.9;display:flex;flex-direction:column;gap:6px">
+        <div><span style="font-weight:700;color:#7b5ea7;margin-right:6px">1.</span>評測中的現場討論，以及評測後的個別訪談，有助於理解數據背後的原因與變化脈絡，是純問卷數字之外重要的補充來源。</div>
+        <div><span style="font-weight:700;color:#7b5ea7;margin-right:6px">2.</span>有育兒與無育兒受眾在商品大方向的喜好上有一定共識；透過差異化分析能進一步判斷，部分商品在實際使用後功能認同度顯著提升，也能協助排除「預期功能性強但實際感受落差大」的商品。</div>
+      </div>
+    </div>
+
   </div>
 </div>
 
@@ -414,7 +465,7 @@ function getQ8(code){return Q8P[code]!==undefined?Q8P[code]:Q8S;}
 function switchPanel(i,el){
   document.querySelectorAll('.pbody').forEach((p,j)=>p.classList.toggle('active',i===j));
   document.querySelectorAll('.ptab').forEach((t,j)=>t.classList.toggle('active',i===j));
-  const hideTable=i===0||i===3||i===4;
+  const hideTable=i===0||i===3||i===4||i===5;
   ['toolbar','legendBar'].forEach(id=>{
     const el2=id==='legendBar'?document.getElementById(id):document.querySelector('.'+id);
     if(el2)el2.style.display=hideTable?'none':'';
@@ -441,6 +492,129 @@ function resetOpts(){
   Q5S=null;q5gScore.value=1;q5gScore.disabled=true;q5gsv.value='';
   Q8P={};Q5OV={};Q6OV={};
   renderTable();
+}
+function toggleQ7Sum(){
+  const wrap=document.getElementById('q7SumWrap');
+  const show=wrap.style.display==='none';
+  wrap.style.display=show?'':'none';
+  if(show&&!wrap.dataset.built){renderQ7Sum();wrap.dataset.built='1';}
+}
+function renderQ7Sum(){
+  const prods=RAW.filter(d=>d.hasQ7).sort((a,b)=>b.q7yes.length-a.q7yes.length);
+  if(!prods.length){document.getElementById('q7SumBody').innerHTML='<div class="emp">無 Q7 意願資料</div>';return;}
+  const rows=prods.map(d=>{
+    const yE=d.q7yes.filter(p=>p.exp).length,yN=d.q7yes.filter(p=>!p.exp).length;
+    const nE=d.q7no.filter(p=>p.exp).length,nN=d.q7no.filter(p=>!p.exp).length;
+    const pctE=(yE/13*100).toFixed(0),pctN=(yN/28*100).toFixed(0);
+    const tid='q7r_'+d.code;
+    const names=d.q7yes.map(p=>`<span style="background:${p.exp?'#d8f3dc':'#f0f0f0'};border-radius:8px;padding:1px 6px;font-size:9px;color:${p.exp?'#2d6a4f':'#555'}">${p.name}${p.unit?' · '+p.unit:''}</span>`).join(' ');
+    return `<tr style="border-bottom:1px solid #eee;cursor:pointer" onclick="var x=document.getElementById('${tid}');x.style.display=x.style.display?'':'table-row'">
+      <td style="padding:2px 6px;font-size:10px;font-weight:700;color:var(--pr)">${d.code}</td>
+      <td style="padding:2px 6px;font-size:10px">${d.name}</td>
+      <td style="padding:2px 6px;text-align:center;font-size:11px;font-weight:700;color:#2d6a4f">${yE+yN}</td>
+      <td style="padding:2px 6px;text-align:center;font-size:10px;color:#52b788">${yE} <span style="color:#aaa">(${pctE}%)</span></td>
+      <td style="padding:2px 6px;text-align:center;font-size:10px;color:#888">${yN} <span style="color:#aaa">(${pctN}%)</span></td>
+    </tr>
+    <tr id="${tid}" style="display:none"><td colspan="5" style="padding:3px 10px 6px;background:#fafff8">
+      ${names||'<span style="color:#aaa;font-size:9px">無人填寫</span>'}
+    </td></tr>`;
+  }).join('');
+  document.getElementById('q7SumBody').innerHTML=`<table style="border-collapse:collapse;width:100%">
+    <thead><tr style="background:#e8f5e9">
+      <th style="padding:3px 6px;text-align:left;font-size:9px;color:var(--sub)">代碼</th>
+      <th style="padding:3px 6px;text-align:left;font-size:9px;color:var(--sub)">商品名稱</th>
+      <th style="padding:3px 6px;text-align:center;font-size:9px;color:var(--sub)">合計</th>
+      <th style="padding:3px 6px;text-align:center;font-size:9px;color:var(--sub)">有育兒</th>
+      <th style="padding:3px 6px;text-align:center;font-size:9px;color:var(--sub)">無育兒</th>
+    </tr></thead><tbody>${rows}</tbody></table>`;
+}
+
+function groupCompare(d){
+  const qDefs=[
+    {q:'q1',name:'Q1 安全安心',ow:O5},{q:'q2',name:'Q2 解決需求',ow:O5},
+    {q:'q3',name:'Q3 售價購買',ow:O5},{q:'q4',name:'Q4 外觀品味',ow:O5},
+    {q:'q5',name:'Q5 社群推薦',ow:O4},{q:'q6',name:'Q6 主動關注',ow:O4},
+  ];
+  const diffs=qDefs.map(({q,name,ow})=>{
+    const aE=qAvg(d[q]['exp'],ow),aN=qAvg(d[q]['noexp'],ow);
+    if(aE===null||aN===null)return null;
+    const mx=Math.max(...Object.values(ow));
+    const opts=Object.entries(ow).sort((a,b)=>b[1]-a[1]);
+    const topOpt=opts[0][0];
+    const totE=Object.values(d[q]['exp']).reduce((s,v)=>s+v,0);
+    const totN=Object.values(d[q]['noexp']).reduce((s,v)=>s+v,0);
+    const topE=totE?(d[q]['exp'][topOpt]||0)/totE:0;
+    const topN=totN?(d[q]['noexp'][topOpt]||0)/totN:0;
+    return{q,name,aE,aN,diff:aE-aN,mx,topE,topN,topDiff:topE-topN};
+  }).filter(x=>x);
+  if(!diffs.length)return'';
+
+  // 1. 趨勢傾向
+  const expTot=calcTotalFor(d,'exp'),noexpTot=calcTotalFor(d,'noexp');
+  const totalDiff=expTot-noexpTot;
+  const hiGrp=totalDiff>0?'有育兒':'無育兒';
+  const loGrp=totalDiff>0?'無育兒':'有育兒';
+  let trend;
+  if(Math.abs(totalDiff)<0.05)trend='兩組整體評分高度一致，育兒經驗對此商品評感影響不顯著';
+  else trend=`有育兒組加權總分比無育兒組${totalDiff>0?'多':'少'} ${Math.abs(totalDiff).toFixed(2)} 分（${hiGrp}組整體偏好較高）`;
+
+  // 2. 最大差之處（不限分數）
+  const sortedByDiff=[...diffs].sort((a,b)=>Math.abs(b.diff)-Math.abs(a.diff));
+  const big=sortedByDiff[0];
+  const bigHi=big.diff>0?'有育兒':'無育兒';
+  const bigLo=big.diff>0?'無育兒':'有育兒';
+  let bigNote=`${big.name}：${bigHi}組比${bigLo}組多 ${Math.abs(big.diff).toFixed(2)} 分（${big.aE.toFixed(1)} vs ${big.aN.toFixed(1)}）`;
+  // Top-box distribution
+  const sortedByTop=[...diffs].sort((a,b)=>Math.abs(b.topDiff)-Math.abs(a.topDiff));
+  const bigTop=sortedByTop[0];
+  if(Math.abs(bigTop.topDiff)>0.15){
+    const tHi=bigTop.topDiff>0?'有育兒':'無育兒';
+    const tLo=bigTop.topDiff>0?'無育兒':'有育兒';
+    const tHiPct=(Math.max(bigTop.topE,bigTop.topN)*100).toFixed(0);
+    const tLoPct=(Math.min(bigTop.topE,bigTop.topN)*100).toFixed(0);
+    bigNote+=`；${bigTop.name} 最高選項勾選率${tHi}組比${tLo}組多 ${(Math.abs(bigTop.topDiff)*100).toFixed(0)}%（${tHiPct}% vs ${tLoPct}%）`;
+  }
+  // Q7 intent
+  if(d.hasQ7){
+    const yE=d.q7yes.filter(p=>p.exp).length,yN=d.q7yes.filter(p=>!p.exp).length;
+    const rE=yE/13,rN=yN/28;
+    const rateDiff=rE-rN;
+    if(Math.abs(rateDiff)>0.08){
+      const qHi=rateDiff>0?'有育兒':'無育兒';
+      const qLo=rateDiff>0?'無育兒':'有育兒';
+      bigNote+=`；Q7 深入體驗意願${qHi}組比${qLo}組高 ${(Math.abs(rateDiff)*100).toFixed(0)}%（${(rE*100).toFixed(0)}% vs ${(rN*100).toFixed(0)}%）`;
+    }
+  }
+
+  // 3. 影響加權總分最大的原因（排除Q5）
+  const impacts=[
+    {q:'q2',name:'Q2 解決需求',w:QW.q2||0},
+    {q:'q3',name:'Q3 售價購買',w:QW.q3||0},
+    {q:'q4',name:'Q4 外觀品味',w:QW.q4||0},
+  ].map(({q,name,w})=>{
+    const x=diffs.find(dd=>dd.q===q);
+    if(!x||!w)return{name,w,impact:0,diff:0,aE:0,aN:0};
+    return{name,w,impact:w*Math.abs(norm5(x.aE,O5)-norm5(x.aN,O5)),diff:x.diff,aE:x.aE,aN:x.aN};
+  }).sort((a,b)=>b.impact-a.impact);
+  const top=impacts[0];
+  let impactNote;
+  if(top&&top.impact>0.01){
+    const iHi=top.diff>0?'有育兒':'無育兒';
+    const iLo=top.diff>0?'無育兒':'有育兒';
+    const iDiff=Math.abs(top.aE-top.aN).toFixed(2);
+    impactNote=`${top.name}（權重 ${top.w}%）— ${iHi}組比${iLo}組多 ${iDiff} 分，是拉開兩組加權總分的主要原因`;
+  }else{
+    impactNote='各計分向度差距均小，加權後兩組總分仍相近，無明顯主導因素';
+  }
+
+  return`<div class="dc" style="grid-column:1/-1;background:#faf5ff;border:1px solid #d8c4f7;border-radius:6px;padding:8px 10px">
+    <div class="dt" style="color:#6b3fa0">🔍 有育兒 vs 無育兒 組間洞察</div>
+    <div style="display:flex;flex-direction:column;gap:5px;font-size:11px;margin-top:5px;line-height:1.6">
+      <div><span style="font-weight:700;color:#6b3fa0;min-width:70px;display:inline-block">① 趨勢傾向</span>${trend}</div>
+      <div><span style="font-weight:700;color:#6b3fa0;min-width:70px;display:inline-block">② 最大差異</span>${bigNote}</div>
+      <div><span style="font-weight:700;color:#6b3fa0;min-width:70px;display:inline-block">③ 加權主因</span>${impactNote}</div>
+    </div>
+  </div>`;
 }
 function setQOV(qkey,code,val){
   const ov=qkey==='q5'?Q5OV:Q6OV;
@@ -564,7 +738,8 @@ function optB(c,ow,labels){
   if(!tot)return'<div class="emp">無資料</div>';
   return labels.map(o=>{const n=c[o]||0,p=tot?n/tot*100:0;
     const sc=ow[o]!==undefined?` [${ow[o]}]`:'';
-    return`<div class="or"><div class="ol">${o}${sc}</div>
+    const hlBg=(o==='普通'&&p>30)?'background:#ffe4e6;border-radius:3px;':'';
+    return`<div class="or" style="${hlBg}"><div class="ol">${o}${sc}</div>
       <div class="obw"><div class="obf" style="width:${p.toFixed(1)}%;background:${OC[o]}"></div></div>
       <div class="opc">${p.toFixed(0)}%</div><div class="ocnt">(${n})</div></div>`;
   }).join('');
@@ -594,7 +769,7 @@ function buildDet(d){
       h+=`<div class="dc"><div class="dt">${l}<span class="db">均分 ${a?a.toFixed(2):'N/A'}/${mx}</span></div>${optB(arr,ow,opts)}</div>`;
     }
   }
-  if(g==='cross'){h+=crossSummary(d);}
+  if(g==='cross'){h+=groupCompare(d);}
   if(d.hasQ7){
     const yesExp=d.q7yes.filter(p=>p.exp).length;
     const yesNoExp=d.q7yes.filter(p=>!p.exp).length;
@@ -991,60 +1166,113 @@ function renderAnalysis(){
       const diff=isExp?rN-rE:rE-rN;
       const clr=isExp?'#2d6a4f':'#e07b39';
       return '<tr>'
-        +'<td style="padding:4px 6px;font-size:10px;font-weight:700;color:var(--pr)">'+r.code+'</td>'
-        +'<td style="padding:4px 6px;font-size:10px">'+r.name+'</td>'
-        +'<td style="padding:4px 6px;font-size:10px;text-align:center">#'+rE+'</td>'
-        +'<td style="padding:4px 6px;font-size:10px;text-align:center">#'+rN+'</td>'
-        +'<td style="padding:4px 6px;font-size:10px;text-align:center;font-weight:700;color:'+clr+'">+'+diff+'名</td>'
+        +'<td style="padding:5px 8px;font-size:12px;font-weight:700;color:var(--pr)">'+r.code+'</td>'
+        +'<td style="padding:5px 8px;font-size:12px">'+r.name+'</td>'
+        +'<td style="padding:5px 8px;font-size:12px;text-align:center">#'+rE+'</td>'
+        +'<td style="padding:5px 8px;font-size:12px;text-align:center">#'+rN+'</td>'
+        +'<td style="padding:5px 8px;font-size:12px;text-align:center;font-weight:700;color:'+clr+'">+'+diff+'名</td>'
         +'</tr>';
     }).join('');
   }
   function rankTable(list,isExp,title,hdrClr){
-    return '<div style="flex:1;min-width:280px">'
-      +'<div style="font-size:10px;font-weight:800;letter-spacing:.5px;margin-bottom:6px;color:'+(isExp?'#2d6a4f':'#e07b39')+'">'+title+'</div>'
+    return '<div style="flex:1;min-width:300px">'
+      +'<div style="font-size:12px;font-weight:800;letter-spacing:.5px;margin-bottom:6px;color:'+(isExp?'#2d6a4f':'#e07b39')+'">'+title+'</div>'
       +'<table style="width:100%;border-collapse:collapse;background:#fff;border-radius:8px;overflow:hidden;box-shadow:var(--shadow)">'
       +'<thead><tr style="background:'+hdrClr+'">'
-      +'<th style="padding:5px 6px;font-size:10px;text-align:left">代碼</th>'
-      +'<th style="padding:5px 6px;font-size:10px;text-align:left">商品</th>'
-      +'<th style="padding:5px 6px;font-size:10px">有育兒排名</th>'
-      +'<th style="padding:5px 6px;font-size:10px">無育兒排名</th>'
-      +'<th style="padding:5px 6px;font-size:10px">差距</th>'
+      +'<th style="padding:6px 8px;font-size:12px;text-align:left">代碼</th>'
+      +'<th style="padding:6px 8px;font-size:12px;text-align:left">商品</th>'
+      +'<th style="padding:6px 8px;font-size:12px">有育兒排名</th>'
+      +'<th style="padding:6px 8px;font-size:12px">無育兒排名</th>'
+      +'<th style="padding:6px 8px;font-size:12px">差距</th>'
       +'</tr></thead><tbody>'+rankRows(list,isExp)+'</tbody></table></div>';
   }
 
   // Children info
   const childInfo=RESP_ALL.filter(r=>r.children_info&&r.children_info.trim()&&!['—','-'].includes(r.children_info.trim()));
   const childRows=childInfo.map(r=>'<tr>'
-    +'<td style="padding:4px 8px;font-size:10px;font-weight:700">'+r.name+'</td>'
-    +'<td style="padding:4px 8px;font-size:10px;color:var(--sub)">'+r.unit+'</td>'
-    +'<td style="padding:4px 8px;font-size:10px">'+r.children_info+'</td>'
+    +'<td style="padding:5px 10px;font-size:12px;font-weight:700">'+r.name+'</td>'
+    +'<td style="padding:5px 10px;font-size:12px;color:var(--sub)">'+r.unit+'</td>'
+    +'<td style="padding:5px 10px;font-size:12px">'+r.children_info+'</td>'
     +'</tr>').join('');
 
   const expTopStr=expBetter.map(r=>`${r.code} ${r.name}（+${rankNoexp[r.code]-rankExp[r.code]}名）`).join('、');
   const noexpTopStr=noexpBetter.map(r=>`${r.code} ${r.name}（+${rankExp[r.code]-rankNoexp[r.code]}名）`).join('、');
-  const rankNote='<div style="background:#f8fffe;border:1px solid var(--border);border-radius:8px;padding:10px 14px;font-size:10px;color:var(--sub);line-height:1.8;margin-bottom:14px">'
+  const rankNote='<div style="background:#f8fffe;border:1px solid var(--border);border-radius:8px;padding:12px 16px;font-size:12px;color:var(--sub);line-height:1.8;margin-bottom:14px">'
     +'<b style="color:var(--text)">說明：</b>以下排名以「加權總分（Q2×'+QW.q2+'%＋Q3×'+QW.q3+'%＋Q4×'+QW.q4+'%＋Q5×'+QW.q5+'%）」分組計算，分別比較有育兒組與無育兒組各自的排名，再取差距最大的前5名。'
     +'<br>🟢 <b style="color:#2d6a4f">有育兒組特別偏好</b>：'+expTopStr+'——有育兒者因實際使用經驗，對這類商品的需求感與評分顯著偏高。'
     +'<br>🟠 <b style="color:#e07b39">無育兒組特別偏好</b>：'+noexpTopStr+'——這類商品在無育兒組排名明顯偏高，可能因外觀設計感或「送禮想像」驅動，有育兒者對實際功能有更嚴格的現實評估。'
     +'</div>';
 
   const html=
-    '<div style="font-size:10px;font-weight:800;color:var(--pr);letter-spacing:.5px;margin-bottom:10px">各題問卷洞察</div>'
-    +'<div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px">'+qCards+'</div>'
-    +'<div style="font-size:10px;font-weight:800;color:var(--pr);letter-spacing:.5px;margin-bottom:8px">族群排名差異</div>'
+    '<div style="font-size:12px;font-weight:800;color:var(--pr);letter-spacing:.5px;margin-bottom:10px">各題問卷洞察</div>'
+    +'<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px">'
+    // Q1
+    +'<div style="background:#fff;border:1px solid var(--border);border-radius:7px;padding:11px 14px;border-left:3px solid #4361ee">'
+    +'<div style="font-size:12px;font-weight:800;color:#4361ee;letter-spacing:.5px;margin-bottom:5px">Q1 安全安心</div>'
+    +'<div style="font-size:12px;color:var(--text);line-height:1.75">'
+    +'・<b>有育兒</b> ≥4.4：<b>18件</b>／<b>無育兒</b> ≥4.4：<b>8件</b>（差距10件）<br>'
+    +'・推測有育兒分數偏高原因：曾有實際照顧經驗，更能判斷商品對寶寶的真實反應，也更貼近媽媽實際使用需求；無育兒較難建立具體的安全感知標準。<br>'
+    +'・有育兒高分集中：感官玩具、媽媽用品、日用耗材；無育兒集中：日常消耗品與餵食輔具。'
+    +'</div></div>'
+    // Q2
+    +'<div style="background:#fff;border:1px solid var(--border);border-radius:7px;padding:11px 14px;border-left:3px solid #2d9cdb">'
+    +'<div style="font-size:12px;font-weight:800;color:#2d9cdb;letter-spacing:.5px;margin-bottom:5px">Q2 解決需求</div>'
+    +'<div style="font-size:12px;color:var(--text);line-height:1.75">'
+    +'・<b>有育兒</b> ≥4.0：25件、≥4.4：14件／<b>無育兒</b> ≥4.0：24件、≥4.4：5件<br>'
+    +'・兩組共同認可 <b>19件</b>，清一色是功能明確的嬰兒照護必需品（清潔、餵食、睡眠、護膚）。<br>'
+    +'・<b>有育兒獨有 6件</b>：B10 AX水杯、A01 媽媽包、C05 布書、B03 學習水杯、D02 精油按摩乳、C04 安撫小海馬——偏向發展性商品與媽媽使用工具，無育兒因缺乏具體使用脈絡，分數停在觀望區。<br>'
+    +'・<b>無育兒獨有 5件</b>：C09 拋棄式圍兜、D05/D06 防蚊系列、D09 抗菌濕紙巾、B12 食物調理機——偏向外出防護與一次性便利品，有育兒用過後反而評分保守，可能對實際效果有保留或已有替代方案。'
+    +'</div></div>'
+    // Q3
+    +'<div style="background:#fff;border:1px solid var(--border);border-radius:7px;padding:11px 14px;border-left:3px solid #27ae60">'
+    +'<div style="font-size:12px;font-weight:800;color:#27ae60;letter-spacing:.5px;margin-bottom:5px">Q3 售價購買</div>'
+    +'<div style="font-size:12px;color:var(--text);line-height:1.75">'
+    +'・全體僅 <b>10/42（24%）≥4.0</b>，約1/4；有育兒10件／無育兒13件，共同8件，<b>重疊率80%</b>。<br>'
+    +'・另有 <b>18件</b>商品「普通」佔比 >30%，是所有題目中價格卡關最廣的一題。<br>'
+    +'・受訪者回饋：對商品市場定價較不熟悉，難以判斷售價是否合理，導致評分趨向保守中立，並非對商品本身有負面看法。'
+    +'</div></div>'
+    // Q4
+    +'<div style="background:#fff;border:1px solid var(--border);border-radius:7px;padding:11px 14px;border-left:3px solid #e07b39">'
+    +'<div style="font-size:12px;font-weight:800;color:#e07b39;letter-spacing:.5px;margin-bottom:5px">Q4 外觀品味</div>'
+    +'<div style="font-size:12px;color:var(--text);line-height:1.75">'
+    +'・全體 ≥4.0：<b>15件</b>；有育兒15件／無育兒17件，共同 <b>10件</b>。<br>'
+    +'・與Q1、Q2不同，<b>無育兒在外觀品味的認可件數反而略高於有育兒</b>（出現反轉）。<br>'
+    +'・推測有育兒族群選品時功能優先、外觀標準更嚴；無育兒較容易受設計感與第一印象驅動評分。'
+    +'</div></div>'
+    // Q5/Q6
+    +'<div style="background:#f8f9fa;border:1px solid var(--border);border-radius:7px;padding:11px 14px;border-left:3px solid #adb5bd">'
+    +'<div style="font-size:12px;font-weight:800;color:#6c757d;letter-spacing:.5px;margin-bottom:5px">Q5 社群推薦 ／ Q6 主動關注</div>'
+    +'<div style="font-size:12px;color:var(--sub);line-height:1.75">因問卷題目設計因素，Q5、Q6 數據暫不列入分析，保留原始資料供後續參考。</div>'
+    +'</div>'
+    // Q7
+    +'<div style="background:#fff;border:1px solid var(--border);border-radius:7px;padding:11px 14px;border-left:3px solid #9b59b6">'
+    +'<div style="font-size:12px;font-weight:800;color:#9b59b6;letter-spacing:.5px;margin-bottom:5px">Q7 深入體驗意願 — 黑馬商品</div>'
+    +'<div style="font-size:12px;color:var(--text);line-height:1.75">'
+    +'・評分未進全體前15，但體驗意願人數異常高，屬「好奇心 > 現有需求感知」型商品：<br>'
+    +'<div style="margin:5px 0 5px 0;display:grid;grid-template-columns:auto 1fr auto auto;gap:2px 8px;font-size:11px;align-items:center">'
+    +'<span style="font-weight:800;color:#9b59b6">D02 精油按摩乳</span><span style="color:var(--sub)">排名 #24</span><span style="color:var(--pr)">21人</span><span style="color:var(--sub)">有育兒8／無育兒13</span>'
+    +'<span style="font-weight:800;color:#9b59b6">D09 抗菌濕紙巾</span><span style="color:var(--sub)">排名 #29</span><span style="color:var(--pr)">19人</span><span style="color:var(--sub)">有育兒7／無育兒12</span>'
+    +'<span style="font-weight:800;color:#9b59b6">D08 口手濕紙巾</span><span style="color:var(--sub)">排名 #32</span><span style="color:var(--pr)">15人</span><span style="color:var(--sub)">有育兒5／無育兒10</span>'
+    +'<span style="font-weight:800;color:#9b59b6">D01 無痕美體霜</span><span style="color:var(--sub)">排名 #23</span><span style="color:var(--pr)">15人</span><span style="color:var(--sub)">有育兒7／無育兒8</span>'
+    +'<span style="font-weight:800;color:#9b59b6">B03 矽膠學習水杯</span><span style="color:var(--sub)">排名 #31</span><span style="color:var(--pr)">15人</span><span style="color:var(--sub)">有育兒7／無育兒8</span>'
+    +'</div>'
+    +'・其中 <b>D02 精油按摩乳</b>最具代表性——幾乎半數受訪者想親自體驗，有育兒（62%）與無育兒（46%）意願皆高，而非真的不感興趣。'
+    +'</div></div>'
+    +'</div>'
+    +'<div style="font-size:12px;font-weight:800;color:var(--pr);letter-spacing:.5px;margin-bottom:8px">族群排名差異</div>'
     +rankNote
     +'<div style="display:flex;gap:14px;flex-wrap:wrap;margin-bottom:18px">'
     +rankTable(expBetter,true,'🟢 有育兒組特別偏好（排名差距最大 Top 5）','#d8f3dc')
     +rankTable(noexpBetter,false,'🟠 無育兒組特別偏好（排名差距最大 Top 5）','#fde8d0')
     +'</div>'
-    +'<div style="font-size:10px;font-weight:800;color:var(--pr);letter-spacing:.5px;margin-bottom:6px">👶 有填寫小孩年齡資訊者（'+childInfo.length+'人）</div>'
+    +'<div style="font-size:12px;font-weight:800;color:var(--pr);letter-spacing:.5px;margin-bottom:6px">👶 有填寫小孩年齡資訊者（'+childInfo.length+'人）</div>'
     +'<table style="border-collapse:collapse;background:#fff;border-radius:8px;overflow:hidden;box-shadow:var(--shadow);margin-bottom:6px">'
     +'<thead><tr style="background:#d8f3dc">'
-    +'<th style="padding:5px 8px;font-size:10px;text-align:left">姓名</th>'
-    +'<th style="padding:5px 8px;font-size:10px;text-align:left">單位</th>'
-    +'<th style="padding:5px 8px;font-size:10px;text-align:left">小孩資訊</th>'
+    +'<th style="padding:6px 10px;font-size:12px;text-align:left">姓名</th>'
+    +'<th style="padding:6px 10px;font-size:12px;text-align:left">單位</th>'
+    +'<th style="padding:6px 10px;font-size:12px;text-align:left">小孩資訊</th>'
     +'</tr></thead><tbody>'+childRows+'</tbody></table>'
-    +'<div style="font-size:10px;color:var(--sub)">※ 蔡孟儒填寫「沒有小孩」但被歸入有育兒組，資料可能有誤</div>';
+    +'<div style="font-size:11px;color:var(--sub)">※ 蔡孟儒填寫「沒有小孩」但被歸入有育兒組，資料可能有誤</div>';
 
   const el=document.getElementById('analysisBody');
   if(el)el.innerHTML=html;
@@ -1178,7 +1406,13 @@ function exp(code){EXPCODE=EXPCODE===code?null:code;renderTable();
   if(EXPCODE===code)setTimeout(()=>document.querySelector(`tr[data-code="${code}"]`)?.scrollIntoView({behavior:'smooth',block:'nearest'}),50);
 }
 renderTable();
-renderInsights();
+renderAnalysisSafe();
+// Hide toolbar/table on initial load (default tab is 族群洞察)
+(function(){
+  const hideTable=true;
+  document.querySelector('.toolbar').style.display='none';
+  document.querySelector('.table-wrap').style.display='none';
+})();
 
 let RESP_FILTER='all';
 let RESP_SORT='default';
