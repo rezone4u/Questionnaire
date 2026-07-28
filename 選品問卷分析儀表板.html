@@ -164,6 +164,9 @@ tr.dtr td{padding:0;border-bottom:2px solid var(--sc)}
 .ins-qbar-fill{height:100%;border-radius:4px}
 .ins-qbar-val{min-width:28px;text-align:right;font-weight:700;color:var(--text)}
 .ins-diff-chip{display:inline-flex;align-items:center;gap:3px;background:var(--ll);border:1px solid var(--lt);border-radius:4px;padding:2px 7px;font-size:10px;color:var(--pr);font-weight:700;margin-right:4px;margin-bottom:4px}
+[contenteditable="true"]{cursor:text}
+[contenteditable="true"]:hover{background:rgba(45,106,79,.07);border-radius:3px;outline:1px dashed rgba(45,106,79,.35)}
+[contenteditable="true"]:focus{background:#f0faf4;border-radius:3px;outline:2px solid rgba(45,106,79,.4);padding:2px 4px}
 </style>
 </head>
 <body>
@@ -333,7 +336,7 @@ tr.dtr td{padding:0;border-bottom:2px solid var(--sc)}
   <div style="width:100%;padding:14px 20px 20px;overflow-y:auto;height:100%;display:flex;flex-direction:column;gap:16px">
 
     <!-- 做對的事 -->
-    <div style="background:#fff;border:1px solid var(--border);border-radius:10px;overflow:hidden">
+    <div style="background:#fff;border:1px solid var(--border);border-radius:10px">
       <div style="background:#d8f3dc;padding:10px 16px;display:flex;align-items:center;gap:8px">
         <span style="font-size:16px">✅</span>
         <span style="font-size:13px;font-weight:800;color:#1b4332;letter-spacing:.5px">做對的事</span>
@@ -345,7 +348,7 @@ tr.dtr td{padding:0;border-bottom:2px solid var(--sc)}
     </div>
 
     <!-- 可以突破或調整的事 -->
-    <div style="background:#fff;border:1px solid var(--border);border-radius:10px;overflow:hidden">
+    <div style="background:#fff;border:1px solid var(--border);border-radius:10px">
       <div style="background:#fff3cd;padding:10px 16px;display:flex;align-items:center;gap:8px">
         <span style="font-size:16px">🔄</span>
         <span style="font-size:13px;font-weight:800;color:#7d5a00;letter-spacing:.5px">可以突破或調整的事</span>
@@ -361,7 +364,7 @@ tr.dtr td{padding:0;border-bottom:2px solid var(--sc)}
     </div>
 
     <!-- 獲得資訊 -->
-    <div style="background:#fff;border:1px solid var(--border);border-radius:10px;overflow:hidden">
+    <div style="background:#fff;border:1px solid var(--border);border-radius:10px">
       <div style="background:#e8d5f7;padding:10px 16px;display:flex;align-items:center;gap:8px">
         <span style="font-size:16px">💡</span>
         <span style="font-size:13px;font-weight:800;color:#4a1a7a;letter-spacing:.5px">獲得資訊</span>
@@ -1299,9 +1302,7 @@ function renderAnalysis(){
       const cel=document.getElementById('qce-'+k);if(!cel)return;
       const saved=localStorage.getItem('qcardv1_'+k);
       if(saved)cel.innerHTML=saved;
-      cel.addEventListener('focus',()=>{cel.style.background='#f8fffe';cel.style.borderRadius='4px';cel.style.padding='3px 5px';cel.style.margin='-3px -5px';});
       cel.addEventListener('blur',()=>{
-        cel.style.background='';cel.style.borderRadius='';cel.style.padding='';cel.style.margin='';
         localStorage.setItem('qcardv1_'+k,cel.innerHTML);
         _JB.push('analysis',_getAllQce());
       });
@@ -1630,9 +1631,7 @@ const _JB=(function(){
       const e=document.getElementById(k);if(!e)return;
       const saved=localStorage.getItem('actv1_'+k);
       if(saved)e.innerHTML=saved;
-      e.addEventListener('focus',()=>{e.style.background='#f0faf4';e.style.padding='2px 4px';e.style.margin='-2px -4px';});
       e.addEventListener('blur',()=>{
-        e.style.background='';e.style.padding='';e.style.margin='';
         localStorage.setItem('actv1_'+k,e.innerHTML);
         _JB.push('activity',_getAll());
       });
