@@ -1701,7 +1701,7 @@ function renderAssignBoard(){
 const _JB=(function(){
   const KEY='$2a$10$0t.NdneSaCvJ0ConoY7J5e2J1oxko.SJhoTNydP5CiKh7YqdoIltq';
   const BIN_STORE='jb_bin_id_v1';
-  let _binId=localStorage.getItem(BIN_STORE);
+  let _binId=localStorage.getItem(BIN_STORE)||'6a6933b4f5f4af5e29cefc6e';
   let _data=null;
   async function _createBin(){
     const r=await fetch('https://api.jsonbin.io/v3/b',{method:'POST',headers:{'Content-Type':'application/json','X-Master-Key':KEY,'X-Bin-Name':'questionnaire-insights'},body:JSON.stringify({activity:{history:[]},analysis:{history:[]}})});
