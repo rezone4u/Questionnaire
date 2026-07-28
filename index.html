@@ -1211,46 +1211,59 @@ function renderAnalysis(){
     +'<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px">'
     // Q1
     +'<div style="background:#fff;border:1px solid var(--border);border-radius:7px;padding:11px 14px;border-left:3px solid #4361ee">'
-    +'<div style="font-size:12px;font-weight:800;color:#4361ee;letter-spacing:.5px;margin-bottom:5px">Q1 安全安心</div>'
-    +'<div style="font-size:12px;color:var(--text);line-height:1.75">'
-    +'・<b>有育兒</b> ≥4.4：<b>18件</b>／<b>無育兒</b> ≥4.4：<b>8件</b>（差距10件）<br>'
+    +'<div style="font-size:12px;font-weight:800;color:#4361ee;letter-spacing:.5px;margin-bottom:6px">Q1 安全安心</div>'
+    +'<div style="display:flex;flex-direction:column;gap:3px;margin-bottom:7px;padding-bottom:7px;border-bottom:1px dashed var(--border)">'
+    +'<div style="display:flex;align-items:center;gap:7px;font-size:12px"><span style="width:7px;height:7px;border-radius:50%;background:#7c3aed;flex-shrink:0"></span><span style="font-weight:600;min-width:44px;color:var(--text)">有育兒</span><span style="color:var(--sub)">≥4.4 <b style="color:var(--text);font-weight:700">18件</b></span></div>'
+    +'<div style="display:flex;align-items:center;gap:7px;font-size:12px"><span style="width:7px;height:7px;border-radius:50%;background:#d97706;flex-shrink:0"></span><span style="font-weight:600;min-width:44px;color:var(--text)">無育兒</span><span style="color:var(--sub)">≥4.4 <b style="color:var(--text);font-weight:700">8件</b></span></div>'
+    +'</div>'
+    +'<div id="qce-q1" contenteditable="true" spellcheck="false" style="font-size:12px;color:var(--text);line-height:1.75;outline:none;cursor:text">'
     +'・推測有育兒分數偏高原因：曾有實際照顧經驗，更能判斷商品對寶寶的真實反應，也更貼近媽媽實際使用需求；無育兒較難建立具體的安全感知標準。<br>'
     +'・有育兒高分集中：感官玩具、媽媽用品、日用耗材；無育兒集中：日常消耗品與餵食輔具。'
     +'</div></div>'
     // Q2
     +'<div style="background:#fff;border:1px solid var(--border);border-radius:7px;padding:11px 14px;border-left:3px solid #2d9cdb">'
-    +'<div style="font-size:12px;font-weight:800;color:#2d9cdb;letter-spacing:.5px;margin-bottom:5px">Q2 解決需求</div>'
-    +'<div style="font-size:12px;color:var(--text);line-height:1.75">'
-    +'・<b>有育兒</b> ≥4.0：25件、≥4.4：14件／<b>無育兒</b> ≥4.0：24件、≥4.4：5件<br>'
+    +'<div style="font-size:12px;font-weight:800;color:#2d9cdb;letter-spacing:.5px;margin-bottom:6px">Q2 解決需求</div>'
+    +'<div style="display:flex;flex-direction:column;gap:3px;margin-bottom:7px;padding-bottom:7px;border-bottom:1px dashed var(--border)">'
+    +'<div style="display:flex;align-items:center;gap:7px;font-size:12px"><span style="width:7px;height:7px;border-radius:50%;background:#7c3aed;flex-shrink:0"></span><span style="font-weight:600;min-width:44px;color:var(--text)">有育兒</span><span style="color:var(--sub)">≥4.0 <b style="color:var(--text);font-weight:700">25件</b></span><span style="color:var(--sub);margin:0 2px">·</span><span style="color:var(--sub)">≥4.4 <b style="color:var(--text);font-weight:700">14件</b></span></div>'
+    +'<div style="display:flex;align-items:center;gap:7px;font-size:12px"><span style="width:7px;height:7px;border-radius:50%;background:#d97706;flex-shrink:0"></span><span style="font-weight:600;min-width:44px;color:var(--text)">無育兒</span><span style="color:var(--sub)">≥4.0 <b style="color:var(--text);font-weight:700">24件</b></span><span style="color:var(--sub);margin:0 2px">·</span><span style="color:var(--sub)">≥4.4 <b style="color:var(--text);font-weight:700">5件</b></span></div>'
+    +'</div>'
+    +'<div id="qce-q2" contenteditable="true" spellcheck="false" style="font-size:12px;color:var(--text);line-height:1.75;outline:none;cursor:text">'
     +'・兩組共同認可 <b>19件</b>，清一色是功能明確的嬰兒照護必需品（清潔、餵食、睡眠、護膚）。<br>'
     +'・<b>有育兒獨有 6件</b>：B10 AX水杯、A01 媽媽包、C05 布書、B03 學習水杯、D02 精油按摩乳、C04 安撫小海馬——偏向發展性商品與媽媽使用工具，無育兒因缺乏具體使用脈絡，分數停在觀望區。<br>'
     +'・<b>無育兒獨有 5件</b>：C09 拋棄式圍兜、D05/D06 防蚊系列、D09 抗菌濕紙巾、B12 食物調理機——偏向外出防護與一次性便利品，有育兒用過後反而評分保守，可能對實際效果有保留或已有替代方案。'
     +'</div></div>'
     // Q3
     +'<div style="background:#fff;border:1px solid var(--border);border-radius:7px;padding:11px 14px;border-left:3px solid #27ae60">'
-    +'<div style="font-size:12px;font-weight:800;color:#27ae60;letter-spacing:.5px;margin-bottom:5px">Q3 售價購買</div>'
-    +'<div style="font-size:12px;color:var(--text);line-height:1.75">'
-    +'・全體僅 <b>10/42（24%）≥4.0</b>，約1/4；有育兒10件／無育兒13件，共同8件，<b>重疊率80%</b>。<br>'
+    +'<div style="font-size:12px;font-weight:800;color:#27ae60;letter-spacing:.5px;margin-bottom:6px">Q3 售價購買</div>'
+    +'<div style="display:flex;flex-direction:column;gap:3px;margin-bottom:7px;padding-bottom:7px;border-bottom:1px dashed var(--border)">'
+    +'<div style="display:flex;align-items:center;gap:7px;font-size:12px"><span style="width:7px;height:7px;border-radius:50%;background:#7c3aed;flex-shrink:0"></span><span style="font-weight:600;min-width:44px;color:var(--text)">有育兒</span><span style="color:var(--sub)">≥4.0 <b style="color:var(--text);font-weight:700">10件</b></span></div>'
+    +'<div style="display:flex;align-items:center;gap:7px;font-size:12px"><span style="width:7px;height:7px;border-radius:50%;background:#d97706;flex-shrink:0"></span><span style="font-weight:600;min-width:44px;color:var(--text)">無育兒</span><span style="color:var(--sub)">≥4.0 <b style="color:var(--text);font-weight:700">13件</b></span></div>'
+    +'</div>'
+    +'<div id="qce-q3" contenteditable="true" spellcheck="false" style="font-size:12px;color:var(--text);line-height:1.75;outline:none;cursor:text">'
+    +'・全體僅 <b>10/42（24%）≥4.0</b>，共同8件，<b>重疊率80%</b>。<br>'
     +'・另有 <b>18件</b>商品「普通」佔比 >30%，是所有題目中價格卡關最廣的一題。<br>'
     +'・受訪者回饋：對商品市場定價較不熟悉，難以判斷售價是否合理，導致評分趨向保守中立，並非對商品本身有負面看法。'
     +'</div></div>'
     // Q4
     +'<div style="background:#fff;border:1px solid var(--border);border-radius:7px;padding:11px 14px;border-left:3px solid #e07b39">'
-    +'<div style="font-size:12px;font-weight:800;color:#e07b39;letter-spacing:.5px;margin-bottom:5px">Q4 外觀品味</div>'
-    +'<div style="font-size:12px;color:var(--text);line-height:1.75">'
-    +'・全體 ≥4.0：<b>15件</b>；有育兒15件／無育兒17件，共同 <b>10件</b>。<br>'
+    +'<div style="font-size:12px;font-weight:800;color:#e07b39;letter-spacing:.5px;margin-bottom:6px">Q4 外觀品味</div>'
+    +'<div style="display:flex;flex-direction:column;gap:3px;margin-bottom:7px;padding-bottom:7px;border-bottom:1px dashed var(--border)">'
+    +'<div style="display:flex;align-items:center;gap:7px;font-size:12px"><span style="width:7px;height:7px;border-radius:50%;background:#7c3aed;flex-shrink:0"></span><span style="font-weight:600;min-width:44px;color:var(--text)">有育兒</span><span style="color:var(--sub)">≥4.0 <b style="color:var(--text);font-weight:700">15件</b></span></div>'
+    +'<div style="display:flex;align-items:center;gap:7px;font-size:12px"><span style="width:7px;height:7px;border-radius:50%;background:#d97706;flex-shrink:0"></span><span style="font-weight:600;min-width:44px;color:var(--text)">無育兒</span><span style="color:var(--sub)">≥4.0 <b style="color:var(--text);font-weight:700">17件</b></span><span style="font-size:11px;color:var(--sub);margin-left:6px">共同10件</span></div>'
+    +'</div>'
+    +'<div id="qce-q4" contenteditable="true" spellcheck="false" style="font-size:12px;color:var(--text);line-height:1.75;outline:none;cursor:text">'
     +'・與Q1、Q2不同，<b>無育兒在外觀品味的認可件數反而略高於有育兒</b>（出現反轉）。<br>'
     +'・推測有育兒族群選品時功能優先、外觀標準更嚴；無育兒較容易受設計感與第一印象驅動評分。'
     +'</div></div>'
     // Q5/Q6
     +'<div style="background:#f8f9fa;border:1px solid var(--border);border-radius:7px;padding:11px 14px;border-left:3px solid #adb5bd">'
-    +'<div style="font-size:12px;font-weight:800;color:#6c757d;letter-spacing:.5px;margin-bottom:5px">Q5 社群推薦 ／ Q6 主動關注</div>'
-    +'<div style="font-size:12px;color:var(--sub);line-height:1.75">因問卷題目設計因素，Q5、Q6 數據暫不列入分析，保留原始資料供後續參考。</div>'
+    +'<div style="font-size:12px;font-weight:800;color:#6c757d;letter-spacing:.5px;margin-bottom:6px">Q5 社群推薦 ／ Q6 主動關注</div>'
+    +'<div id="qce-q5q6" contenteditable="true" spellcheck="false" style="font-size:12px;color:var(--sub);line-height:1.75;outline:none;cursor:text">因問卷題目設計因素，Q5、Q6 數據暫不列入分析，保留原始資料供後續參考。</div>'
     +'</div>'
     // Q7
     +'<div style="background:#fff;border:1px solid var(--border);border-radius:7px;padding:11px 14px;border-left:3px solid #9b59b6">'
-    +'<div style="font-size:12px;font-weight:800;color:#9b59b6;letter-spacing:.5px;margin-bottom:5px">Q7 深入體驗意願 — 黑馬商品</div>'
-    +'<div style="font-size:12px;color:var(--text);line-height:1.75">'
+    +'<div style="font-size:12px;font-weight:800;color:#9b59b6;letter-spacing:.5px;margin-bottom:6px">Q7 深入體驗意願 — 黑馬商品</div>'
+    +'<div id="qce-q7" contenteditable="true" spellcheck="false" style="font-size:12px;color:var(--text);line-height:1.75;outline:none;cursor:text">'
     +'・評分未進全體前15，但體驗意願人數異常高，屬「好奇心 > 現有需求感知」型商品：<br>'
     +'<div style="margin:5px 0 5px 0;display:grid;grid-template-columns:auto 1fr auto auto;gap:2px 8px;font-size:11px;align-items:center">'
     +'<span style="font-weight:800;color:#9b59b6">D02 精油按摩乳</span><span style="color:var(--sub)">排名 #24</span><span style="color:var(--pr)">21人</span><span style="color:var(--sub)">有育兒8／無育兒13</span>'
@@ -1278,7 +1291,23 @@ function renderAnalysis(){
     +'<div style="font-size:11px;color:var(--sub)">※ 蔡孟儒填寫「沒有小孩」但被歸入有育兒組，資料可能有誤</div>';
 
   const el=document.getElementById('analysisBody');
-  if(el)el.innerHTML=html;
+  if(el){
+    el.innerHTML=html;
+    const _qceKeys=['q1','q2','q3','q4','q5q6','q7'];
+    let _saveInd,_saveTimer;
+    function _flashSaved(){
+      if(!_saveInd){_saveInd=document.createElement('div');Object.assign(_saveInd.style,{position:'fixed',bottom:'16px',right:'16px',background:'#2d6a4f',color:'#fff',fontSize:'12px',padding:'5px 14px',borderRadius:'6px',opacity:'0',transition:'opacity .3s',zIndex:'9999',pointerEvents:'none'});_saveInd.textContent='✓ 已儲存';document.body.appendChild(_saveInd);}
+      _saveInd.style.opacity='1';clearTimeout(_saveTimer);_saveTimer=setTimeout(()=>{_saveInd.style.opacity='0';},1600);
+    }
+    _qceKeys.forEach(k=>{
+      const cel=document.getElementById('qce-'+k);
+      if(!cel)return;
+      const saved=localStorage.getItem('qcardv1_'+k);
+      if(saved)cel.innerHTML=saved;
+      cel.addEventListener('focus',()=>{cel.style.background='#f8fffe';cel.style.borderRadius='4px';cel.style.padding='3px 5px';cel.style.margin='-3px -5px';});
+      cel.addEventListener('blur',()=>{cel.style.background='';cel.style.borderRadius='';cel.style.padding='';cel.style.margin='';localStorage.setItem('qcardv1_'+k,cel.innerHTML);_flashSaved();});
+    });
+  }
 }
 
 function renderAnalysisSafe(){
