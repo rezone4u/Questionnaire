@@ -339,6 +339,13 @@ tr.dtr td{padding:0;border-bottom:2px solid var(--sc)}
       <button onclick="actSave()" style="font-size:12px;font-weight:600;background:#1b4332;color:#fff;border:none;border-radius:5px;padding:5px 14px;cursor:pointer">💾 儲存快照</button>
       <button onclick="actToggleHistory()" id="act-hist-btn" style="font-size:12px;color:var(--sub);background:none;border:1px solid var(--border);border-radius:5px;padding:5px 10px;cursor:pointer">📋 版本記錄</button>
       <span id="act-saved-ind" style="font-size:11px;color:#2d6a4f;opacity:0;transition:opacity .3s;margin-left:4px">✓ 已儲存</span>
+      <div style="width:100%;margin-top:6px;padding-top:6px;border-top:1px dashed var(--border);display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+        <span style="font-size:11px;color:var(--sub);flex-shrink:0">🔗 Bin ID：</span>
+        <span class="jb-bin-id" style="font-size:11px;font-family:monospace;color:#334155;background:#f1f5f9;padding:2px 7px;border-radius:3px">載入中...</span>
+        <button onclick="navigator.clipboard.writeText(document.querySelector('.jb-bin-id').textContent)" style="font-size:11px;color:var(--sub);background:none;border:1px solid var(--border);border-radius:3px;padding:2px 7px;cursor:pointer">複製</button>
+        <input id="act-bin-input" type="text" placeholder="貼上其他電腦的 Bin ID" style="font-size:11px;border:1px solid var(--border);border-radius:3px;padding:2px 7px;width:200px;outline:none;color:var(--text)">
+        <button onclick="(async()=>{const v=document.getElementById('act-bin-input').value;const ok=await _JB.setBinId(v);alert(ok?'✓ 已切換，請重新整理頁面':'✗ 找不到此 Bin ID，請確認');})();" style="font-size:11px;color:#1b4332;background:#d8f3dc;border:none;border-radius:3px;padding:3px 8px;cursor:pointer">套用</button>
+      </div>
     </div>
 
     <!-- 版本記錄面板 -->
@@ -1227,7 +1234,29 @@ function renderAnalysis(){
     +'</div>';
 
   const html=
-    '<div style="font-size:12px;font-weight:800;color:var(--pr);letter-spacing:.5px;margin-bottom:10px">各題問卷洞察</div>'
+    '<div id="qce-toolbar" style="background:#f8fafc;border:1px solid var(--border);border-radius:8px;padding:10px 14px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:14px">'
+    +'<span style="font-size:12px;color:var(--sub);flex-shrink:0">編輯者：</span>'
+    +'<input id="qce-editor-input" type="text" placeholder="輸入您的名稱" style="font-size:12px;border:1px solid var(--border);border-radius:5px;padding:4px 8px;width:120px;color:var(--text);background:#fff;outline:none">'
+    +'<button onclick="qceSave()" style="font-size:12px;font-weight:600;background:#1b4332;color:#fff;border:none;border-radius:5px;padding:5px 14px;cursor:pointer">💾 儲存快照</button>'
+    +'<button onclick="qceToggleHistory()" id="qce-hist-btn" style="font-size:12px;color:var(--sub);background:none;border:1px solid var(--border);border-radius:5px;padding:5px 10px;cursor:pointer">📋 版本記錄</button>'
+    +'<span id="qce-saved-ind" style="font-size:11px;color:#2d6a4f;opacity:0;transition:opacity .3s;margin-left:4px">✓ 已儲存</span>'
+    +'<div style="width:100%;margin-top:6px;padding-top:6px;border-top:1px dashed var(--border);display:flex;align-items:center;gap:8px;flex-wrap:wrap">'
+    +'<span style="font-size:11px;color:var(--sub);flex-shrink:0">🔗 Bin ID：</span>'
+    +'<span class="jb-bin-id" style="font-size:11px;font-family:monospace;color:#334155;background:#f1f5f9;padding:2px 7px;border-radius:3px">載入中...</span>'
+    +'<button onclick="navigator.clipboard.writeText(document.querySelector(\'.jb-bin-id\').textContent)" style="font-size:11px;color:var(--sub);background:none;border:1px solid var(--border);border-radius:3px;padding:2px 7px;cursor:pointer">複製</button>'
+    +'<input id="qce-bin-input" type="text" placeholder="貼上其他電腦的 Bin ID" style="font-size:11px;border:1px solid var(--border);border-radius:3px;padding:2px 7px;width:200px;outline:none;color:var(--text)">'
+    +'<button onclick="(async()=>{const v=document.getElementById(\'qce-bin-input\').value;const ok=await _JB.setBinId(v);alert(ok?\'✓ 已切換，請重新整理頁面\':\'✗ 找不到此 Bin ID，請確認\');})()" style="font-size:11px;color:#1b4332;background:#d8f3dc;border:none;border-radius:3px;padding:3px 8px;cursor:pointer">套用</button>'
+    +'</div>'
+    +'</div>'
+    +'<div id="qce-history-panel" style="display:none;background:#fff;border:1px solid var(--border);border-radius:8px;overflow:hidden;margin-bottom:14px">'
+    +'<div style="background:#f1f5f9;padding:8px 14px;font-size:12px;font-weight:700;color:#334155;display:flex;justify-content:space-between;align-items:center">'
+    +'<span>📋 版本記錄（最近 20 筆）</span>'
+    +'<button onclick="qceToggleHistory()" style="background:none;border:none;cursor:pointer;color:var(--sub);font-size:16px;line-height:1">✕</button>'
+    +'</div>'
+    +'<div id="qce-history-list" style="max-height:240px;overflow-y:auto;padding:8px 14px;display:flex;flex-direction:column;gap:6px">'
+    +'<div style="color:var(--sub);font-size:11px;font-style:italic">尚無版本記錄</div>'
+    +'</div></div>'
+    +'<div style="font-size:12px;font-weight:800;color:var(--pr);letter-spacing:.5px;margin-bottom:10px">各題問卷洞察</div>'
     +'<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px">'
     // Q1
     +'<div style="background:#fff;border:1px solid var(--border);border-radius:7px;padding:11px 14px;border-left:3px solid #4361ee">'
@@ -1314,19 +1343,75 @@ function renderAnalysis(){
   if(el){
     el.innerHTML=html;
     const _qceKeys=['q1','q2','q3','q4','q5q6','q7'];
-    let _saveInd,_saveTimer;
-    function _flashSaved(){
-      if(!_saveInd){_saveInd=document.createElement('div');Object.assign(_saveInd.style,{position:'fixed',bottom:'16px',right:'16px',background:'#2d6a4f',color:'#fff',fontSize:'12px',padding:'5px 14px',borderRadius:'6px',opacity:'0',transition:'opacity .3s',zIndex:'9999',pointerEvents:'none'});_saveInd.textContent='✓ 已儲存';document.body.appendChild(_saveInd);}
-      _saveInd.style.opacity='1';clearTimeout(_saveTimer);_saveTimer=setTimeout(()=>{_saveInd.style.opacity='0';},1600);
-    }
+    // Restore saved content
     _qceKeys.forEach(k=>{
       const cel=document.getElementById('qce-'+k);
       if(!cel)return;
       const saved=localStorage.getItem('qcardv1_'+k);
       if(saved)cel.innerHTML=saved;
       cel.addEventListener('focus',()=>{cel.style.background='#f8fffe';cel.style.borderRadius='4px';cel.style.padding='3px 5px';cel.style.margin='-3px -5px';});
-      cel.addEventListener('blur',()=>{cel.style.background='';cel.style.borderRadius='';cel.style.padding='';cel.style.margin='';localStorage.setItem('qcardv1_'+k,cel.innerHTML);_flashSaved();});
+      cel.addEventListener('blur',()=>{cel.style.background='';cel.style.borderRadius='';cel.style.padding='';cel.style.margin='';localStorage.setItem('qcardv1_'+k,cel.innerHTML);});
     });
+    // Restore editor name
+    const _savedEd=localStorage.getItem('qcev1_editor');
+    const _edIn=document.getElementById('qce-editor-input');
+    if(_edIn&&_savedEd)_edIn.value=_savedEd;
+    // Save snapshot function
+    window.qceSave=async function(){
+      const edIn=document.getElementById('qce-editor-input');
+      const editor=(edIn&&edIn.value.trim())||'（未署名）';
+      if(edIn)localStorage.setItem('qcev1_editor',editor);
+      const items={};
+      _qceKeys.forEach(k=>{const c=document.getElementById('qce-'+k);if(c){items[k]=c.innerHTML;localStorage.setItem('qcardv1_'+k,c.innerHTML);}});
+      let hist=[];try{hist=JSON.parse(localStorage.getItem('qcev1_history')||'[]');}catch(e){}
+      hist.push({ts:Date.now(),editor,items});
+      if(hist.length>20)hist=hist.slice(-20);
+      localStorage.setItem('qcev1_history',JSON.stringify(hist));
+      const ind=document.getElementById('qce-saved-ind');
+      if(ind){ind.textContent='⏳ 同步中...';ind.style.color='#6c757d';ind.style.opacity='1';}
+      const ok=await _JB.push('analysis',editor,items);
+      if(ind){ind.textContent=ok?'✓ 已同步':'✓ 本機已存（離線）';ind.style.color=ok?'#2d6a4f':'#c47d00';clearTimeout(ind._t);ind._t=setTimeout(()=>{ind.style.opacity='0';},2500);}
+      qceRenderHistory();
+    };
+    window.qceRenderHistory=function(){
+      const list=document.getElementById('qce-history-list');if(!list)return;
+      const gh=_JB.get('analysis');
+      let hist=(gh&&gh.history&&gh.history.length)?gh.history:[];
+      const fromGH=hist.length>0;
+      if(!fromGH){try{hist=JSON.parse(localStorage.getItem('qcev1_history')||'[]');}catch(e){}}
+      if(!hist.length){list.innerHTML='<div style="color:var(--sub);font-size:11px;font-style:italic">尚無版本記錄</div>';return;}
+      const src=fromGH?'<span style="font-size:10px;color:#2d6a4f;margin-left:6px">● GitHub</span>':'<span style="font-size:10px;color:#c47d00;margin-left:6px">● 本機</span>';
+      list.innerHTML=hist.slice().reverse().map((v,i)=>{
+        const idx=hist.length-1-i;
+        const dt=new Date(v.ts);const pad=n=>String(n).padStart(2,'0');
+        const dtStr=`${dt.getFullYear()}/${pad(dt.getMonth()+1)}/${pad(dt.getDate())} ${pad(dt.getHours())}:${pad(dt.getMinutes())}`;
+        return `<div style="display:flex;align-items:center;justify-content:space-between;font-size:12px;padding:6px 8px;background:#f8fafc;border-radius:6px;border:1px solid #e2e8f0">
+          <div><span style="font-weight:700;color:var(--text)">${v.editor||'（未署名）'}</span><span style="color:var(--sub);margin-left:8px">${dtStr}</span>${i===0?src:''}</div>
+          <button onclick="qceRestore(${idx})" style="font-size:11px;color:#1b4332;background:#d8f3dc;border:none;border-radius:4px;padding:3px 9px;cursor:pointer">還原</button>
+        </div>`;
+      }).join('');
+    };
+    window.qceRestore=function(idx){
+      const gh=_JB.get('analysis');
+      const hist=(gh&&gh.history&&gh.history.length)?gh.history:(()=>{try{return JSON.parse(localStorage.getItem('qcev1_history')||'[]');}catch(e){return[];}})();
+      const v=hist[idx];if(!v)return;
+      if(!confirm('確定要還原到這個版本嗎？'))return;
+      _qceKeys.forEach(k=>{const c=document.getElementById('qce-'+k);if(c&&v.items[k]!=null){c.innerHTML=v.items[k];localStorage.setItem('qcardv1_'+k,v.items[k]);}});
+    };
+    // Load GitHub data and override local content
+    (async()=>{
+      await _JB.ready;
+      const gh=_JB.get('analysis');
+      if(gh&&gh.current&&gh.current.items){
+        _qceKeys.forEach(k=>{const c=document.getElementById('qce-'+k);if(c&&gh.current.items[k]!=null){c.innerHTML=gh.current.items[k];localStorage.setItem('qcardv1_'+k,gh.current.items[k]);}});
+      }
+    })();
+    window.qceToggleHistory=function(){
+      const panel=document.getElementById('qce-history-panel');if(!panel)return;
+      const open=panel.style.display==='none';
+      panel.style.display=open?'block':'none';
+      if(open)qceRenderHistory();
+    };
   }
 }
 
@@ -1612,6 +1697,56 @@ function renderAssignBoard(){
   }).join('');
 }
 
+// JSONBin cross-device sync
+const _JB=(function(){
+  const KEY='$2a$10$0t.NdneSaCvJ0ConoY7J5e2J1oxko.SJhoTNydP5CiKh7YqdoIltq';
+  const BIN_STORE='jb_bin_id_v1';
+  let _binId=localStorage.getItem(BIN_STORE);
+  let _data=null;
+  async function _createBin(){
+    const r=await fetch('https://api.jsonbin.io/v3/b',{method:'POST',headers:{'Content-Type':'application/json','X-Master-Key':KEY,'X-Bin-Name':'questionnaire-insights'},body:JSON.stringify({activity:{history:[]},analysis:{history:[]}})});
+    if(!r.ok)throw new Error('create bin failed');
+    const j=await r.json();return j.metadata.id;
+  }
+  async function _loadBin(id){
+    const r=await fetch('https://api.jsonbin.io/v3/b/'+id+'/latest',{headers:{'X-Master-Key':KEY}});
+    if(!r.ok)throw new Error('load failed');
+    const j=await r.json();return j.record||{};
+  }
+  const _ready=(async function(){
+    try{
+      if(!_binId){_binId=await _createBin();localStorage.setItem(BIN_STORE,_binId);}
+      _data=await _loadBin(_binId);
+    }catch(e){_data={};}
+    // Update any bin-id displays
+    document.querySelectorAll('.jb-bin-id').forEach(el=>el.textContent=_binId||'—');
+  })();
+  async function push(section,editor,items){
+    await _ready;
+    if(!_data)_data={};
+    if(!_data[section])_data[section]={history:[]};
+    const entry={ts:Date.now(),editor,items};
+    _data[section].history=[...(_data[section].history||[]),entry].slice(-20);
+    _data[section].current=entry;
+    try{
+      const r=await fetch('https://api.jsonbin.io/v3/b/'+_binId,{method:'PUT',headers:{'Content-Type':'application/json','X-Master-Key':KEY},body:JSON.stringify(_data)});
+      return r.ok;
+    }catch(e){return false;}
+  }
+  async function setBinId(id){
+    id=id.trim();if(!id)return false;
+    try{
+      const d=await _loadBin(id);
+      _binId=id;_data=d;localStorage.setItem(BIN_STORE,id);
+      document.querySelectorAll('.jb-bin-id').forEach(el=>el.textContent=id);
+      return true;
+    }catch(e){return false;}
+  }
+  function get(section){return _data&&_data[section];}
+  function getBinId(){return _binId;}
+  return{ready:_ready,push,get,getBinId,setBinId};
+})();
+
 // 活動洞察 editable + version history
 (function(){
   const KEYS=['act-g1-1','act-g1-2','act-g2-1','act-g2-2','act-g2-3','act-g2-4','act-g2-5','act-g2-6','act-g3-1','act-g3-2'];
@@ -1642,43 +1777,40 @@ function renderAssignBoard(){
 
   function renderHistory(){
     const list=document.getElementById('act-history-list');
-    if(!list) return;
-    let history=[];
-    try{ history=JSON.parse(localStorage.getItem(STORE_HISTORY)||'[]'); }catch(e){}
-    if(history.length===0){
-      list.innerHTML='<div style="color:var(--sub);font-size:11px;font-style:italic">尚無版本記錄</div>';
-      return;
-    }
+    if(!list)return;
+    const gh=_JB.get('activity');
+    let history=(gh&&gh.history&&gh.history.length)?gh.history:[];
+    if(!history.length){try{history=JSON.parse(localStorage.getItem(STORE_HISTORY)||'[]');}catch(e){}}
+    if(!history.length){list.innerHTML='<div style="color:var(--sub);font-size:11px;font-style:italic">尚無版本記錄</div>';return;}
+    const src=gh&&gh.history&&gh.history.length?'<span style="font-size:10px;color:#2d6a4f;margin-left:6px">● GitHub</span>':'<span style="font-size:10px;color:#c47d00;margin-left:6px">● 本機</span>';
     list.innerHTML=history.slice().reverse().map((v,i)=>{
       const idx=history.length-1-i;
       const dt=new Date(v.ts);
       const pad=n=>String(n).padStart(2,'0');
       const dtStr=`${dt.getFullYear()}/${pad(dt.getMonth()+1)}/${pad(dt.getDate())} ${pad(dt.getHours())}:${pad(dt.getMinutes())}`;
-      const editor=v.editor||'（未署名）';
       return `<div style="display:flex;align-items:center;justify-content:space-between;font-size:12px;padding:6px 8px;background:#f8fafc;border-radius:6px;border:1px solid #e2e8f0">
-        <div>
-          <span style="font-weight:700;color:var(--text)">${editor}</span>
-          <span style="color:var(--sub);margin-left:8px">${dtStr}</span>
-        </div>
+        <div><span style="font-weight:700;color:var(--text)">${v.editor||'（未署名）'}</span><span style="color:var(--sub);margin-left:8px">${dtStr}</span>${i===0?src:''}</div>
         <button onclick="actRestore(${idx})" style="font-size:11px;color:#1b4332;background:#d8f3dc;border:none;border-radius:4px;padding:3px 9px;cursor:pointer">還原</button>
       </div>`;
     }).join('');
   }
 
-  window.actSave=function(){
+  window.actSave=async function(){
     const editorEl=document.getElementById('act-editor');
     const editor=(editorEl&&editorEl.value.trim())||'（未署名）';
     if(editorEl) localStorage.setItem(STORE_EDITOR,editor);
     const content=getCurrentContent();
     localStorage.setItem(STORE_CONTENT,JSON.stringify(content));
     let history=[];
-    try{ history=JSON.parse(localStorage.getItem(STORE_HISTORY)||'[]'); }catch(e){}
+    try{history=JSON.parse(localStorage.getItem(STORE_HISTORY)||'[]');}catch(e){}
     history.push({ts:Date.now(),editor,items:content});
-    if(history.length>20) history=history.slice(-20);
+    if(history.length>20)history=history.slice(-20);
     localStorage.setItem(STORE_HISTORY,JSON.stringify(history));
-    renderHistory();
     const ind=document.getElementById('act-saved-ind');
-    if(ind){ind.style.opacity='1';clearTimeout(ind._t);ind._t=setTimeout(()=>{ind.style.opacity='0';},1800);}
+    if(ind){ind.textContent='⏳ 同步中...';ind.style.color='#6c757d';ind.style.opacity='1';}
+    const ok=await _JB.push('activity',editor,content);
+    if(ind){ind.textContent=ok?'✓ 已同步':'✓ 本機已存（離線）';ind.style.color=ok?'#2d6a4f':'#c47d00';clearTimeout(ind._t);ind._t=setTimeout(()=>{ind.style.opacity='0';},2500);}
+    renderHistory();
   };
 
   window.actRestore=function(idx){
@@ -1719,20 +1851,26 @@ function renderAssignBoard(){
     if(el&&saved) el.value=saved;
   }
 
+  async function initP5(){
+    loadContent(); initFocusStyle(); restoreEditorName();
+    // Wait for GitHub data, then override with remote if available
+    await _JB.ready;
+    const gh=_JB.get('activity');
+    if(gh&&gh.current&&gh.current.items){
+      KEYS.forEach(k=>{const el=document.getElementById(k);if(el&&gh.current.items[k]!=null)el.innerHTML=gh.current.items[k];});
+      localStorage.setItem(STORE_CONTENT,JSON.stringify(gh.current.items));
+    }
+  }
   // Init on p5 first activation
   let _actInited=false;
   const _origSwitch=window.switchPanel;
   window.switchPanel=function(i,el){
     _origSwitch&&_origSwitch(i,el);
-    if(i===5&&!_actInited){
-      _actInited=true;
-      setTimeout(()=>{ loadContent(); initFocusStyle(); restoreEditorName(); },50);
-    }
+    if(i===5&&!_actInited){_actInited=true;initP5();}
   };
-  // Also init if p5 is shown on load
   document.addEventListener('DOMContentLoaded',()=>{
     if(document.getElementById('p5')&&document.getElementById('p5').style.display!=='none'){
-      loadContent(); initFocusStyle(); restoreEditorName(); _actInited=true;
+      _actInited=true;initP5();
     }
   });
 })();
