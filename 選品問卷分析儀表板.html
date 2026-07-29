@@ -166,10 +166,14 @@ tr.dtr td{padding:0;border-bottom:2px solid var(--sc)}
 .ins-diff-chip{display:inline-flex;align-items:center;gap:3px;background:var(--ll);border:1px solid var(--lt);border-radius:4px;padding:2px 7px;font-size:10px;color:var(--pr);font-weight:700;margin-right:4px;margin-bottom:4px}
 [contenteditable="true"]{cursor:text}
 [contenteditable="true"]:hover{background:rgba(45,106,79,.07);border-radius:3px;outline:1px dashed rgba(45,106,79,.35)}
-[contenteditable="true"]:focus{background:#f0faf4;border-radius:3px;outline:2px solid rgba(45,106,79,.4);padding:2px 4px}
+[contenteditable="true"]:focus{background:#f0faf4;border-radius:3px;outline:2px solid rgba(45,106,79,.4)}
+#act-g1>div,#act-g2>div,#act-g3>div{padding-left:1.7em;text-indent:-1.7em}
+#save-toast{position:fixed;bottom:24px;right:24px;background:#2d6a4f;color:#fff;font-size:12px;font-weight:600;padding:7px 14px;border-radius:20px;opacity:0;pointer-events:none;transition:opacity .25s;z-index:9999}
+#save-toast.show{opacity:1}
 </style>
 </head>
 <body>
+<div id="save-toast">✓ 已儲存</div>
 <header>
   <div style="display:flex;align-items:center;gap:6px">
 <svg width="11" height="11" viewBox="0 0 11 11" style="display:inline;vertical-align:middle;margin-right:4px" xmlns="http://www.w3.org/2000/svg"><path d="M5.5 1C3 3 1 6 2 9.5 4.5 9 7 7 8 4.5 9 7 10 9 9.5 9.5 8 6 6 3 5.5 1z" fill="#52b788"/><line x1="5.5" y1="2" x2="5.5" y2="10" stroke="#2d6a4f" stroke-width="0.7" stroke-linecap="round"/></svg>
@@ -341,10 +345,7 @@ tr.dtr td{padding:0;border-bottom:2px solid var(--sc)}
         <span style="font-size:16px">✅</span>
         <span style="font-size:13px;font-weight:800;color:#1b4332;letter-spacing:.5px">做對的事</span>
       </div>
-      <div style="padding:14px 16px;font-size:14px;color:var(--text);line-height:1.9;display:flex;flex-direction:column;gap:6px">
-        <div style="display:flex;align-items:flex-start"><span style="font-weight:700;color:#2d6a4f;margin-right:6px;flex-shrink:0">1.</span><span id="act-g1-1" contenteditable="true" spellcheck="false" style="flex:1;outline:none;cursor:text;border-radius:3px;transition:background .15s">商品一次性展開評測，讓消費者在真實接觸的當下，直接反映疑問與在意的資訊，有效捕捉第一手感受。</span></div>
-        <div style="display:flex;align-items:flex-start"><span style="font-weight:700;color:#2d6a4f;margin-right:6px;flex-shrink:0">2.</span><span id="act-g1-2" contenteditable="true" spellcheck="false" style="flex:1;outline:none;cursor:text;border-radius:3px;transition:background .15s">評測過程提供商品功能說明與使用情境介紹，使受試者在充分理解商品的前提下給予回饋；受試者也反映，若缺乏解說環節，評分結果將有極大落差。</span></div>
-      </div>
+      <div id="act-g1" contenteditable="true" spellcheck="false" style="padding:14px 16px;font-size:14px;color:var(--text);line-height:1.9;outline:none;min-height:36px"><div><b style="color:#2d6a4f">1.</b> 商品一次性展開評測，讓消費者在真實接觸的當下，直接反映疑問與在意的資訊，有效捕捉第一手感受。</div><div><b style="color:#2d6a4f">2.</b> 評測過程提供商品功能說明與使用情境介紹，使受試者在充分理解商品的前提下給予回饋；受試者也反映，若缺乏解說環節，評分結果將有極大落差。</div></div>
     </div>
 
     <!-- 可以突破或調整的事 -->
@@ -353,14 +354,7 @@ tr.dtr td{padding:0;border-bottom:2px solid var(--sc)}
         <span style="font-size:16px">🔄</span>
         <span style="font-size:13px;font-weight:800;color:#7d5a00;letter-spacing:.5px">可以突破或調整的事</span>
       </div>
-      <div style="padding:14px 16px;font-size:14px;color:var(--text);line-height:1.9;display:flex;flex-direction:column;gap:6px">
-        <div style="display:flex;align-items:flex-start"><span style="font-weight:700;color:#c47d00;margin-right:6px;flex-shrink:0">1.</span><span id="act-g2-1" contenteditable="true" spellcheck="false" style="flex:1;outline:none;cursor:text;border-radius:3px;transition:background .15s">Q5、Q6 的問法不夠明確，多數受訪者有所反應，從評分結果也可看出題目缺乏鑑別力，建議下次重新設計問題方向。</span></div>
-        <div style="display:flex;align-items:flex-start"><span style="font-weight:700;color:#c47d00;margin-right:6px;flex-shrink:0">2.</span><span id="act-g2-2" contenteditable="true" spellcheck="false" style="flex:1;outline:none;cursor:text;border-radius:3px;transition:background .15s">可提供同性質商品作為現場比較基準，並附上該類商品的市場行情價，讓受訪者在有參照的情況下，對「價格合理性」做出更有依據的判斷。</span></div>
-        <div style="display:flex;align-items:flex-start"><span style="font-weight:700;color:#c47d00;margin-right:6px;flex-shrink:0">3.</span><span id="act-g2-3" contenteditable="true" spellcheck="false" style="flex:1;outline:none;cursor:text;border-radius:3px;transition:background .15s">各商品的獨家賣點或功能特點標示應保持一致，避免描述落差導致受訪者對商品產生混淆或不必要的疑問。</span></div>
-        <div style="display:flex;align-items:flex-start"><span style="font-weight:700;color:#c47d00;margin-right:6px;flex-shrink:0">4.</span><span id="act-g2-4" contenteditable="true" spellcheck="false" style="flex:1;outline:none;cursor:text;border-radius:3px;transition:background .15s">多數商品加權總分未超過4.0，推測有兩點結構性原因：① Q5 問卷設計最高僅4分，且題目本身無法作為有效評鑑依據，全體均分僅約1.90，長期拉低總分貢獻；② 受訪者反映，一旦涉及價格判斷，便會考量商品整體適用性並需參照市場行情，導致其中18件商品「普通」佔比 >30%，Q3整體均分落在3.61，形成整體分數的壓力。</span></div>
-        <div style="display:flex;align-items:flex-start"><span style="font-weight:700;color:#c47d00;margin-right:6px;flex-shrink:0">5.</span><span id="act-g2-5" contenteditable="true" spellcheck="false" style="flex:1;outline:none;cursor:text;border-radius:3px;transition:background .15s">建議在部分商品答題結果偏向不認同時，增設開放性原因描述欄，有助於更深入解析選評數據背後的真實考量，提升問卷結果的可解讀性。</span></div>
-        <div style="display:flex;align-items:flex-start"><span style="font-weight:700;color:#c47d00;margin-right:6px;flex-shrink:0">6.</span><span id="act-g2-6" contenteditable="true" spellcheck="false" style="flex:1;outline:none;cursor:text;border-radius:3px;transition:background .15s">深度體驗調查的問法需更明確，部分商品應標示適用年齡範圍，避免非目標受眾也填寫體驗意願，導致嬰幼兒專用商品的體驗名單出現不適合的參與者。</span></div>
-      </div>
+      <div id="act-g2" contenteditable="true" spellcheck="false" style="padding:14px 16px;font-size:14px;color:var(--text);line-height:1.9;outline:none;min-height:36px"><div><b style="color:#c47d00">1.</b> Q5、Q6 的問法不夠明確，多數受訪者有所反應，從評分結果也可看出題目缺乏鑑別力，建議下次重新設計問題方向。</div><div><b style="color:#c47d00">2.</b> 可提供同性質商品作為現場比較基準，並附上該類商品的市場行情價，讓受訪者在有參照的情況下，對「價格合理性」做出更有依據的判斷。</div><div><b style="color:#c47d00">3.</b> 各商品的獨家賣點或功能特點標示應保持一致，避免描述落差導致受訪者對商品產生混淆或不必要的疑問。</div><div><b style="color:#c47d00">4.</b> 多數商品加權總分未超過4.0，推測有兩點結構性原因：① Q5 問卷設計最高僅4分，且題目本身無法作為有效評鑑依據，全體均分僅約1.90，長期拉低總分貢獻；② 受訪者反映，一旦涉及價格判斷，便會考量商品整體適用性並需參照市場行情，導致其中18件商品「普通」佔比 >30%，Q3整體均分落在3.61，形成整體分數的壓力。</div><div><b style="color:#c47d00">5.</b> 建議在部分商品答題結果偏向不認同時，增設開放性原因描述欄，有助於更深入解析選評數據背後的真實考量，提升問卷結果的可解讀性。</div><div><b style="color:#c47d00">6.</b> 深度體驗調查的問法需更明確，部分商品應標示適用年齡範圍，避免非目標受眾也填寫體驗意願，導致嬰幼兒專用商品的體驗名單出現不適合的參與者。</div></div>
     </div>
 
     <!-- 獲得資訊 -->
@@ -369,10 +363,7 @@ tr.dtr td{padding:0;border-bottom:2px solid var(--sc)}
         <span style="font-size:16px">💡</span>
         <span style="font-size:13px;font-weight:800;color:#4a1a7a;letter-spacing:.5px">獲得資訊</span>
       </div>
-      <div style="padding:14px 16px;font-size:14px;color:var(--text);line-height:1.9;display:flex;flex-direction:column;gap:6px">
-        <div style="display:flex;align-items:flex-start"><span style="font-weight:700;color:#7b5ea7;margin-right:6px;flex-shrink:0">1.</span><span id="act-g3-1" contenteditable="true" spellcheck="false" style="flex:1;outline:none;cursor:text;border-radius:3px;transition:background .15s">評測中的現場討論，以及評測後的個別訪談，有助於理解數據背後的原因與變化脈絡，是純問卷數字之外重要的補充來源。</span></div>
-        <div style="display:flex;align-items:flex-start"><span style="font-weight:700;color:#7b5ea7;margin-right:6px;flex-shrink:0">2.</span><span id="act-g3-2" contenteditable="true" spellcheck="false" style="flex:1;outline:none;cursor:text;border-radius:3px;transition:background .15s">有育兒與無育兒受眾在商品大方向的喜好上有一定共識；透過差異化分析能進一步判斷，部分商品在實際使用後功能認同度顯著提升，也能協助排除「預期功能性強但實際感受落差大」的商品。</span></div>
-      </div>
+      <div id="act-g3" contenteditable="true" spellcheck="false" style="padding:14px 16px;font-size:14px;color:var(--text);line-height:1.9;outline:none;min-height:36px"><div><b style="color:#7b5ea7">1.</b> 評測中的現場討論，以及評測後的個別訪談，有助於理解數據背後的原因與變化脈絡，是純問卷數字之外重要的補充來源。</div><div><b style="color:#7b5ea7">2.</b> 有育兒與無育兒受眾在商品大方向的喜好上有一定共識；透過差異化分析能進一步判斷，部分商品在實際使用後功能認同度顯著提升，也能協助排除「預期功能性強但實際感受落差大」的商品。</div></div>
     </div>
 
   </div>
@@ -1220,8 +1211,8 @@ function renderAnalysis(){
     +'<div style="display:flex;align-items:center;gap:7px;font-size:12px"><span style="width:7px;height:7px;border-radius:50%;background:#d97706;flex-shrink:0"></span><span style="font-weight:600;min-width:44px;color:var(--text)">無育兒</span><span style="color:var(--sub)">≥4.4 <b style="color:var(--text);font-weight:700">8件</b></span></div>'
     +'</div>'
     +'<div id="qce-q1" contenteditable="true" spellcheck="false" style="font-size:12px;color:var(--text);line-height:1.75;outline:none;cursor:text">'
-    +'・推測有育兒分數偏高原因：曾有實際照顧經驗，更能判斷商品對寶寶的真實反應，也更貼近媽媽實際使用需求；無育兒較難建立具體的安全感知標準。<br>'
-    +'・有育兒高分集中：感官玩具、媽媽用品、日用耗材；無育兒集中：日常消耗品與餵食輔具。'
+    +'<div style="padding-left:1em;text-indent:-1em">・推測有育兒分數偏高原因：曾有實際照顧經驗，更能判斷商品對寶寶的真實反應，也更貼近媽媽實際使用需求；無育兒較難建立具體的安全感知標準。</div>'
+    +'<div style="padding-left:1em;text-indent:-1em">・有育兒高分集中：感官玩具、媽媽用品、日用耗材；無育兒集中：日常消耗品與餵食輔具。</div>'
     +'</div></div>'
     // Q2
     +'<div style="background:#fff;border:1px solid var(--border);border-radius:7px;padding:11px 14px;border-left:3px solid #2d9cdb">'
@@ -1231,9 +1222,9 @@ function renderAnalysis(){
     +'<div style="display:flex;align-items:center;gap:7px;font-size:12px"><span style="width:7px;height:7px;border-radius:50%;background:#d97706;flex-shrink:0"></span><span style="font-weight:600;min-width:44px;color:var(--text)">無育兒</span><span style="color:var(--sub)">≥4.0 <b style="color:var(--text);font-weight:700">24件</b></span><span style="color:var(--sub);margin:0 2px">·</span><span style="color:var(--sub)">≥4.4 <b style="color:var(--text);font-weight:700">5件</b></span></div>'
     +'</div>'
     +'<div id="qce-q2" contenteditable="true" spellcheck="false" style="font-size:12px;color:var(--text);line-height:1.75;outline:none;cursor:text">'
-    +'・兩組共同認可 <b>19件</b>，清一色是功能明確的嬰兒照護必需品（清潔、餵食、睡眠、護膚）。<br>'
-    +'・<b>有育兒獨有 6件</b>：B10 AX水杯、A01 媽媽包、C05 布書、B03 學習水杯、D02 精油按摩乳、C04 安撫小海馬——偏向發展性商品與媽媽使用工具，無育兒因缺乏具體使用脈絡，分數停在觀望區。<br>'
-    +'・<b>無育兒獨有 5件</b>：C09 拋棄式圍兜、D05/D06 防蚊系列、D09 抗菌濕紙巾、B12 食物調理機——偏向外出防護與一次性便利品，有育兒用過後反而評分保守，可能對實際效果有保留或已有替代方案。'
+    +'<div style="padding-left:1em;text-indent:-1em">・兩組共同認可 <b>19件</b>，清一色是功能明確的嬰兒照護必需品（清潔、餵食、睡眠、護膚）。</div>'
+    +'<div style="padding-left:1em;text-indent:-1em">・<b>有育兒獨有 6件</b>：B10 AX水杯、A01 媽媽包、C05 布書、B03 學習水杯、D02 精油按摩乳、C04 安撫小海馬——偏向發展性商品與媽媽使用工具，無育兒因缺乏具體使用脈絡，分數停在觀望區。</div>'
+    +'<div style="padding-left:1em;text-indent:-1em">・<b>無育兒獨有 5件</b>：C09 拋棄式圍兜、D05/D06 防蚊系列、D09 抗菌濕紙巾、B12 食物調理機——偏向外出防護與一次性便利品，有育兒用過後反而評分保守，可能對實際效果有保留或已有替代方案。</div>'
     +'</div></div>'
     // Q3
     +'<div style="background:#fff;border:1px solid var(--border);border-radius:7px;padding:11px 14px;border-left:3px solid #27ae60">'
@@ -1243,9 +1234,9 @@ function renderAnalysis(){
     +'<div style="display:flex;align-items:center;gap:7px;font-size:12px"><span style="width:7px;height:7px;border-radius:50%;background:#d97706;flex-shrink:0"></span><span style="font-weight:600;min-width:44px;color:var(--text)">無育兒</span><span style="color:var(--sub)">≥4.0 <b style="color:var(--text);font-weight:700">13件</b></span></div>'
     +'</div>'
     +'<div id="qce-q3" contenteditable="true" spellcheck="false" style="font-size:12px;color:var(--text);line-height:1.75;outline:none;cursor:text">'
-    +'・全體僅 <b>10/42（24%）≥4.0</b>，共同8件，<b>重疊率80%</b>。<br>'
-    +'・另有 <b>18件</b>商品「普通」佔比 >30%，是所有題目中價格卡關最廣的一題。<br>'
-    +'・受訪者回饋：對商品市場定價較不熟悉，難以判斷售價是否合理，導致評分趨向保守中立，並非對商品本身有負面看法。'
+    +'<div style="padding-left:1em;text-indent:-1em">・全體僅 <b>10/42（24%）≥4.0</b>，共同8件，<b>重疊率80%</b>。</div>'
+    +'<div style="padding-left:1em;text-indent:-1em">・另有 <b>18件</b>商品「普通」佔比 >30%，是所有題目中價格卡關最廣的一題。</div>'
+    +'<div style="padding-left:1em;text-indent:-1em">・受訪者回饋：對商品市場定價較不熟悉，難以判斷售價是否合理，導致評分趨向保守中立，並非對商品本身有負面看法。</div>'
     +'</div></div>'
     // Q4
     +'<div style="background:#fff;border:1px solid var(--border);border-radius:7px;padding:11px 14px;border-left:3px solid #e07b39">'
@@ -1255,8 +1246,8 @@ function renderAnalysis(){
     +'<div style="display:flex;align-items:center;gap:7px;font-size:12px"><span style="width:7px;height:7px;border-radius:50%;background:#d97706;flex-shrink:0"></span><span style="font-weight:600;min-width:44px;color:var(--text)">無育兒</span><span style="color:var(--sub)">≥4.0 <b style="color:var(--text);font-weight:700">17件</b></span><span style="font-size:11px;color:var(--sub);margin-left:6px">共同10件</span></div>'
     +'</div>'
     +'<div id="qce-q4" contenteditable="true" spellcheck="false" style="font-size:12px;color:var(--text);line-height:1.75;outline:none;cursor:text">'
-    +'・與Q1、Q2不同，<b>無育兒在外觀品味的認可件數反而略高於有育兒</b>（出現反轉）。<br>'
-    +'・推測有育兒族群選品時功能優先、外觀標準更嚴；無育兒較容易受設計感與第一印象驅動評分。'
+    +'<div style="padding-left:1em;text-indent:-1em">・與Q1、Q2不同，<b>無育兒在外觀品味的認可件數反而略高於有育兒</b>（出現反轉）。</div>'
+    +'<div style="padding-left:1em;text-indent:-1em">・推測有育兒族群選品時功能優先、外觀標準更嚴；無育兒較容易受設計感與第一印象驅動評分。</div>'
     +'</div></div>'
     // Q5/Q6
     +'<div style="background:#f8f9fa;border:1px solid var(--border);border-radius:7px;padding:11px 14px;border-left:3px solid #adb5bd">'
@@ -1267,7 +1258,7 @@ function renderAnalysis(){
     +'<div style="background:#fff;border:1px solid var(--border);border-radius:7px;padding:11px 14px;border-left:3px solid #9b59b6">'
     +'<div style="font-size:12px;font-weight:800;color:#9b59b6;letter-spacing:.5px;margin-bottom:6px">Q7 深入體驗意願 — 黑馬商品</div>'
     +'<div id="qce-q7" contenteditable="true" spellcheck="false" style="font-size:12px;color:var(--text);line-height:1.75;outline:none;cursor:text">'
-    +'・評分未進全體前15，但體驗意願人數異常高，屬「好奇心 > 現有需求感知」型商品：<br>'
+    +'<div style="padding-left:1em;text-indent:-1em">・評分未進全體前15，但體驗意願人數異常高，屬「好奇心 > 現有需求感知」型商品：</div>'
     +'<div style="margin:5px 0 5px 0;display:grid;grid-template-columns:auto 1fr auto auto;gap:2px 8px;font-size:11px;align-items:center">'
     +'<span style="font-weight:800;color:#9b59b6">D02 精油按摩乳</span><span style="color:var(--sub)">排名 #24</span><span style="color:var(--pr)">21人</span><span style="color:var(--sub)">有育兒8／無育兒13</span>'
     +'<span style="font-weight:800;color:#9b59b6">D09 抗菌濕紙巾</span><span style="color:var(--sub)">排名 #29</span><span style="color:var(--pr)">19人</span><span style="color:var(--sub)">有育兒7／無育兒12</span>'
@@ -1275,7 +1266,7 @@ function renderAnalysis(){
     +'<span style="font-weight:800;color:#9b59b6">D01 無痕美體霜</span><span style="color:var(--sub)">排名 #23</span><span style="color:var(--pr)">15人</span><span style="color:var(--sub)">有育兒7／無育兒8</span>'
     +'<span style="font-weight:800;color:#9b59b6">B03 矽膠學習水杯</span><span style="color:var(--sub)">排名 #31</span><span style="color:var(--pr)">15人</span><span style="color:var(--sub)">有育兒7／無育兒8</span>'
     +'</div>'
-    +'・其中 <b>D02 精油按摩乳</b>最具代表性——幾乎半數受訪者想親自體驗，有育兒（62%）與無育兒（46%）意願皆高，而非真的不感興趣。'
+    +'<div style="padding-left:1em;text-indent:-1em">・其中 <b>D02 精油按摩乳</b>最具代表性——幾乎半數受訪者想親自體驗，有育兒（62%）與無育兒（46%）意願皆高，而非真的不感興趣。</div>'
     +'</div></div>'
     +'</div>'
     +'<div style="font-size:12px;font-weight:800;color:var(--pr);letter-spacing:.5px;margin-bottom:8px">族群排名差異</div>'
@@ -1305,6 +1296,7 @@ function renderAnalysis(){
       cel.addEventListener('blur',()=>{
         localStorage.setItem('qcardv1_'+k,cel.innerHTML);
         _JB.push('analysis',_getAllQce());
+        showSaveToast();
       });
     });
     // Override with remote
@@ -1598,6 +1590,14 @@ function renderAssignBoard(){
   }).join('');
 }
 
+// Save toast
+let _toastTimer=null;
+function showSaveToast(){
+  const t=document.getElementById('save-toast');if(!t)return;
+  t.classList.add('show');clearTimeout(_toastTimer);
+  _toastTimer=setTimeout(()=>t.classList.remove('show'),1800);
+}
+
 // JSONBin cross-device sync
 const _JB=(function(){
   const KEY='$2a$10$0t.NdneSaCvJ0ConoY7J5e2J1oxko.SJhoTNydP5CiKh7YqdoIltq';
@@ -1621,7 +1621,7 @@ const _JB=(function(){
 
 // 活動洞察 auto-save
 (function(){
-  const KEYS=['act-g1-1','act-g1-2','act-g2-1','act-g2-2','act-g2-3','act-g2-4','act-g2-5','act-g2-6','act-g3-1','act-g3-2'];
+  const KEYS=['act-g1','act-g2','act-g3'];
 
   function _getAll(){const o={};KEYS.forEach(k=>{const e=document.getElementById(k);if(e)o[k]=e.innerHTML;});return o;}
 
@@ -1629,17 +1629,18 @@ const _JB=(function(){
     // Load localStorage immediately
     KEYS.forEach(k=>{
       const e=document.getElementById(k);if(!e)return;
-      const saved=localStorage.getItem('actv1_'+k);
+      const saved=localStorage.getItem('actv2_'+k);
       if(saved)e.innerHTML=saved;
       e.addEventListener('blur',()=>{
-        localStorage.setItem('actv1_'+k,e.innerHTML);
+        localStorage.setItem('actv2_'+k,e.innerHTML);
         _JB.push('activity',_getAll());
+        showSaveToast();
       });
     });
     // Override with remote
     await _JB.ready;
     const remote=_JB.get('activity');
-    if(remote){KEYS.forEach(k=>{const e=document.getElementById(k);if(e&&remote[k]!=null){e.innerHTML=remote[k];localStorage.setItem('actv1_'+k,remote[k]);}});}
+    if(remote){KEYS.forEach(k=>{const e=document.getElementById(k);if(e&&remote[k]!=null){e.innerHTML=remote[k];localStorage.setItem('actv2_'+k,remote[k]);}});}
   }
 
   let _actInited=false;
